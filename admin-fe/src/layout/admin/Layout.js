@@ -134,12 +134,12 @@ function Header({ children }) {
                                 </Link>
                             </li>
                             <li>
-                                <Link to="/admin/dot-giam-gia" className="text-white text-decoration-none ps-4">
+                                <Link  className="text-white text-decoration-none ps-4">
                                     <i className="fa fa-list me-2"></i> Đợt giảm giá
                                 </Link>
                             </li>
                             <li>
-                                <Link to="/admin/add-dot-giam-gia" className="text-white text-decoration-none ps-4">
+                                <Link  className="text-white text-decoration-none ps-4">
                                     <i className="fa fa-plus me-2"></i> Thêm đợt giảm giá
                                 </Link>
                             </li>
