@@ -36,38 +36,38 @@ public class SanPhamController {
         return ResponseEntity.ok(sanPhamList);
     }
 
-    @GetMapping("/san-pham-lien-quan")
-    public ResponseEntity<List<SanPham>> getAllSanPhamLienQuan(@RequestParam Integer id) {
-        Optional<SanPham> sanPham = sanPhamRepository.findById(id);
-        if(sanPham.isEmpty()){
-            throw new MessageException("not found");
-        }
-        List<SanPham> sanPhamList = new ArrayList<>();
-        if(sanPham.get().getThuongHieu() != null){
-            sanPhamList = sanPhamRepository.findByThuongHieu(sanPham.get().getThuongHieu().getId());
-        }
-        return ResponseEntity.ok(sanPhamList);
-    }
+//    @GetMapping("/san-pham-lien-quan")
+//    public ResponseEntity<List<SanPham>> getAllSanPhamLienQuan(@RequestParam Integer id) {
+//        Optional<SanPham> sanPham = sanPhamRepository.findById(id);
+//        if(sanPham.isEmpty()){
+//            throw new MessageException("not found");
+//        }
+//        List<SanPham> sanPhamList = new ArrayList<>();
+//        if(sanPham.get().getThuongHieu() != null){
+//            sanPhamList = sanPhamRepository.findByThuongHieu(sanPham.get().getThuongHieu().getId());
+//        }
+//        return ResponseEntity.ok(sanPhamList);
+//    }
 
     @GetMapping("/public/all")
     public ResponseEntity<?> getAllSanPhamPage(Pageable pageable) {
         Page<SanPham> sanPhamList = sanPhamRepository.findAll(pageable);
         return ResponseEntity.ok(sanPhamList);
     }
-
-    @PostMapping("/public/loc-san-pham")
-    public ResponseEntity<?> locSanPham(Pageable pageable, @RequestBody SearchDto searchDto) {
-        SanPhamSpecification sanPhamSpecification = new SanPhamSpecification(searchDto.getIdThuongHieu() != null ? searchDto.getIdThuongHieu() : null, searchDto.getSmall(), searchDto.getLarge(), searchDto.getIdDeGiay(), searchDto.getIdChatLieu());
-        Page<SanPham> sanPhamList = sanPhamRepository.findAll(sanPhamSpecification, pageable);
-        return ResponseEntity.ok(sanPhamList);
-    }
-
-    @PostMapping("/public/loc-san-pham-list")
-    public ResponseEntity<?> locSanPham(@RequestBody SearchDto searchDto) {
-        SanPhamSpecification sanPhamSpecification = new SanPhamSpecification(searchDto.getIdThuongHieu(), searchDto.getSmall(), searchDto.getLarge(), searchDto.getIdDeGiay(), searchDto.getIdChatLieu());
-        List<SanPham> sanPhamList = sanPhamRepository.findAll(sanPhamSpecification);
-        return ResponseEntity.ok(sanPhamList);
-    }
+//
+//    @PostMapping("/public/loc-san-pham")
+//    public ResponseEntity<?> locSanPham(Pageable pageable, @RequestBody SearchDto searchDto) {
+//        SanPhamSpecification sanPhamSpecification = new SanPhamSpecification(searchDto.getIdThuongHieu() != null ? searchDto.getIdThuongHieu() : null, searchDto.getSmall(), searchDto.getLarge(), searchDto.getIdDeGiay(), searchDto.getIdChatLieu());
+//        Page<SanPham> sanPhamList = sanPhamRepository.findAll(sanPhamSpecification, pageable);
+//        return ResponseEntity.ok(sanPhamList);
+//    }
+//
+//    @PostMapping("/public/loc-san-pham-list")
+//    public ResponseEntity<?> locSanPham(@RequestBody SearchDto searchDto) {
+//        SanPhamSpecification sanPhamSpecification = new SanPhamSpecification(searchDto.getIdThuongHieu(), searchDto.getSmall(), searchDto.getLarge(), searchDto.getIdDeGiay(), searchDto.getIdChatLieu());
+//        List<SanPham> sanPhamList = sanPhamRepository.findAll(sanPhamSpecification);
+//        return ResponseEntity.ok(sanPhamList);
+//    }
 
     @GetMapping("/public/tim-theo-ten")
     public ResponseEntity<?> locSanPham(Pageable pageable, @RequestParam String search) {

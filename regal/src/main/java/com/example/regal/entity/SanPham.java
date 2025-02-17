@@ -72,9 +72,9 @@ public class SanPham {
     @Column(name = "TrangThai", columnDefinition = "int default 1")
     private Integer trangThai;
 
-    @OneToMany(mappedBy = "sanPham", cascade = CascadeType.REMOVE)
-    @JsonIgnoreProperties(value = {"sanPham"})
-    private List<SanPhamChiTiet> sanPhamChiTiets;
+//    @OneToMany(mappedBy = "sanPham", cascade = CascadeType.REMOVE)
+//    @JsonIgnoreProperties(value = {"sanPham"})
+//    private List<SanPhamChiTiet> sanPhamChiTiets;
 
     @Override
     public boolean equals(Object o) {

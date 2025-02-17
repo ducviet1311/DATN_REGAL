@@ -1,7 +1,7 @@
 package com.example.regal.repository;
 
 import com.example.regal.entity.SanPham;
-import com.example.regal.entity.SanPhamChiTiet;
+//import com.example.regal.entity.SanPhamChiTiet;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -56,25 +56,25 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer>, JpaS
     boolean existsByTenSanPham(String tensanpham);
 
     // các sp mới nhất bên sp
-    @Query("""
-        SELECT sp.id, sp.tenSanPham, sp.ngayTao, 
-               SUM(ct.soLuong) AS tongSoLuong, sp.trangThai, sp.maSanPham
-        FROM SanPham sp
-        JOIN SanPhamChiTiet ct ON sp.id = ct.id
-        GROUP BY sp.id, sp.tenSanPham, sp.ngayTao, sp.trangThai, sp.maSanPham
-        ORDER BY sp.ngayTao DESC, tongSoLuong DESC
-       """)
-    List<Object[]> findProductsWithTotalQuantityOrderByDateDesc();
+//    @Query("""
+//        SELECT sp.id, sp.tenSanPham, sp.ngayTao,
+//               SUM(ct.soLuong) AS tongSoLuong, sp.trangThai, sp.maSanPham
+//        FROM SanPham sp
+//        JOIN SanPhamChiTiet ct ON sp.id = ct.id
+//        GROUP BY sp.id, sp.tenSanPham, sp.ngayTao, sp.trangThai, sp.maSanPham
+//        ORDER BY sp.ngayTao DESC, tongSoLuong DESC
+//       """)
+//    List<Object[]> findProductsWithTotalQuantityOrderByDateDesc();
 
 
-    @Query("select s from SanPhamChiTiet s where s.sanPham.id = ?1")
-    List<SanPhamChiTiet> findBySanPham(Integer sanpham);
+//    @Query("select s from SanPhamChiTiet s where s.sanPham.id = ?1")
+//    List<SanPhamChiTiet> findBySanPham(Integer sanpham);
 
     @Query("select s from SanPham s where s.tenSanPham like ?1")
     Page<SanPham> findByParam(String s, Pageable pageable);
 
-    @Query("select s from SanPhamChiTiet s where s.dotGiamGia.id = ?1")
-    List<SanPhamChiTiet> findByDotGiamGia(Integer id);
+//    @Query("select s from SanPhamChiTiet s where s.dotGiamGia.id = ?1")
+//    List<SanPhamChiTiet> findByDotGiamGia(Integer id);
     // search bên sp
 //    @Query("""
 //        SELECT sp.id, sp.tenSanPham, sp.ngayTao, SUM(SanPhamChiTiet.soLuong) AS tongSoLuong,
