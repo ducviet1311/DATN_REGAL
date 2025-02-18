@@ -8,6 +8,7 @@ public class RegalApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(RegalApplication.class, args);
+        System.out.println("running...");
     }
 
 }

@@ -183,6 +183,7 @@ const AdminProduct = () => {
                       <a href={"add-product?id=" + item.id} class="edit-btn">
                         <i className="fa fa-edit"></i>
                       </a>
+<<<<<<< HEAD
                       <a
                         // target="_blank"
                         href={"sanphamchitiet?sanpham=" + item.id}
@@ -190,6 +191,15 @@ const AdminProduct = () => {
                       >
                         <i className="fa fa-eye"></i>
                       </a>
+=======
+                      {/*<a*/}
+                      {/*  // target="_blank"*/}
+                      {/*  href={"sanphamchitiet?sanpham=" + item.id}*/}
+                      {/*  class="edit-btn"*/}
+                      {/*>*/}
+                      {/*  <i className="fa fa-eye"></i>*/}
+                      {/*</a>*/}
+>>>>>>> 0bdc97a585d774e6b8c880246204683aaf037cab
                       <button
                         onClick={() => deleteProduct(item.id)}
                         class="delete-btn"

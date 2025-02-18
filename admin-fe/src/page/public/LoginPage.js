@@ -32,7 +32,11 @@ import Swal from 'sweetalert2'
     };
     console.log('pá', payload);
     const res = await postMethodPayload('/api/v1/auth/public/login', payload);
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> 0bdc97a585d774e6b8c880246204683aaf037cab
     var result = await res.json()
     console.log(result);
     if (res.status == 417) {
@@ -59,7 +63,11 @@ import Swal from 'sweetalert2'
       }
     }
   };
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> 0bdc97a585d774e6b8c880246204683aaf037cab
    return (
     <section className="login_section layout_padding">
     <div className="container">
@@ -88,6 +96,11 @@ import Swal from 'sweetalert2'
   </section>
    )
  }
+<<<<<<< HEAD
  
  export default LoginPage
  
+=======
+
+ export default LoginPage
+>>>>>>> 0bdc97a585d774e6b8c880246204683aaf037cab

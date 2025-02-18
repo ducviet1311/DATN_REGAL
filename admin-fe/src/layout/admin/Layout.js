@@ -134,12 +134,20 @@ function Header({ children }) {
                                 </Link>
                             </li>
                             <li>
+<<<<<<< HEAD
                                 <Link to="/admin/dot-giam-gia" className="text-white text-decoration-none ps-4">
+=======
+                                <Link  className="text-white text-decoration-none ps-4">
+>>>>>>> 0bdc97a585d774e6b8c880246204683aaf037cab
                                     <i className="fa fa-list me-2"></i> Đợt giảm giá
                                 </Link>
                             </li>
                             <li>
+<<<<<<< HEAD
                                 <Link to="/admin/add-dot-giam-gia" className="text-white text-decoration-none ps-4">
+=======
+                                <Link  className="text-white text-decoration-none ps-4">
+>>>>>>> 0bdc97a585d774e6b8c880246204683aaf037cab
                                     <i className="fa fa-plus me-2"></i> Thêm đợt giảm giá
                                 </Link>
                             </li>
