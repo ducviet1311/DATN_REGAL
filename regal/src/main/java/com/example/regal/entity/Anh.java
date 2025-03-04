@@ -2,7 +2,18 @@ package com.example.regal.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
+<<<<<<< HEAD
 import jakarta.persistence.*;
+=======
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+>>>>>>> 6c3d7fb65af90cb226814be30c5d31df00e60baa
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
