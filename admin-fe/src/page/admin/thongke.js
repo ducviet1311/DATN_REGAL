@@ -17,14 +17,14 @@ const AdminThongKe = () => {
     revenueYear(new Date().getFullYear());
     getMauSac();
     getThongKe();
-    veBieuDoTron();
+    // veBieuDoTron();
   }, []);
   async function revenueYear(nam) {
     if (nam < 2000) {
       nam = new Date().getFullYear();
     }
     const response = await getMethod(
-      "/api/thong-ke/admin/doanhthuall?nam=" + nam
+        "/api/thong-ke/admin/doanhthuall?nam=" + nam
     );
     var list = await response.json();
     console.log(list);
@@ -85,7 +85,7 @@ const AdminThongKe = () => {
 
   async function revenueTheoThuTrongTuan() {
     const response = await getMethod(
-      "/api/thong-ke/admin/doanhthuthutrongtuan"
+        "/api/thong-ke/admin/doanhthuthutrongtuan"
     );
     const data = await response.json();
     console.log("thutrongtuan", data);
@@ -246,67 +246,67 @@ const AdminThongKe = () => {
     }
   }
 
-  async function veBieuDoTron() {
-    const response = await getMethod("/api/thong-ke/admin/thong-ke-trang-thai");
-    var result = await response.json();
-    console.log(result);
-
-    var arrTen = Object.keys(result);
-    var arrvalue = Object.values(result);
-    const ctx = document.getElementById("myPieChart").getContext("2d");
-
-    // Kiểm tra và hủy biểu đồ nếu có
-    let chartStatus = Chart.getChart("myPieChart"); // <canvas> id
-    if (chartStatus != undefined) {
-      chartStatus.destroy(); // Hủy biểu đồ cũ nếu có
-    }
-
-    // Dữ liệu biểu đồ
-    const data = {
-      labels: arrTen,
-      datasets: [
-        {
-          label: "Số lượng đơn hàng",
-          data: arrvalue, // Giá trị
-          backgroundColor: [
-            "rgba(255, 99, 132, 0.6)", // Màu sắc từng phần
-            "rgba(54, 162, 235, 0.6)",
-            "rgba(255, 206, 86, 0.6)",
-            "rgba(75, 192, 192, 0.6)",
-            "rgba(168, 142, 69, 0.6)",
-            "rgba(86, 55, 196, 0.6)",
-            "rgba(58, 152, 161, 0.6)",
-            "rgba(171, 91, 55, 0.6)",
-          ],
-          borderWidth: 1,
-        },
-      ],
-    };
-
-    const config = {
-      type: "pie",
-      data: data,
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            position: "right",
-          },
-          tooltip: {
-            callbacks: {
-              label: function (context) {
-                const label = context.label || "";
-                const value = context.raw || 0;
-                return `${label}: ${value}`;
-              },
-            },
-          },
-        },
-      },
-    };
-
-    new Chart(ctx, config);
-  }
+  // async function veBieuDoTron() {
+  //   const response = await getMethod("/api/thong-ke/admin/thong-ke-trang-thai");
+  //   var result = await response.json();
+  //   console.log(result);
+  //
+  //   var arrTen = Object.keys(result);
+  //   var arrvalue = Object.values(result);
+  //   const ctx = document.getElementById("myPieChart").getContext("2d");
+  //
+  //   // Kiểm tra và hủy biểu đồ nếu có
+  //   let chartStatus = Chart.getChart("myPieChart"); // <canvas> id
+  //   if (chartStatus != undefined) {
+  //     chartStatus.destroy(); // Hủy biểu đồ cũ nếu có
+  //   }
+  //
+  //   // Dữ liệu biểu đồ
+  //   const data = {
+  //     labels: arrTen,
+  //     datasets: [
+  //       {
+  //         label: "Số lượng đơn hàng",
+  //         data: arrvalue, // Giá trị
+  //         backgroundColor: [
+  //           "rgba(255, 99, 132, 0.6)", // Màu sắc từng phần
+  //           "rgba(54, 162, 235, 0.6)",
+  //           "rgba(255, 206, 86, 0.6)",
+  //           "rgba(75, 192, 192, 0.6)",
+  //           "rgba(168, 142, 69, 0.6)",
+  //           "rgba(86, 55, 196, 0.6)",
+  //           "rgba(58, 152, 161, 0.6)",
+  //           "rgba(171, 91, 55, 0.6)",
+  //         ],
+  //         borderWidth: 1,
+  //       },
+  //     ],
+  //   };
+  //
+  //   const config = {
+  //     type: "pie",
+  //     data: data,
+  //     options: {
+  //       responsive: true,
+  //       plugins: {
+  //         legend: {
+  //           position: "right",
+  //         },
+  //         tooltip: {
+  //           callbacks: {
+  //             label: function (context) {
+  //               const label = context.label || "";
+  //               const value = context.raw || 0;
+  //               return `${label}: ${value}`;
+  //             },
+  //           },
+  //         },
+  //       },
+  //     },
+  //   };
+  //
+  //   new Chart(ctx, config);
+  // }
 
   useEffect(() => {
     revenueTheoGioTrongNgay();
@@ -338,93 +338,93 @@ const AdminThongKe = () => {
     XLSX.writeFile(wb, "ThongKe.xlsx");
   };
   return (
-    <div>
-      <div className="card-container">
-        <div class="card-day">
-          <div class="col-xl-3 col-md-6 mb-4 card-view">
-            <div class="card border-left shadow h-100 py-2">
-              <span class="lbcard">Số đơn hôm nay</span>
-              <span class="solieudoanhthu" id="soDonTrongNgay">
+      <div>
+        <div className="card-container">
+          <div class="card-day">
+            <div class="col-xl-3 col-md-6 mb-4 card-view">
+              <div class="card border-left shadow h-100 py-2">
+                <span class="lbcard">Số đơn hôm nay</span>
+                <span class="solieudoanhthu" id="soDonTrongNgay">
                 {thongKe?.soDonTrongNgay}
               </span>
+              </div>
             </div>
-          </div>
-          <div class="col-xl-3 col-md-6 mb-4 card-view">
-            <div class="card border-left shadow h-100 py-2">
-              <span class="lbcard">Số đơn tuân này</span>
-              <span class="solieudoanhthu" id="soDonTuanNay">
+            <div class="col-xl-3 col-md-6 mb-4 card-view">
+              <div class="card border-left shadow h-100 py-2">
+                <span class="lbcard">Số đơn tuân này</span>
+                <span class="solieudoanhthu" id="soDonTuanNay">
                 {thongKe?.soDonTuanNay}
               </span>
+              </div>
             </div>
-          </div>
-          <div class="col-xl-3 col-md-6 mb-4 card-view">
-            <div class="card border-left shadow h-100 py-2">
-              <span class="lbcard">Số đơn tháng này</span>
-              <span class="solieudoanhthu" id="soDonThangNay">
+            <div class="col-xl-3 col-md-6 mb-4 card-view">
+              <div class="card border-left shadow h-100 py-2">
+                <span class="lbcard">Số đơn tháng này</span>
+                <span class="solieudoanhthu" id="soDonThangNay">
                 {thongKe?.soDonThangNay}
               </span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="export-excel-button">
-        <button onClick={exportToExcel} className="btn btn-success">
-          Xuất Excel
-        </button>
-      </div>
-      <div className="tron-line-container">
-        <div className="col-sm-4 tron-view">
-          <canvas id="myPieChart"></canvas>
-        </div>
-        <div class="col-sm-12 line-view">
-          <div class="card chart-container divtale">
-            <canvas id="chartGio"></canvas>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-sm-12 header-sp row ">
-        <div class="col-md-3">
-          <label class="lbbooking">Chọn năm cần xem</label>
-          <select id="nams" class="form-control">
-            <option id="2024">2024</option>
-            <option id="2025">2025</option>
-            <option id="2026">2026</option>
-            <option id="2027">2027</option>
-            <option id="2028">2028</option>
-          </select>
-        </div>
-        <div class="col-md-2">
-          <label
-            class="lbbooking whitespace"
-            dangerouslySetInnerHTML={{ __html: "<span>&ThinSpace;</span>" }}
-          ></label>
-          <button
-            onClick={() => loadByNam()}
-            class="btn btn-primary form-control"
-          >
-            <i class="fa fa-filter"></i> Lọc
+        <div className="export-excel-button">
+          <button onClick={exportToExcel} className="btn btn-success">
+            Xuất Excel
           </button>
         </div>
-      </div>
-      <div className="cot-container">
-        <div className="cot">
-          <div class="col-sm-12 divtale">
+        <div className="tron-line-container">
+          {/*<div className="col-sm-4 tron-view">*/}
+          {/*  <canvas id="myPieChart"></canvas>*/}
+          {/*</div>*/}
+          <div class="col-sm-12 line-view">
             <div class="card chart-container divtale">
-              <canvas id="chart"></canvas>
+              <canvas id="chartGio"></canvas>
             </div>
           </div>
         </div>
-        <div className="cot">
-          <div class="col-sm-12 divtale">
-            <div class="card chart-container divtale">
-              <canvas id="chartTuan"></canvas>
+
+        <div class="col-sm-12 header-sp row ">
+          <div class="col-md-3">
+            <label class="lbbooking">Chọn năm cần xem</label>
+            <select id="nams" class="form-control">
+              <option id="2024">2024</option>
+              <option id="2025">2025</option>
+              <option id="2026">2026</option>
+              <option id="2027">2027</option>
+              <option id="2028">2028</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <label
+                class="lbbooking whitespace"
+                dangerouslySetInnerHTML={{ __html: "<span>&ThinSpace;</span>" }}
+            ></label>
+            <button
+                onClick={() => loadByNam()}
+                class="btn btn-primary form-control"
+            >
+              <i class="fa fa-filter"></i> Lọc
+            </button>
+          </div>
+        </div>
+        <div className="cot-container">
+          <div className="cot">
+            <div class="col-sm-12 divtale">
+              <div class="card chart-container divtale">
+                <canvas id="chart"></canvas>
+              </div>
+            </div>
+          </div>
+          <div className="cot">
+            <div class="col-sm-12 divtale">
+              <div class="card chart-container divtale">
+                <canvas id="chartTuan"></canvas>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
   );
 };
 
