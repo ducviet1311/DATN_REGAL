@@ -124,8 +124,8 @@ function Header({ children }) {
                         </a>
                         <ul className="collapse list-unstyled" id="colkhuyenmai">
                             <li>
-                                <Link to="/admin/khuyen-mai" className="text-white text-decoration-none ps-4">
-                                    <i className="fa fa-list me-2"></i> Danh sách phiếu giảm giá
+                                <Link to="/admin/khuyen-mais" className="text-white text-decoration-none ps-4">
+                                    <i clasName="fa fa-list me-2"></i> Danh sách phiếu giảm giá
                                 </Link>
                             </li>
                             <li>

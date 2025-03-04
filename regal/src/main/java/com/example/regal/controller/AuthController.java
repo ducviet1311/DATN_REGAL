@@ -153,8 +153,46 @@ public class AuthController {
             khachHang.get().setMatKhau(passwordEncoder.encode(matKhauNgauNhien));
             khachHangRepository.save(khachHang.get());
         }
+<<<<<<< HEAD
         mailService.sendMail(email, "Quên mật khẩu", "Chúng tôi đã tạo mật khẩu mới theo yêu cầu của bạn, mật khẩu mới của bạn là: "+matKhauNgauNhien);
         return new MessageResponse("Đã gửi mật khẩu về gmail");
+=======
+        mailService.sendMailHtml(email, "Khôi Phục Mật Khẩu",
+                "<!DOCTYPE html>" +
+                        "<html>" +
+                        "<head>" +
+                        "<style>" +
+                        "body { margin: 0; padding: 0; font-family: 'Arial', sans-serif; background-color: #ffffff; color: #000000; }" + // Nền trắng, chữ mặc định đen
+                        ".container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #ddd; }" + // Nền container trắng
+                        ".header { background-color: #ffffff; padding: 20px; text-align: center; }" + // Giữ header đỏ như Riot
+                        ".header h1 { margin: 0; font-size: 28px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; color: #000000; }" + // Chữ header trắng
+                        ".content { padding: 30px; text-align: center; }" +
+                        ".content p { font-size: 16px; line-height: 1.5; margin: 10px 0; color: #000000; font-weight: bold; }" + // Chữ <p> đen, in đậm
+                        ".password { font-size: 24px; font-weight: bold; color: #007bff; margin: 20px 0; }" + // Mật khẩu xanh dương
+                        ".button { display: inline-block; padding: 12px 30px; background-color: #c8102e; color: #ffffff; text-decoration: none; font-weight: bold; border-radius: 5px; text-transform: uppercase; letter-spacing: 1px; }" +
+                        ".footer { padding: 20px; text-align: center; font-size: 12px; color: #666; border-top: 1px solid #ddd; }" + // Footer xám nhạt trên nền trắng
+                        ".footer a { color: #007bff; text-decoration: none; }" + // Link xanh dương
+                        "</style>" +
+                        "</head>" +
+                        "<body>" +
+                        "<div class='container'>" +
+                        "<div class='header'>" +
+                        "<h1>KHÔI PHỤC MẬT KHẨU</h1>" +
+                        "</div>" +
+                        "<div class='content'>" +
+                        "<p>Chào bạn,</p>" +
+                        "<p>Chúng tôi đã tạo một mật khẩu mới cho tài khoản của bạn theo yêu cầu.</p>" +
+                        "<p>Mật khẩu mới của bạn là:</p>" +
+                        "<div class='password'>" + matKhauNgauNhien + "</div>" +
+                        "</div>" +
+                        "<div class='footer'>" +
+                        "<p>© 2025 Regal Store. All Rights Reserved.</p>" +
+                        "<p>Cần hỗ trợ? Liên hệ <a href='mailto:qtvducviet131@gmail.com'>Hỗ trợ của chúng tôi</a>.</p>" +
+                        "</div>" +
+                        "</div>" +
+                        "</body>" +
+                        "</html>");        return new MessageResponse("Đã gửi mật khẩu về gmail");
+>>>>>>> 4550e0fb5a481bd29276900712032b9ff571ca1c
     }
 
 
