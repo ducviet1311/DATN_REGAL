@@ -153,10 +153,9 @@ public class AuthController {
             khachHang.get().setMatKhau(passwordEncoder.encode(matKhauNgauNhien));
             khachHangRepository.save(khachHang.get());
         }
-<<<<<<< HEAD
         mailService.sendMail(email, "Quên mật khẩu", "Chúng tôi đã tạo mật khẩu mới theo yêu cầu của bạn, mật khẩu mới của bạn là: "+matKhauNgauNhien);
         return new MessageResponse("Đã gửi mật khẩu về gmail");
-=======
+
         mailService.sendMailHtml(email, "Khôi Phục Mật Khẩu",
                 "<!DOCTYPE html>" +
                         "<html>" +
