@@ -1,12 +1,14 @@
 package com.example.regal.controller;
 
 import com.example.regal.dto.request.PhieuGiamGiaRequest;
+import com.example.regal.entity.HoaDon;
 import com.example.regal.entity.PhieuGiamGia;
 import com.example.regal.repository.PhieuGiamGiaRepository;
 import com.example.regal.service.PhieuGiamGiaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -88,7 +90,7 @@ public class PhieuGiamGiaController {
         return ResponseEntity.ok(phieuGiamGiaPage);
     }
 
-//    // Lấy tất cả các phiếu giảm giá của một hóa đơn
+    // Lấy tất cả các phiếu giảm giá của một hóa đơn
 //    @GetMapping("/hoa-don/{hoaDonId}")
 //    public ResponseEntity<List<PhieuGiamGia>> getPhieuGiamGiaByHoaDon(@PathVariable Integer hoaDonId) {
 //        HoaDon hoaDon = new HoaDon(); // Assume HoaDon entity is correctly instantiated or fetched

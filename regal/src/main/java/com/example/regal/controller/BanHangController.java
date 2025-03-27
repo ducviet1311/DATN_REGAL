@@ -70,65 +70,65 @@ public class BanHangController {
     /*
      * api sẽ bổ sung tính phí ship sau rồi lấy tổng tiền + phí ship nữa
      * */
-    @PostMapping("/create-url-vnpay")
-    public ResponseEntity<?> createUrlVnpay(@RequestBody PaymentDto paymentDto, HttpServletRequest request){
-        Double tongTien = 0D;
-        float khoiluong = 0F;
-        for(SanPhamChiTietPayment payment : paymentDto.getSanPhamChiTietPayment()){
-            SanPhamChiTiet spct = sanPhamChiTietRepository.findByIdSPCT(payment.getIdSpct());
-            if(spct.getSoLuong() < payment.getSoLuong()){
-                throw new MessageException("Số lượng sản phẩm: "+spct.getSanPham().getTenSanPham()+" chỉ còn: "+spct.getSoLuong());
-            }
-            tongTien += spct.getGiaTien() * payment.getSoLuong();
-            khoiluong += khoiLuongDf * payment.getSoLuong();
-        }
-        if(paymentDto.getMaGiamGia() != null){
-            PhieuGiamGia phieuGiamGia = phieuGiamGiaRepository.findPhieuGiamGiaByMaCode(paymentDto.getMaGiamGia());
-            if(phieuGiamGia.getNgayKetThuc().before(new Timestamp(System.currentTimeMillis()))){
-                throw new MessageException("Đợt giảm giá đã kết thúc");
-            }
-            KhachHang khachHang = userUltis.getLoggedInKhachHang(request);
-            Optional<KhachHangPhieuGiam> khachHangPhieuGiam = khachHangPhieuGiamRepository.findByMaGGAndKhId(paymentDto.getMaGiamGia(), khachHang.getId());
-            if(khachHangPhieuGiam.isEmpty()){
-                throw new MessageException("Bạn không được áp dụng mã giảm giá này");
-            }
-            if(tongTien < phieuGiamGia.getDonToiThieu()){
-                throw new MessageException("Bạn phải mua thêm: "+ (phieuGiamGia.getDonToiThieu() - tongTien)+" để được áp dụng mã giảm giá này");
-            }
-            // giảm theo %
-            if(phieuGiamGia.getLoaiPhieu() == false){
-                tongTien = tongTien - (tongTien * phieuGiamGia.getGiaTriGiam() / 100);
-            }
-            // giảm giá cứng cố định
-            else{
-                tongTien = tongTien - phieuGiamGia.getGiaTriGiam();
-            }
-        }
-        int canNang = 0;
-        if(khoiluong != (int) khoiluong ){
-            canNang =  (int) khoiluong + 1;
-        }
-        else{
-            canNang = (int) khoiluong;
-        }
-        Map<String, Object> response = ghnClient.calculateShippingFee(paymentDto.getToDistrictId(), paymentDto.getToWardCode(), canNang);
-        Map<String, Object> data = (Map<String, Object>) response.get("data");
-        int totalShip = (int) data.get("total");
-
-        System.out.println("Khoi luong: "+canNang);
-        System.out.println("tien ship: "+totalShip);
-        tongTien += totalShip;
-        System.out.println("tong tien: "+tongTien.intValue());
-        String vnpOrderInfo = String.valueOf(System.currentTimeMillis());
-        String vnpayUrl = vnPayService.createOrder(tongTien.intValue(), vnpOrderInfo, paymentDto.getReturnUrl());
-        ResponsePayment responsePayment = new ResponsePayment(vnpayUrl,vnpOrderInfo);
-        return new ResponseEntity<>(responsePayment, HttpStatus.CREATED);
-    }
-
-
-    /*
-     *  api tạo đơn hàng khi người dùng về trang thanh cong
-     * */
+//    @PostMapping("/create-url-vnpay")
+//    public ResponseEntity<?> createUrlVnpay(@RequestBody PaymentDto paymentDto, HttpServletRequest request){
+//        Double tongTien = 0D;
+//        float khoiluong = 0F;
+//        for(SanPhamChiTietPayment payment : paymentDto.getSanPhamChiTietPayment()){
+//            SanPhamChiTiet spct = sanPhamChiTietRepository.findByIdSPCT(payment.getIdSpct());
+//            if(spct.getSoLuong() < payment.getSoLuong()){
+//                throw new MessageException("Số lượng sản phẩm: "+spct.getSanPham().getTenSanPham()+" chỉ còn: "+spct.getSoLuong());
+//            }
+//            tongTien += spct.getGiaTien() * payment.getSoLuong();
+//            khoiluong += khoiLuongDf * payment.getSoLuong();
+//        }
+//        if(paymentDto.getMaGiamGia() != null){
+//            PhieuGiamGia phieuGiamGia = phieuGiamGiaRepository.findPhieuGiamGiaByMaCode(paymentDto.getMaGiamGia());
+//            if(phieuGiamGia.getNgayKetThuc().before(new Timestamp(System.currentTimeMillis()))){
+//                throw new MessageException("Đợt giảm giá đã kết thúc");
+//            }
+//            KhachHang khachHang = userUltis.getLoggedInKhachHang(request);
+//            Optional<KhachHangPhieuGiam> khachHangPhieuGiam = khachHangPhieuGiamRepository.findByMaGGAndKhId(paymentDto.getMaGiamGia(), khachHang.getId());
+//            if(khachHangPhieuGiam.isEmpty()){
+//                throw new MessageException("Bạn không được áp dụng mã giảm giá này");
+//            }
+//            if(tongTien < phieuGiamGia.getDonToiThieu()){
+//                throw new MessageException("Bạn phải mua thêm: "+ (phieuGiamGia.getDonToiThieu() - tongTien)+" để được áp dụng mã giảm giá này");
+//            }
+//            // giảm theo %
+//            if(phieuGiamGia.getLoaiPhieu() == false){
+//                tongTien = tongTien - (tongTien * phieuGiamGia.getGiaTriGiam() / 100);
+//            }
+//            // giảm giá cứng cố định
+//            else{
+//                tongTien = tongTien - phieuGiamGia.getGiaTriGiam();
+//            }
+//        }
+//        int canNang = 0;
+//        if(khoiluong != (int) khoiluong ){
+//            canNang =  (int) khoiluong + 1;
+//        }
+//        else{
+//            canNang = (int) khoiluong;
+//        }
+//        Map<String, Object> response = ghnClient.calculateShippingFee(paymentDto.getToDistrictId(), paymentDto.getToWardCode(), canNang);
+//        Map<String, Object> data = (Map<String, Object>) response.get("data");
+//        int totalShip = (int) data.get("total");
+//
+//        System.out.println("Khoi luong: "+canNang);
+//        System.out.println("tien ship: "+totalShip);
+//        tongTien += totalShip;
+//        System.out.println("tong tien: "+tongTien.intValue());
+//        String vnpOrderInfo = String.valueOf(System.currentTimeMillis());
+//        String vnpayUrl = vnPayService.createOrder(tongTien.intValue(), vnpOrderInfo, paymentDto.getReturnUrl());
+//        ResponsePayment responsePayment = new ResponsePayment(vnpayUrl,vnpOrderInfo);
+//        return new ResponseEntity<>(responsePayment, HttpStatus.CREATED);
+//    }
+//
+//
+//    /*
+//     *  api tạo đơn hàng khi người dùng về trang thanh cong
+//     * */
 
 
     @PostMapping("/tao-don-hang")
