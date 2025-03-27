@@ -49,14 +49,14 @@ public class BanHangController {
     @Autowired
     private UserUltis userUltis;
 
-    @Autowired
-    private VNPayService vnPayService;
+//    @Autowired
+//    private VNPayService vnPayService;
 
     @Autowired
     private PhuongThucThanhToanRepository phuongThucThanhToanRepository;
 
-    @Autowired
-    private GhnClient ghnClient;
+//    @Autowired
+//    private GhnClient ghnClient;
 
     @Value("${khoiluong.default}")
     private Float khoiLuongDf;
