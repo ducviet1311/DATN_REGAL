@@ -87,6 +87,27 @@ public class DotGiamGiaServiceImpl implements DotGiamGiaService {
             dotGiamGia.setNgayKetThuc(requestDTO.getNgayKetThuc());
             dotGiamGia.setNguoiCapNhat(requestDTO.getNguoiCapNhat());
             dotGiamGia.setTrangThai(requestDTO.getTrangThai());
+
+            // Xóa các sản phẩm cũ trước khi cập nhật
+            List<SanPhamChiTiet> sanPhamChiTietCu = sanPhamRepository.findByDotGiamGia(id);
+            for (SanPhamChiTiet spct : sanPhamChiTietCu) {
+                spct.setGiaTien(spct.getGiaTien() + dotGiamGia.getGiaTriGiam()); // Khôi phục giá cũ
+                spct.setDotGiamGia(null);
+                sanPhamChiTietRepository.save(spct);
+            }
+
+            // Gán sản phẩm mới vào đợt giảm giá
+            for (Integer spId : requestDTO.getListIdSp()) {
+                SanPham sanPham = sanPhamRepository.findById(spId).orElse(null);
+                if (sanPham != null) {
+                    for (SanPhamChiTiet spct : sanPham.getSanPhamChiTiets()) {
+                        spct.setGiaTien(spct.getGiaTien() - requestDTO.getGiaTriGiam()); // Giảm giá
+                        spct.setDotGiamGia(dotGiamGia);
+                        sanPhamChiTietRepository.save(spct);
+                    }
+                }
+            }
+
             DotGiamGia updatedDotGiamGia = dotGiamGiaRepository.save(dotGiamGia);
             return convertToResponse(updatedDotGiamGia);
         }
