@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import {useState, useEffect} from "react";
 import ReactPaginate from "react-paginate";
-import { toast } from "react-toastify";
+import {toast} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
   getMethod,
@@ -9,10 +9,10 @@ import {
   postMethod,
 } from "../../services/request";
 import Swal from "sweetalert2";
-import { formatMoney } from "../../services/money";
+import {formatMoney} from "../../services/money";
 import Select from "react-select";
 import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
+import {saveAs} from "file-saver";
 
 var size = 8;
 var url = "";
@@ -31,7 +31,7 @@ const AdminDonHang = () => {
 
   const getDonHang = async () => {
     var response = await getMethod(
-      "/api/v1/hoa-don/all?&size=" + size + "&sort=id,desc&page=" + 0
+        "/api/v1/hoa-don/all?&size=" + size + "&sort=id,desc&page=" + 0
     );
     var result = await response.json();
     console.log(result);
@@ -44,7 +44,7 @@ const AdminDonHang = () => {
     if (value) setSelectTrangThai(value);
 
     var response = await getMethod(
-      "/api/v1/hoa-don/all?&size=" +
+        "/api/v1/hoa-don/all?&size=" +
         size +
         "&sort=id,desc&trangthai=" +
         value +
@@ -56,11 +56,11 @@ const AdminDonHang = () => {
     setItems(result.content);
     setpageCount(result.totalPages);
     url =
-      "/api/v1/hoa-don/all?&size=" +
-      size +
-      "&sort=id,desc&trangthai=" +
-      value +
-      "&page=";
+        "/api/v1/hoa-don/all?&size=" +
+        size +
+        "&sort=id,desc&trangthai=" +
+        value +
+        "&page=";
   };
 
   const getStatusInvoice = async () => {
@@ -97,7 +97,7 @@ const AdminDonHang = () => {
         ttup = 8;
       }
       var res = await postMethod(
-        "/api/v1/hoa-don/update-trang-thai?hoaDonId=" +
+          "/api/v1/hoa-don/update-trang-thai?hoaDonId=" +
           iddonhang +
           "&trangThai=" +
           ttup
@@ -132,7 +132,7 @@ const AdminDonHang = () => {
       if (result.isConfirmed) {
         if (trangthai != 4) {
           toast.error(
-            "Đơn hàng chưa được gửi đi, không thể cập nhật trạng thái này"
+              "Đơn hàng chưa được gửi đi, không thể cập nhật trạng thái này"
           );
           return;
         }
@@ -147,7 +147,7 @@ const AdminDonHang = () => {
 
   async function chuyenTrangThai(iddonhang, trangthai) {
     var res = await postMethod(
-      "/api/v1/hoa-don/update-trang-thai?hoaDonId=" +
+        "/api/v1/hoa-don/update-trang-thai?hoaDonId=" +
         iddonhang +
         "&trangThai=" +
         trangthai
@@ -168,12 +168,12 @@ const AdminDonHang = () => {
 
   async function getChiTietDonHang(item) {
     var response = await getMethod(
-      "/api/hoa-don-chi-tiet/find-by-hoa-don?hoaDonId=" + item.id
+        "/api/hoa-don-chi-tiet/find-by-hoa-don?hoaDonId=" + item.id
     );
     var result = await response.json();
     setChiTietDonHang(result);
     var response = await getMethod(
-      "/api/lich-su-hoa-don/find-by-hoa-don?hoaDonId=" + item.id
+        "/api/lich-su-hoa-don/find-by-hoa-don?hoaDonId=" + item.id
     );
     var result = await response.json();
     setLichSuHoaDon(result);
@@ -187,76 +187,58 @@ const AdminDonHang = () => {
       bookType: "xlsx",
       type: "array",
     });
-    const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
+    const blob = new Blob([excelBuffer], {type: "application/octet-stream"});
     saveAs(blob, `data.xlsx`);
   };
 
   return (
-    <>
-      <div class="headerpageadmin d-flex justify-content-between align-items-center p-3 bg-light border">
-        <strong class="text-left">
-          <i className="fa fa-list"></i> Quản Lý Đơn Hàng
-        </strong>
-        <div class="search-wrapper d-flex align-items-center">
-          <div className="d-flex divngayadmin">
-            <div className="trangthailist">
-              <div
-                onClick={() => locDonHang("")}
-                className={`trangthaiitem ${
-                  !selectTrangThai && "selected"
-                }`}
-              >
-                Tất Cả
-              </div>
-              {trangThai &&
-                trangThai.map((a, index) => (
-                  <div
-                    onClick={() => locDonHang(a.value)}
+      <>
+        <div class="headerpageadmin d-flex justify-content-between align-items-center p-3 bg-light border">
+          <strong class="text-left">
+            <i className="fa fa-list"></i> Quản Lý Đơn Hàng
+          </strong>
+          <div class="search-wrapper d-flex align-items-center">
+            <div className="d-flex divngayadmin">
+              <div className="trangthailist">
+                <div
+                    onClick={() => locDonHang("")}
                     className={`trangthaiitem ${
-                      a.value === selectTrangThai && "selected"
+                        !selectTrangThai && "selected"
                     }`}
-                  >
-                    {a.tenTrangThai}
-                  </div>
-                ))}
+                >
+                  Tất Cả
+                </div>
+                {trangThai &&
+                    trangThai.map((a, index) => (
+                        <div
+                            onClick={() => locDonHang(a.value)}
+                            className={`trangthaiitem ${
+                                a.value === selectTrangThai && "selected"
+                            }`}
+                        >
+                          {a.tenTrangThai}
+                        </div>
+                    ))}
+              </div>
             </div>
-
-            {/* <Select
-              className="select-container ms-2"
-              options={trangThai}
-              value={selectTrangThai}
-              onChange={setSelectTrangThai}
-              getOptionLabel={(option) => option.tenTrangThai}
-              getOptionValue={(option) => option.value}
-              name="trangthai"
-              placeholder="Chọn trạng thái"
-            /> */}
+            <a
+                href="#"
+                onClick={() => exportToExcel()}
+                class="btn btn-primary ms-2"
+            >
+              <i className="fa fa-file-excel"></i>
+            </a>
           </div>
-
-          {/* <button onClick={() => locDonHang()} class="btn btn-primary ms-2">
-            <i className="fa fa-filter"></i> Lọc
-          </button> */}
-          <a href="add-product" class="btn btn-primary ms-2">
-            <i className="fa fa-plus"></i>
-          </a>
-          <a
-            href="#"
-            onClick={() => exportToExcel()}
-            class="btn btn-primary ms-2"
-          >
-            <i className="fa fa-file-excel"></i>
-          </a>
         </div>
-      </div>
-      <div class="tablediv">
-        <div class="headertable">
-          <span class="lbtable">Danh sách đơn hàng</span>
-        </div>
-        <div class="divcontenttable">
-          <table id="example" class="table table-bordered">
-            <thead>
+        <div class="tablediv">
+          <div class="headertable">
+            <span class="lbtable">Danh sách đơn hàng</span>
+          </div>
+          <div class="divcontenttable">
+            <table id="example" class="table table-bordered">
+              <thead>
               <tr>
-                <th>Id</th>
+                <th>STT</th>
                 <th>Mã hóa đơn</th>
                 <th>Tên khách hàng</th>
                 <th>Email</th>
@@ -266,189 +248,183 @@ const AdminDonHang = () => {
                 <th>Phí vận chuyển</th>
                 <th>Loại hóa đơn</th>
                 <th>Thanh toán</th>
-                <th>Ngày tạo</th>
+                {/*<th>Ngày tạo</th>*/}
                 <th>Trạng thái</th>
                 <th class="sticky-col">Cập nhật trạng thái</th>
               </tr>
-            </thead>
-            <tbody>
-              {items.map((item) => {
+              </thead>
+              <tbody>
+              {items.map((item, index) => {
                 console.log("donhang", item);
                 return (
-                  <tr>
-                    <td
-                      onClick={() => getChiTietDonHang(item)}
-                      data-bs-toggle="modal"
-                      data-bs-target="#addcate"
-                      className="pointer"
-                      style={{ color: "blue", fontWeight: "bold" }}
-                    >
-                      {item.id}
-                    </td>
-                    <td
-                      onClick={() => getChiTietDonHang(item)}
-                      data-bs-toggle="modal"
-                      data-bs-target="#addcate"
-                      className="pointer"
-                      style={{ color: "blue", fontWeight: "bold" }}
-                    >
-                      {item.maHoaDon}
-                    </td>
-                    <td>
-                      {item.khachHang === null ? "" : item.khachHang.hoVaTen}
-                    </td>
-                    <td>
-                      {item.khachHang === null ? "" : item.khachHang.email}
-                    </td>
-                    <td>
-                      {item.khachHang === null
-                        ? ""
-                        : item.khachHang.soDienThoai}
-                    </td>
-                    <td>{item.khachHang === null ? "" : item.diaChi}</td>
-                    <td>{formatMoney(item.tongTien)}</td>
-                    <td>{formatMoney(item.phiVanChuyen)}</td>
-                    <td>
-                      {item.loaiHoaDon == true
-                        ? "Đặt hàng online"
-                        : "Thanh toán tại quầy"}
-                    </td>
-                    <td>
-                      {item.daThanhToan == true
-                        ? "Đã thanh toán"
-                        : "Thanh toán khi nhận hàng"}
-                    </td>
-                    <td>{item.ngayTao}</td>
-                    <td>{getTrangThai(item.trangThai, trangThai)}</td>
-                    <td>
-                      <div className="d-flex">
-                        {item.trangThai < 6 ? (
-                          <button
-                            onClick={() =>
-                              capNhatTrangThai(item.id, item.trangThai)
-                            }
-                            class="edit-btn"
-                          >
-                            <i class="fa fa-arrow-right"></i>
-                          </button>
-                        ) : (
-                          ""
-                        )}
-                        {item.trangThai < 4 ? (
-                          <button
-                            onClick={() => capNhatTT(item.id, item.trangThai)}
-                            class="delete-btn"
-                          >
-                            <i class="fa fa-times-circle"></i>
-                          </button>
-                        ) : (
-                          ""
-                        )}
-                      </div>
-                    </td>
-                  </tr>
+                    <tr>
+                      <td>
+                        {index + 1}
+                      </td>
+                      <td
+                          onClick={() => getChiTietDonHang(item)}
+                          data-bs-toggle="modal"
+                          data-bs-target="#addcate"
+                          className="pointer"
+                          style={{color: "blue", fontWeight: "bold"}}
+                      >
+                        {item.maHoaDon}
+                      </td>
+                      <td>
+                        {item.khachHang === null ? "" : item.khachHang.hoVaTen}
+                      </td>
+                      <td>
+                        {item.khachHang === null ? "" : item.khachHang.email}
+                      </td>
+                      <td>
+                        {item.khachHang === null
+                            ? ""
+                            : item.khachHang.soDienThoai}
+                      </td>
+                      <td>{item.khachHang === null ? "" : item.diaChi}</td>
+                      <td>{formatMoney(item.tongTien)}</td>
+                      <td>{formatMoney(item.phiVanChuyen)}</td>
+                      <td>
+                        {item.loaiHoaDon == true
+                            ? "Đặt hàng online"
+                            : "Thanh toán tại quầy"}
+                      </td>
+                      <td>
+                        {item.daThanhToan == true
+                            ? "Đã thanh toán"
+                            : "Thanh toán khi nhận hàng"}
+                      </td>
+                      {/*<td>{item.ngayTao}</td>*/}
+                      <td>{getTrangThai(item.trangThai, trangThai)}</td>
+                      <td>
+                        <div className="d-flex">
+                          {item.trangThai < 6 ? (
+                              <button
+                                  onClick={() =>
+                                      capNhatTrangThai(item.id, item.trangThai)
+                                  }
+                                  class="edit-btn"
+                              >
+                                <i class="fa fa-arrow-right"></i>
+                              </button>
+                          ) : (
+                              ""
+                          )}
+                          {item.trangThai < 4 ? (
+                              <button
+                                  onClick={() => capNhatTT(item.id, item.trangThai)}
+                                  class="delete-btn"
+                              >
+                                <i class="fa fa-times-circle"></i>
+                              </button>
+                          ) : (
+                              ""
+                          )}
+                        </div>
+                      </td>
+                    </tr>
                 );
               })}
-            </tbody>
-          </table>
-          <ReactPaginate
-            marginPagesDisplayed={2}
-            pageCount={pageCount}
-            onPageChange={handlePageClick}
-            containerClassName={"pagination"}
-            pageClassName={"page-item"}
-            pageLinkClassName={"page-link"}
-            previousClassName="page-item"
-            previousLinkClassName="page-link"
-            nextClassName="page-item"
-            nextLinkClassName="page-link"
-            breakClassName="page-item"
-            breakLinkClassName="page-link"
-            previousLabel="Trang trước"
-            nextLabel="Trang sau"
-            activeClassName="active"
-          />
+              </tbody>
+            </table>
+            <ReactPaginate
+                marginPagesDisplayed={2}
+                pageCount={pageCount}
+                onPageChange={handlePageClick}
+                containerClassName={"pagination"}
+                pageClassName={"page-item"}
+                pageLinkClassName={"page-link"}
+                previousClassName="page-item"
+                previousLinkClassName="page-link"
+                nextClassName="page-item"
+                nextLinkClassName="page-link"
+                breakClassName="page-item"
+                breakLinkClassName="page-link"
+                previousLabel="Trang trước"
+                nextLabel="Trang sau"
+                activeClassName="active"
+            />
+          </div>
         </div>
-      </div>
 
-      <div
-        class="modal fade"
-        id="addcate"
-        tabindex="-1"
-        aria-labelledby="exampleModalLabel"
-        aria-hidden="false"
-      >
-        <div class="modal-dialog modal-lg">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">
-                Thông tin đơn hàng
-              </h5>{" "}
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <div class="modal-body">
-              <h5>Lịch sử hóa đơn</h5>
-              <table className="table table-bordered">
-                <thead>
+        <div
+            class="modal fade"
+            id="addcate"
+            tabindex="-1"
+            aria-labelledby="exampleModalLabel"
+            aria-hidden="false"
+        >
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">
+                  Thông tin đơn hàng
+                </h5>{" "}
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                ></button>
+              </div>
+              <div class="modal-body">
+                <h5>Lịch sử hóa đơn</h5>
+                <table class="table table-cart table-order" id="detailInvoice">
+                  <caption style={{ textAlign: "left", fontWeight: "bold", captionSide: "top" }}>
+                    Ngày tạo: {chiTietDonHang[0]?.hoaDon?.ngayTao || "N/A"}
+                  </caption>
+                  <thead class="thead-default theaddetail">
                   <tr>
-                    <th>Ngày cập nhật</th>
-                    <th>Trạng thái</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {lichSuHoaDon.map((stt, index) => {
-                    return (
-                      <tr>
-                        <td>{stt.ngayTao}</td>
-                        <td>{getTrangThai(stt.trangThai)}</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-              <table class="table table-cart table-order" id="detailInvoice">
-                <thead class="thead-default theaddetail">
-                  <tr>
+                    <th>Mã sản phẩm</th>
                     <th>Ảnh</th>
                     <th>Tên sản phẩm</th>
-                    <th>Giá bán</th>
+                    <th>Màu sắc</th>
+                    <th>Kích cỡ</th>
+                    <th>Thương hiệu</th>
                     <th>Số lượng</th>
+                    <th>Đơn giá</th>
                   </tr>
-                </thead>
-                <tbody>
+                  </thead>
+                  <tbody>
                   {chiTietDonHang.map((item, index) => {
                     return (
-                      <tr>
-                        <td>
-                          <img
-                            src={
-                              item.sanPhamChiTiet.anhs.length > 0
-                                ? item.sanPhamChiTiet.anhs[0].tenAnh
-                                : ""
-                            }
-                            className="imgtable"
-                          />
-                        </td>
-                        <td>{item.sanPhamChiTiet.sanPham.tenSanPham}</td>
-                        <td>{formatMoney(item.giaSanPham)}</td>
-                        <td>{item.soLuong}</td>
-                      </tr>
+                        <tr>
+                          <td>{item.sanPhamChiTiet.maSanPhamChiTiet}</td>
+                          <td>
+                            <img
+                                src={
+                                  item.sanPhamChiTiet.anhs.length > 0
+                                      ? item.sanPhamChiTiet.anhs[0].tenAnh
+                                      : ""
+                                }
+                                className="imgtable"
+                            />
+                          </td>
+                          <td>{item.sanPhamChiTiet.sanPham.tenSanPham}</td>
+                          <td>{item.sanPhamChiTiet.mauSac.tenMauSac}</td>
+                          <td>{item.sanPhamChiTiet.kichCo.tenKichCo}</td>
+                          <td>{item.sanPhamChiTiet.sanPham.thuongHieu.tenThuongHieu}</td>
+                          <td>{item.soLuong}</td>
+                          <td>{formatMoney(item.giaSanPham)}</td>
+                        </tr>
                     );
                   })}
-                </tbody>
-              </table>
-              <br />
-              <br />
+                  </tbody>
+                  <tfoot>
+                  <tr>
+                    <td colSpan="8" style={{ textAlign: "right", fontWeight: "bold" }}>
+                      Tổng tiền: {formatMoney(chiTietDonHang[0]?.hoaDon?.tongTien || 0)}
+                    </td>
+                  </tr>
+                  </tfoot>
+                </table>
+                <br/>
+                <br/>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </>
+      </>
   );
 };
 

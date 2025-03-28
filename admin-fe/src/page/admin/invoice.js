@@ -1,8 +1,8 @@
-import React, { forwardRef } from "react";
-import { formatMoney } from "../../services/money";
+import React, {forwardRef} from "react";
+import {formatMoney} from "../../services/money";
 
 // Sử dụng forwardRef để truyền ref từ component cha
-const Invoice = forwardRef(({ invoiceData, giamgia }, ref) => {
+const Invoice = forwardRef(({invoiceData, giamgia}, ref) => {
     return (
         <div
             ref={ref}
@@ -16,31 +16,45 @@ const Invoice = forwardRef(({ invoiceData, giamgia }, ref) => {
             }}
         >
             {/* Header */}
-            <div style={{ textAlign: "center", marginBottom: "20px" }}>
-                <h2 style={{ margin: "0" }}>CỬA HÀNG BERRY SHOES</h2>
-                {/* <p style={{ margin: '5px 0' }}>MST: 0315728889</p>
-        <p style={{ margin: '5px 0' }}>Điện thoại: 0912.491.214 - 0975.937.979</p>
-        <p style={{ margin: '5px 0' }}>ĐC: Số 8, Đường số 1, Khu Cityland Center Hill, P.7, Q.Gò Vấp</p> */}
-                <h3 style={{ marginTop: "20px" }}>HÓA ĐƠN BÁN LẺ</h3>
+            <div style={{textAlign: "center", marginBottom: "20px"}}>
+                <h2 style={{margin: "0"}}>CỬA HÀNG REGAL</h2>
+                <h3 style={{marginTop: "20px"}}>HÓA ĐƠN BÁN LẺ</h3>
             </div>
 
             {/* Thông tin khách hàng */}
-            <div style={{ marginBottom: "20px" }}>
+            <div style={{marginBottom: "20px"}}>
                 <p>
-                    <b>MÃ HÓA ĐƠN:</b>{" "}
-                    {invoiceData?.maHoaDon || "_______________________"}
+                    <b>Mã hóa đơn:</b>{" "}
+                    <span style={{fontSize: "1.2em", fontWeight: "normal"}}>
+                        {invoiceData?.maHoaDon || "_______________________"}
+                    </span>
                 </p>
                 <p>
-                    <b>Người tạo hóa đơn:</b> {invoiceData?.nguoitao || "Nhân Viên"}
+                    <b>Ngày tạo:</b>{" "}
+                    <span style={{fontSize: "1.2em", fontWeight: "normal"}}>
+                        {invoiceData?.date || "_______________________"}
+                    </span>
+                </p>
+                <p>
+                    <b>Người tạo hóa đơn:</b>{" "}
+                    <span style={{fontSize: "1.2em", fontWeight: "normal"}}>
+                        {invoiceData?.nguoitao || "Nhân Viên"}
+                    </span>
                 </p>
                 <p>
                     <b>Khách hàng:</b>{" "}
-                    {invoiceData?.customerName || "_______________________"}
+                    <span style={{fontSize: "1.2em", fontWeight: "normal"}}>
+                        {invoiceData?.customerName || "_______________________"}
+                    </span>
                 </p>
-                {/* <p>
-          <b>Địa chỉ:</b> {invoiceData.customerAddress || '_______________________'}
-        </p> */}
+                <p>
+                    <b>SĐT:</b>{" "}
+                    <span style={{fontSize: "1.2em", fontWeight: "normal"}}>
+                        {invoiceData?.soDienThoai || "_______________________"}
+                    </span>
+                </p>
             </div>
+
 
             {/* Bảng sản phẩm */}
             <table
@@ -68,7 +82,34 @@ const Invoice = forwardRef(({ invoiceData, giamgia }, ref) => {
                             textAlign: "center",
                         }}
                     >
-                        TÊN HÀNG
+                        Tên hàng
+                    </th>
+                    <th
+                        style={{
+                            border: "1px solid black",
+                            padding: "5px",
+                            textAlign: "center",
+                        }}
+                    >
+                        Màu sắc
+                    </th>
+                    <th
+                        style={{
+                            border: "1px solid black",
+                            padding: "5px",
+                            textAlign: "center",
+                        }}
+                    >
+                        Kích cỡ
+                    </th>
+                    <th
+                        style={{
+                            border: "1px solid black",
+                            padding: "5px",
+                            textAlign: "center",
+                        }}
+                    >
+                        Thương hiệu
                     </th>
                     <th
                         style={{
@@ -111,8 +152,35 @@ const Invoice = forwardRef(({ invoiceData, giamgia }, ref) => {
                         >
                             {index + 1}
                         </td>
-                        <td style={{ border: "1px solid black", padding: "5px" }}>
+                        <td style={{border: "1px solid black", padding: "5px"}}>
                             {item.name}
+                        </td>
+                        <td
+                            style={{
+                                border: "1px solid black",
+                                padding: "5px",
+                                textAlign: "center",
+                            }}
+                        >
+                            {item.mauSac}
+                        </td>
+                        <td
+                            style={{
+                                border: "1px solid black",
+                                padding: "5px",
+                                textAlign: "center",
+                            }}
+                        >
+                            {item.kichCo}
+                        </td>
+                        <td
+                            style={{
+                                border: "1px solid black",
+                                padding: "5px",
+                                textAlign: "center",
+                            }}
+                        >
+                            {item.thuongHieu}
                         </td>
                         <td
                             style={{
@@ -148,28 +216,38 @@ const Invoice = forwardRef(({ invoiceData, giamgia }, ref) => {
 
             {/* Tổng cộng */}
             <div style={{ textAlign: "right", marginTop: "20px" }}>
-                <p>
-                    <b>Tổng cộng:</b>{" "}
-                    {formatMoney(Number(invoiceData?.total)) || "________________"}
-                </p>
-                <p>
-                    <b>Giảm giá:</b>{" "}
-                    {giamgia.loaiPhieu
-                        ? formatMoney(giamgia.giaTriGiam)
-                        : `${giamgia.giaTriGiam} %` || "________________"}
-                </p>
-                <p>
-                    <b>Thành tiền:</b>{" "}
-                    {formatMoney(
-                        Number(invoiceData?.total) -
-                        Number(
-                            giamgia.loaiPhieu
-                                ? giamgia.giaTriGiam
-                                : (invoiceData?.total * giamgia.giaTriGiam) / 100
-                        )
-                    ) || "________________"}
-                </p>
+                <div style={{
+                    display: "grid",
+                    gridTemplateColumns: "80px 110px", /* Đảm bảo độ rộng cố định */
+                    gap: "10px",
+                    justifyContent: "end" /* Căn phải toàn bộ */
+                }}>
+                    <span style={{ textAlign: "left", fontWeight: "bold" }}>Tổng cộng:</span>
+                    <span style={{ minWidth: "70px", textAlign: "right" }}>
+                        {formatMoney(Number(invoiceData?.total)) || "________________"}
+                    </span>
+
+                    <span style={{ textAlign: "left", fontWeight: "bold" }}>Giảm giá:</span>
+                    <span style={{ minWidth: "70px", textAlign: "right" }}>
+                        {giamgia.loaiPhieu
+                            ? formatMoney(giamgia.giaTriGiam)
+                            : `${giamgia.giaTriGiam} %` || "________________"}
+                    </span>
+
+                    <span style={{ textAlign: "left", fontWeight: "bold" }}>Thành tiền:</span>
+                    <span style={{ minWidth: "70px", textAlign: "right" }}>
+                        {formatMoney(
+                            Number(invoiceData?.total) -
+                            Number(
+                                giamgia.loaiPhieu
+                                    ? giamgia.giaTriGiam
+                                    : (invoiceData?.total * giamgia.giaTriGiam) / 100
+                            )
+                        ) || "________________"}
+                    </span>
+                </div>
             </div>
+
 
             {/* Footer */}
             <div
@@ -179,13 +257,13 @@ const Invoice = forwardRef(({ invoiceData, giamgia }, ref) => {
                     marginTop: "40px",
                 }}
             >
-                <div style={{ textAlign: "center" }}>
+                <div style={{textAlign: "center"}}>
                     {/* <p>
             <b>Khách hàng</b>
           </p>
           <p>(Ký và ghi rõ họ tên)</p> */}
                 </div>
-                <div style={{ textAlign: "center" }}>
+                <div style={{textAlign: "center"}}>
                     <p>{/* <b>Người viết hóa đơn</b> */}</p>
                     {/* <p>(Ký và ghi rõ họ tên)</p> */}
                 </div>
