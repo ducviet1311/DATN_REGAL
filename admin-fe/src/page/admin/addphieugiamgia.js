@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { toast } from "react-toastify";
+import {useState, useEffect} from "react";
+import {toast} from "react-toastify";
 import {
   getMethod,
   uploadSingleFile,
@@ -8,8 +8,8 @@ import {
 } from "../../services/request";
 import Swal from "sweetalert2";
 import Select from "react-select";
-import { Editor } from "@tinymce/tinymce-react";
-import React, { useRef } from "react";
+import {Editor} from "@tinymce/tinymce-react";
+import React, {useRef} from "react";
 
 var token = localStorage.getItem("token");
 
@@ -84,29 +84,54 @@ const AdminAddPhieuGiamGia = () => {
       return;
     }
 
-    if (!payload.ngayBatDau) {
-      toast.error("Ngày bắt đầu không được để trống.");
+    var ngayBatDau = payload.ngayBatDau;
+    var ngayKetThuc = payload.ngayKetThuc;
+
+    if (!ngayBatDau || !ngayKetThuc) {
+      toast.error("Vui lòng nhập đầy đủ ngày bắt đầu và ngày kết thúc");
       return;
     }
 
-    if (!payload.ngayKetThuc) {
-      toast.error("Ngày kết thúc không được để trống.");
+    var d = new Date();
+    var d1 = new Date(ngayBatDau);
+    var d2 = new Date(ngayKetThuc);
+
+    if (isNaN(d1) || isNaN(d2)) {
+      toast.error("Ngày không hợp lệ");
+      return;
+    }
+
+    if(d1>d){
+      toast.error("Ngày bắt đầu phải nhỏ hơn hoặc bằng ngày hiện tại");
+      return;
+    }
+    // Chỉ so sánh ngày, bỏ qua thời gian
+    if (d1.setHours(0, 0, 0, 0) > d2.setHours(0, 0, 0, 0)) {
+      toast.error("Ngày bắt đầu phải trước ngày kết thúc");
       return;
     }
 
     // Kiểm tra giá trị giảm, giá trị giảm tối đa, đơn tối thiểu, số lượng phải là số nguyên dương
     if (
-      isNaN(payload.giaTriGiamToiDa) ||
-      parseInt(payload.giaTriGiamToiDa) <= 0
+        isNaN(payload.giaTriGiamToiDa) ||
+        parseInt(payload.giaTriGiamToiDa) <= 0
     ) {
       toast.error("Giá trị giảm tối đa phải là một số nguyên dương.");
       return;
     }
 
-    if (isNaN(payload.giaTriGiam) || parseInt(payload.giaTriGiam) < 0 ) {
+    if (isNaN(payload.giaTriGiam) || parseInt(payload.giaTriGiam) < 0) {
       toast.error("Giá trị giảm phải là một số nguyên không âm.");
       return;
     }
+
+    if (String(payload.loaiPhieu) === "false") { // Chuyển về chuỗi để kiểm tra đúng giá trị
+      if (Number(payload.giaTriGiam) > 100) {  // Chuyển đổi thành số để so sánh chính xác
+        toast.error("Giá trị giảm phải tối đa là 100%");
+        return;
+      }
+    }
+
 
     if (isNaN(payload.donToiThieu) || parseInt(payload.donToiThieu) <= 0) {
       toast.error("Đơn tối thiểu phải là một số nguyên dương.");
@@ -132,7 +157,7 @@ const AdminAddPhieuGiamGia = () => {
       // Tự động chuyển trạng thái thành "Ngừng hoạt động"
       payload.trangThai = 0; // Ngừng hoạt động
       toast.warning(
-        "Ngày kết thúc đã qua, phiếu giảm giá sẽ tự động ngừng hoạt động."
+          "Ngày kết thúc đã qua, phiếu giảm giá sẽ tự động ngừng hoạt động."
       );
     }
 
@@ -182,114 +207,114 @@ const AdminAddPhieuGiamGia = () => {
   }
 
   return (
-    <div>
-      <div class="col-sm-12 header-sps">
-        <div class="title-add-admin">
-          <h4>{label}</h4>
+      <div>
+        <div class="col-sm-12 header-sps">
+          <div class="title-add-admin">
+            <h4>{label}</h4>
+          </div>
+        </div>
+        <div class="col-sm-12">
+          <form onSubmit={handleAddPhieuGG} class="form-add row">
+            <div class="col-sm-5">
+              <label class="lb-form">Mã code</label>
+              <input
+                  name="maCode"
+                  defaultValue={item?.maCode}
+                  class="form-control"
+              />
+
+              <label class="lb-form">Tên phiếu</label>
+              <input
+                  name="tenPhieu"
+                  defaultValue={item?.tenPhieu}
+                  class="form-control"
+              />
+
+              <label class="lb-form">Loại phiếu</label>
+              <select
+                  onChange={(e) => change_pgg(e)}
+                  //defaultValue={item?.gioiTinh}
+                  name="loaiphieu"
+                  class="form-control"
+              >
+                <option selected={item?.loaiPhieu == true} value={true}>
+                  Giảm tiền
+                </option>
+                <option selected={item?.loaiPhieu == false} value={false}>
+                  Giảm %
+                </option>
+              </select>
+
+              <div
+                  id="gia_tri_giam_toi_da"
+                  style={{display: item?.loaiPhieu === false ? "block" : "none"}}
+              >
+                <label class="lb-form">Giá trị giảm tối đa</label>
+                <input
+                    name="giaTriGiamToiDa"
+                    defaultValue={item?.giaTriGiamToiDa}
+                    class="form-control"
+                />
+              </div>
+              <div id="gia_tri_giam">
+                <label class="lb-form">Giá trị giảm </label>
+                <input
+                    name="giaTriGiam"
+                    defaultValue={item?.giaTriGiam}
+                    class="form-control"
+                />
+              </div>
+
+              <label class="lb-form">Đơn tối thiểu</label>
+              <input
+                  name="donToiThieu"
+                  defaultValue={item?.donToiThieu}
+                  class="form-control"
+              />
+
+              <br/>
+              <button class="form-control btn btn-primary">{label}</button>
+            </div>
+            <div className="col-sm-5">
+              <label class="lb-form">Số lượng</label>
+              <input
+                  name="soLuong"
+                  defaultValue={item?.soLuong}
+                  class="form-control"
+              />
+
+              <label class="lb-form">Ngày bắt đầu</label>
+              <input
+                  name="ngayBatDau"
+                  defaultValue={item?.ngayBatDau}
+                  type="datetime-local"
+                  class="form-control"
+              />
+
+              <label class="lb-form">Ngày kết thúc</label>
+              <input
+                  name="ngayKetThuc"
+                  defaultValue={item?.ngayKetThuc}
+                  type="datetime-local"
+                  class="form-control"
+              />
+
+              <label className="lb-form">Trạng thái</label>
+              <select
+                  name="trangThai"
+                  value={item?.trangThai?.toString()}
+                  onChange={(e) =>
+                      setItem({...item, trangThai: e.target.value === "1" ? 1 : 0})
+                  }
+                  className="form-control"
+              >
+                <option value="1">Đang hoạt động</option>
+                <option value="0">Ngừng hoạt động</option>
+              </select>
+            </div>
+          </form>
         </div>
       </div>
-      <div class="col-sm-12">
-        <form onSubmit={handleAddPhieuGG} class="form-add row">
-          <div class="col-sm-5">
-            <label class="lb-form">Mã code</label>
-            <input
-              name="maCode"
-              defaultValue={item?.maCode}
-              class="form-control"
-            />
-
-            <label class="lb-form">Tên phiếu</label>
-            <input
-              name="tenPhieu"
-              defaultValue={item?.tenPhieu}
-              class="form-control"
-            />
-
-            <label class="lb-form">Loại phiếu</label>
-            <select
-              onChange={(e) => change_pgg(e)}
-              //defaultValue={item?.gioiTinh}
-              name="loaiphieu"
-              class="form-control"
-            >
-              <option selected={item?.loaiPhieu == true} value={true}>
-                Giảm tiền
-              </option>
-              <option selected={item?.loaiPhieu == false} value={false}>
-                Giảm %
-              </option>
-            </select>
-
-            <div
-              id="gia_tri_giam_toi_da"
-              style={{ display: item?.loaiPhieu === false ? "block" : "none" }}
-            >
-              <label class="lb-form">Giá trị giảm tối đa</label>
-              <input
-                name="giaTriGiamToiDa"
-                defaultValue={item?.giaTriGiamToiDa}
-                class="form-control"
-              />
-            </div>
-            <div id="gia_tri_giam">
-              <label class="lb-form">Giá trị giảm </label>
-              <input
-                name="giaTriGiam"
-                defaultValue={item?.giaTriGiam}
-                class="form-control"
-              />
-            </div>
-
-            <label class="lb-form">Đơn tối thiểu</label>
-            <input
-              name="donToiThieu"
-              defaultValue={item?.donToiThieu}
-              class="form-control"
-            />
-
-            <br />
-            <button class="form-control btn btn-primary">{label}</button>
-          </div>
-          <div className="col-sm-5">
-            <label class="lb-form">Số lượng</label>
-            <input
-              name="soLuong"
-              defaultValue={item?.soLuong}
-              class="form-control"
-            />
-
-            <label class="lb-form">Ngày bắt đầu</label>
-            <input
-              name="ngayBatDau"
-              defaultValue={item?.ngayBatDau}
-              type="datetime-local"
-              class="form-control"
-            />
-
-            <label class="lb-form">Ngày kết thúc</label>
-            <input
-              name="ngayKetThuc"
-              defaultValue={item?.ngayKetThuc}
-              type="datetime-local"
-              class="form-control"
-            />
-
-            <label className="lb-form">Trạng thái</label>
-            <select
-              name="trangThai"
-              value={item?.trangThai?.toString()}
-              onChange={(e) =>
-                setItem({ ...item, trangThai: e.target.value === "1" ? 1 : 0 })
-              }
-              className="form-control"
-            >
-              <option value="1">Đang hoạt động</option>
-              <option value="0">Ngừng hoạt động</option>
-            </select>
-          </div>
-        </form>
-      </div>
-    </div>
   );
 };
 
