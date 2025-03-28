@@ -42,13 +42,13 @@ const AdminSanPhamChiTiet = () => {
         window.location.href = "product";
       }
       var response = await getMethod(
-        "/api/san-pham-chi-tiet/findBySanPham?sanpham=" + sanpham
+          "/api/san-pham-chi-tiet/findBySanPham?sanpham=" + sanpham
       );
       const listResult = await response.json();
       console.log("sdgshgsdhgshs", listResult);
 
       const maMoi = `${id}-${String(
-        Number(listResult.length) + 1
+          Number(listResult.length) + 1
       ).padStart(3, "0")}`;
 
       setMaSptc(maMoi);
@@ -76,7 +76,7 @@ const AdminSanPhamChiTiet = () => {
       window.location.href = "product";
     }
     var response = await getMethod(
-      "/api/san-pham-chi-tiet/findBySanPham?sanpham=" + sanpham
+        "/api/san-pham-chi-tiet/findBySanPham?sanpham=" + sanpham
     );
     var result = await response.json();
 
@@ -104,9 +104,14 @@ const AdminSanPhamChiTiet = () => {
 
   function setItemSelect(item) {
     setIsUpdate(true);
+    setUpdateKichCo(item.kichCo); // Thiết lập kích cỡ hiện tại của CTSP
     setSelectedKichCo(item.kichCo);
     setSelectedMauSac(item.mauSac);
     setItem(item);
+    setMaSptc(item.maSanPhamChiTiet); // Thêm dòng này
+    console.log("item.kichCo:", item.kichCo); // Kiểm tra giá trị kích cỡ
+    setIsUpdate(true);
+    setUpdateKichCo(item.kichCo);
   }
 
   async function deleteChiTiet(id) {
@@ -172,19 +177,19 @@ const AdminSanPhamChiTiet = () => {
     }
     if (isNaN(soLuong) || soLuong <= 0 || soLuong >= 1000000) {
       toast.error(
-        "Số lượng phải là một số hợp lệ và lớn hơn 0 và nhỏ hơn 1.000.000"
+          "Số lượng phải là một số hợp lệ và lớn hơn 0 và nhỏ hơn 1.000.000"
       );
       return;
     }
     if (isNaN(giaTien) || giaTien <= 0 || giaTien >= 1000000000) {
       toast.error(
-        "Giá tiền phải là một số hợp lệ và lớn hơn 0 và nhỏ hơn 1.000.000.000"
+          "Giá tiền phải là một số hợp lệ và lớn hơn 0 và nhỏ hơn 1.000.000.000"
       );
       return;
     }
     if (!trangThai || (trangThai !== "1" && trangThai !== "2")) {
       toast.error(
-        "Trạng thái không hợp lệ. Vui lòng chọn Còn hàng hoặc Hết hàng."
+          "Trạng thái không hợp lệ. Vui lòng chọn Còn hàng hoặc Hết hàng."
       );
       return;
     }
@@ -250,7 +255,7 @@ const AdminSanPhamChiTiet = () => {
 
     // Lấy các giá trị từ form
     const maSanPhamChiTiet =
-      event.target.elements.maSanPhamChiTiet.value.trim();
+        event.target.elements.maSanPhamChiTiet.value.trim();
     const soLuong = parseInt(event.target.elements.soLuong.value, 10);
     const giaTien = parseFloat(event.target.elements.giaTien.value);
     const trangThai = event.target.elements.trangThai.value; // Lấy giá trị từ radio button
@@ -262,19 +267,19 @@ const AdminSanPhamChiTiet = () => {
     }
     if (isNaN(soLuong) || soLuong <= 0 || soLuong >= 1000000) {
       toast.error(
-        "Số lượng phải là một số hợp lệ và lớn hơn 0 và nhỏ hơn 1.000.000"
+          "Số lượng phải là một số hợp lệ và lớn hơn 0 và nhỏ hơn 1.000.000"
       );
       return;
     }
     if (isNaN(giaTien) || giaTien <= 0 || giaTien >= 1000000000) {
       toast.error(
-        "Giá tiền phải là một số hợp lệ và lớn hơn 0 và nhỏ hơn 1.000.000.000"
+          "Giá tiền phải là một số hợp lệ và lớn hơn 0 và nhỏ hơn 1.000.000.000"
       );
       return;
     }
     if (!trangThai || (trangThai !== "1" && trangThai !== "2")) {
       toast.error(
-        "Trạng thái không hợp lệ. Vui lòng chọn Còn hàng hoặc Hết hàng."
+          "Trạng thái không hợp lệ. Vui lòng chọn Còn hàng hoặc Hết hàng."
       );
       return;
     }
@@ -338,8 +343,8 @@ const AdminSanPhamChiTiet = () => {
 
     var listLink = await uploadMultipleFile(listFile);
     const res = await postMethodPayload(
-      "/api/anh?chiTietSanPhamId=" + item.id,
-      listLink
+        "/api/anh?chiTietSanPhamId=" + item.id,
+        listLink
     );
     if (res.status < 300) {
       toast.success("upload ảnh thành công");
@@ -364,43 +369,45 @@ const AdminSanPhamChiTiet = () => {
   }
 
   return (
-    <>
-      <div class="headerpageadmin d-flex justify-content-between align-items-center p-3 bg-light border">
-        <strong class="text-left">
-          <i className="fa fa-list"></i> Quản Lý Sản Phẩm Chi tiết -{" "}
-          {sanpham?.tenSanPham} - {sanpham?.maSanPham}
-        </strong>
-        <div class="search-wrapper d-flex align-items-center">
-          <div class="search-container"></div>
-          <button
-            onClick={() => {
-              genId(sanpham.maSanPham);
-
-              setIsUpdate(false);
-              setItem(null);
-            }}
-            data-bs-toggle="modal"
-            data-bs-target="#addcate"
-            class="btn btn-primary ms-2"
-          >
-            <i className="fa fa-plus"></i>
-          </button>
-          <a
-            href="#"
-            onClick={() => exportToExcel()}
-            className="btn btn-success ms-2"
-          >
-            <i className="fa fa-excel-o"></i>Excel
-          </a>
+      <>
+        <div class="headerpageadmin d-flex justify-content-between align-items-center p-3 bg-light border">
+          <strong class="text-left">
+            <i className="fa fa-list"></i> Quản Lý Sản Phẩm Chi tiết -{" "}
+            {sanpham?.tenSanPham} - {sanpham?.maSanPham}
+          </strong>
+          <div class="search-wrapper d-flex align-items-center">
+            <div class="search-container"></div>
+            <button
+                onClick={() => {
+                  genId(sanpham.maSanPham); // Tạo mã mới
+                  setIsUpdate(false); // Chuyển sang chế độ thêm mới
+                  setItem(null); // Xóa dữ liệu item hiện tại
+                  setSelectedKichCo([]); // Reset kích cỡ về mảng rỗng
+                  setSelectedMauSac(null); // Reset màu sắc về null
+                  setMaSptc(""); // Reset mã CTSP (sẽ được genId cập nhật sau)
+                }}
+                data-bs-toggle="modal"
+                data-bs-target="#addcate"
+                className="btn btn-primary ms-2"
+            >
+              <i className="fa fa-plus"></i>
+            </button>
+            <a
+                href="#"
+                onClick={() => exportToExcel()}
+                className="btn btn-success ms-2"
+            >
+              <i className="fa fa-excel-o"></i>Excel
+            </a>
+          </div>
         </div>
-      </div>
-      <div class="tablediv">
-        <div class="headertable">
-          <span class="lbtable">Danh sách sản phẩm chi tiết</span>
-        </div>
-        <div class="divcontenttable">
-          <table id="example" class="table table-bordered">
-            <thead>
+        <div class="tablediv">
+          <div class="headertable">
+            <span class="lbtable">Danh sách sản phẩm chi tiết</span>
+          </div>
+          <div class="divcontenttable">
+            <table id="example" class="table table-bordered">
+              <thead>
               <tr>
                 <th>STT</th>
                 <th>Ảnh</th>
@@ -415,174 +422,174 @@ const AdminSanPhamChiTiet = () => {
                 <th>Trạng thái</th>
                 <th class="sticky-col">Hành động</th>
               </tr>
-            </thead>
-            <tbody>
+              </thead>
+              <tbody>
               {items.map((item,index) => {
                 const trangThaiHienTai = item.soLuong === 0 ? "Hết hàng" : trangThai(item.trangThai);
                 return (
-                  <tr>
-                    <td>{index +1}</td>
-                    <td>
-                      {item.anhs.length == 0 ? (
-                        ""
-                      ) : (
-                        <img src={item.anhs[0].tenAnh} className="imgtable" />
-                      )}
-                    </td>
-                    <td>{item.maSanPhamChiTiet}</td>
-                    <td>{item.kichCo?.tenKichCo}</td>
-                    <td>{item.mauSac?.tenMauSac}</td>
-                    <td>{item.soLuong}</td>
-                    <td>{formatMoney(item.giaTien)}</td>
-                    <td>{item.ngayTao}</td>
-                    <td>{item.nguoiTao}</td>
-                    <td>{item.nguoiCapNhat}</td>
-                    <td>{trangThaiHienTai}</td>
-                    <td class="sticky-col">
-                      <button
-                        onClick={() => setItemSelect(item)}
-                        data-bs-toggle="modal"
-                        data-bs-target="#addcate"
-                        class="edit-btn"
-                      >
-                        <i className="fa fa-edit"></i>
-                      </button>
-                      <button
-                        onClick={() => deleteChiTiet(item.id)}
-                        class="delete-btn"
-                      >
-                        <i className="fa fa-trash"></i>
-                      </button>
-                      <input
-                        onChange={() => uploadAnh(item)}
-                        multiple={true}
-                        id={"choosefile" + item.id}
-                        type="file"
-                        style={{ display: "none" }}
-                      />
-                      <button
-                        onClick={() =>
-                          document
-                            .getElementById("choosefile" + item.id)
-                            .click()
-                        }
-                        class="edit-btn"
-                      >
-                        <i className="fa fa-image"></i>
-                      </button>
-                    </td>
-                  </tr>
+                    <tr>
+                      <td>{index +1}</td>
+                      <td>
+                        {item.anhs.length == 0 ? (
+                            ""
+                        ) : (
+                            <img src={item.anhs[0].tenAnh} className="imgtable" />
+                        )}
+                      </td>
+                      <td>{item.maSanPhamChiTiet}</td>
+                      <td>{item.kichCo?.tenKichCo}</td>
+                      <td>{item.mauSac?.tenMauSac}</td>
+                      <td>{item.soLuong}</td>
+                      <td>{formatMoney(item.giaTien)}</td>
+                      <td>{item.ngayTao}</td>
+                      <td>{item.nguoiTao}</td>
+                      <td>{item.nguoiCapNhat}</td>
+                      <td>{trangThaiHienTai}</td>
+                      <td class="sticky-col">
+                        <button
+                            onClick={() => setItemSelect(item)}
+                            data-bs-toggle="modal"
+                            data-bs-target="#addcate"
+                            class="edit-btn"
+                        >
+                          <i className="fa fa-edit"></i>
+                        </button>
+                        <button
+                            onClick={() => deleteChiTiet(item.id)}
+                            class="delete-btn"
+                        >
+                          <i className="fa fa-trash"></i>
+                        </button>
+                        <input
+                            onChange={() => uploadAnh(item)}
+                            multiple={true}
+                            id={"choosefile" + item.id}
+                            type="file"
+                            style={{ display: "none" }}
+                        />
+                        <button
+                            onClick={() =>
+                                document
+                                    .getElementById("choosefile" + item.id)
+                                    .click()
+                            }
+                            class="edit-btn"
+                        >
+                          <i className="fa fa-image"></i>
+                        </button>
+                      </td>
+                    </tr>
                 );
               })}
-            </tbody>
-          </table>
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
 
-      <div
-        class="modal fade"
-        id="addcate"
-        tabindex="-1"
-        aria-labelledby="exampleModalLabel"
-        aria-hidden="false"
-      >
-        <div class="modal-dialog modal-lg">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">
-                Thêm hoặc cập nhật màu sắc
-              </h5>{" "}
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <div class="modal-body">
-              <form
-                class="col-sm-5 marginauto"
-                onSubmit={isUpdate ? updateData : saveData}
-                method="post"
-              >
-                <label class="lb-form">Mã sản phẩm chi tiết</label>
-                <input
-                  value={maSptc || "q"}
-                  name="maSanPhamChiTiet"
-                  type="text"
-                  class="form-control"
-                  disabled
-                />
-                <label class="lb-form">Số lượng</label>
-                <input
-                  defaultValue={item?.soLuong}
-                  name="soLuong"
-                  type="text"
-                  class="form-control"
-                />
-                <label class="lb-form">Giá tiền</label>
-                <input
-                  defaultValue={item?.giaTien}
-                  name="giaTien"
-                  type="text"
-                  class="form-control"
-                />
-                <label className="lb-form">Trạng thái</label>
-                <div>
-                  <label>
-                    <input
-                      type="radio"
-                      name="trangThai"
-                      value="1"
-                      defaultChecked={!item?.trangThai || item?.trangThai === 1}
-                    />
-                    Còn hàng
-                  </label>
-                  {/*<label style={{ marginLeft: "10px" }}>*/}
-                  {/*  <input*/}
-                  {/*    type="radio"*/}
-                  {/*    name="trangThai"*/}
-                  {/*    value="2"*/}
-                  {/*    defaultChecked={item?.trangThai === 2}*/}
-                  {/*  />*/}
-                  {/*  Hết hàng*/}
-                  {/*</label>*/}
-                </div>
+        <div
+            class="modal fade"
+            id="addcate"
+            tabindex="-1"
+            aria-labelledby="exampleModalLabel"
+            aria-hidden="false"
+        >
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">
+                  Thêm hoặc cập nhật màu sắc
+                </h5>{" "}
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                ></button>
+              </div>
+              <div class="modal-body">
+                <form
+                    class="col-sm-5 marginauto"
+                    onSubmit={isUpdate ? updateData : saveData}
+                    method="post"
+                >
+                  <label class="lb-form">Mã sản phẩm chi tiết</label>
+                  <input
+                      value={isUpdate ? item?.maSanPhamChiTiet : maSptc}
+                      name="maSanPhamChiTiet"
+                      type="text"
+                      className="form-control"
+                      disabled
+                  />
+                  <label class="lb-form">Số lượng</label>
+                  <input
+                      defaultValue={item?.soLuong}
+                      name="soLuong"
+                      type="text"
+                      class="form-control"
+                  />
+                  <label class="lb-form">Giá tiền</label>
+                  <input
+                      defaultValue={item?.giaTien}
+                      name="giaTien"
+                      type="text"
+                      class="form-control"
+                  />
+                  <label className="lb-form">Trạng thái</label>
+                  <div>
+                    <label>
+                      <input
+                          type="radio"
+                          name="trangThai"
+                          value="1"
+                          defaultChecked={!item?.trangThai || item?.trangThai === 1}
+                      />
+                      Còn hàng
+                    </label>
+                    {/*<label style={{ marginLeft: "10px" }}>*/}
+                    {/*  <input*/}
+                    {/*    type="radio"*/}
+                    {/*    name="trangThai"*/}
+                    {/*    value="2"*/}
+                    {/*    defaultChecked={item?.trangThai === 2}*/}
+                    {/*  />*/}
+                    {/*  Hết hàng*/}
+                    {/*</label>*/}
+                  </div>
 
-                <label class="lb-form">Màu sắc</label>
-                <Select
-                  className="select-container"
-                  options={mausac.filter((option) => option.trangThai === 1)}
-                  value={selectedMauSac}
-                  onChange={setSelectedMauSac}
-                  getOptionLabel={(option) => option.tenMauSac}
-                  getOptionValue={(option) => option.id}
-                  name="mausac"
-                  placeholder="Chọn màu sắc"
-                />
-                <label class="lb-form">Kích cỡ</label>
-                <Select
-                  className="select-container"
-                  options={kichco.filter((option) => option.trangThai === 1)}
-                  value={isUpdate ? updateKichCo : selectedKichCo}
-                  onChange={handleChangeSize}
-                  getOptionLabel={(option) => option.tenKichCo}
-                  getOptionValue={(option) => option.id}
-                  name="kichco"
-                  isMulti={isUpdate ? false : true}
-                  placeholder="Chọn kích cỡ"
-                />
-                <br />
-                <br />
-                <button class="btn btn-success form-control action-btn">
-                  Xác nhận
-                </button>
-              </form>
+                  <label class="lb-form">Màu sắc</label>
+                  <Select
+                      className="select-container"
+                      options={mausac.filter((option) => option.trangThai === 1)}
+                      value={selectedMauSac}
+                      onChange={setSelectedMauSac}
+                      getOptionLabel={(option) => option.tenMauSac}
+                      getOptionValue={(option) => option.id}
+                      name="mausac"
+                      placeholder="Chọn màu sắc"
+                  />
+                  <label class="lb-form">Kích cỡ</label>
+                  <Select
+                      className="select-container"
+                      options={kichco.filter((option) => option.trangThai === 1)}
+                      value={isUpdate ? updateKichCo : selectedKichCo}
+                      onChange={handleChangeSize}
+                      getOptionLabel={(option) => option.tenKichCo}
+                      getOptionValue={(option) => option.id}
+                      name="kichco"
+                      isMulti={isUpdate ? false : true}
+                      placeholder="Chọn kích cỡ"
+                  />
+                  <br />
+                  <br />
+                  <button class="btn btn-success form-control action-btn">
+                    Xác nhận
+                  </button>
+                </form>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </>
+      </>
   );
 };
 
