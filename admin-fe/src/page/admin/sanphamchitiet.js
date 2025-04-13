@@ -157,49 +157,54 @@ const AdminSanPhamChiTiet = () => {
     event.preventDefault();
     setIsUpdate(false);
 
-    // Lấy thông tin người dùng từ localStorage
+    // Validate user
     const user = JSON.parse(localStorage.getItem("user"));
     if (!user) {
       toast.error("Người dùng không hợp lệ.");
       return;
     }
 
-    // Lấy các giá trị từ form
+    // Get form values
     const maSanPhamChiTiet = maSptc.trim();
     const soLuong = parseInt(event.target.elements.soLuong.value, 10);
     const giaTien = parseFloat(event.target.elements.giaTien.value);
-    const trangThai = event.target.elements.trangThai.value; // Lấy giá trị từ radio button
+    const trangThai = event.target.elements.trangThai.value;
 
-    // Kiểm tra giá trị nhập vào
-    if (!maSanPhamChiTiet) {
-      toast.error("Mã sản phẩm chi tiết không được để trống.");
-      return;
-    }
+    // Validate inputs
+    const errors = [];
+    if (!maSanPhamChiTiet) errors.push("Mã sản phẩm chi tiết không được để trống");
     if (isNaN(soLuong) || soLuong <= 0 || soLuong >= 1000000) {
-      toast.error(
-          "Số lượng phải là một số hợp lệ và lớn hơn 0 và nhỏ hơn 1.000.000"
-      );
-      return;
+      errors.push("Số lượng phải là số hợp lệ (0 < số lượng < 1.000.000)");
     }
     if (isNaN(giaTien) || giaTien <= 0 || giaTien >= 1000000000) {
-      toast.error(
-          "Giá tiền phải là một số hợp lệ và lớn hơn 0 và nhỏ hơn 1.000.000.000"
-      );
+      errors.push("Giá tiền phải là số hợp lệ (0 < giá < 1.000.000.000)");
+    }
+    if (!trangThai || !["1","2"].includes(trangThai)) {
+      errors.push("Vui lòng chọn trạng thái hợp lệ");
+    }
+    if (!selectedMauSac?.id) errors.push("Vui lòng chọn màu sắc");
+    if (!selectedKichCo?.id) errors.push("Vui lòng chọn kích cỡ");
+    if (errors.length > 0) {
+      errors.forEach(err => toast.error(err));
       return;
     }
-    if (!trangThai || (trangThai !== "1" && trangThai !== "2")) {
-      toast.error(
-          "Trạng thái không hợp lệ. Vui lòng chọn Còn hàng hoặc Hết hàng."
-      );
-      return;
-    }
-    if (!selectIdKichCo) {
-      toast.error("Vui lòng chọn kích cỡ.");
-      return;
-    }
-    if (!selectedMauSac?.id) {
-      toast.error("Vui lòng chọn màu sắc.");
-      return;
+
+    // Check duplicate (only for new items)
+    if (item == null) {
+      try {
+        const checkUrl = `/api/san-pham-chi-tiet/check-exist?idSanPham=${sanpham.id}&mauSacId=${selectedMauSac.id}&kichCoId=${selectIdKichCo}`;
+        const checkRes = await getMethod(checkUrl);
+        const checkData = await checkRes.json(); // Parse JSON response
+
+        if (checkData.exists) { // Kiểm tra trường exists trong response
+          toast.error("Đã tồn tại màu sắc và kích cỡ này");
+          return;
+        }
+      } catch (error) {
+        console.error("Lỗi kiểm tra trùng lặp:", error);
+        toast.error("Lỗi hệ thống khi kiểm tra trùng lặp");
+        return;
+      }
     }
 
     // Tạo payload
@@ -210,7 +215,7 @@ const AdminSanPhamChiTiet = () => {
       idSanPham: sanpham.id,
       idKichCo: selectIdKichCo,
       idMauSac: selectedMauSac.id,
-      trangThai: parseInt(trangThai, 10), // Chuyển thành số nguyên
+      trangThai: parseInt(trangThai, 10),
       nguoiTao: user.maNhanVien,
       nguoiCapNhat: user.maNhanVien,
     };
@@ -242,7 +247,6 @@ const AdminSanPhamChiTiet = () => {
       toast.error(result.message);
     }
   }
-
   async function updateData(event) {
     event.preventDefault();
 
@@ -392,13 +396,13 @@ const AdminSanPhamChiTiet = () => {
             >
               <i className="fa fa-plus"></i>
             </button>
-            <a
-                href="#"
-                onClick={() => exportToExcel()}
-                className="btn btn-success ms-2"
-            >
-              <i className="fa fa-excel-o"></i>Excel
-            </a>
+            {/*<a*/}
+            {/*    href="#"*/}
+            {/*    onClick={() => exportToExcel()}*/}
+            {/*    className="btn btn-success ms-2"*/}
+            {/*>*/}
+            {/*  <i className="fa fa-excel-o"></i>Excel*/}
+            {/*</a>*/}
           </div>
         </div>
         <div class="tablediv">

@@ -104,4 +104,12 @@ public class SanPhamChiTietServiceImpl implements SanPhamChiTietService {
             throw new RuntimeException("Chi tiết sản phẩm không tồn tại");
         }
     }
+
+    @Override
+    public boolean existsBySanPhamAndMauSacAndKichCo(Integer idSanPham, Integer mauSacId, Integer kichCoId) {
+        return sanPhamChiTietRepository.existsBySanPhamIdAndMauSacIdAndKichCoId(
+                idSanPham, mauSacId, kichCoId);
+    }
+
+
 }

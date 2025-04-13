@@ -1,5 +1,6 @@
 package com.example.regal.service.impl;
 
+import com.example.regal.dto.request.PhuongThucThanhToanRequest;
 import com.example.regal.entity.HoaDon;
 import com.example.regal.entity.PhuongThucThanhToan;
 import com.example.regal.repository.PhuongThucThanhToanRepository;

@@ -1,8 +1,11 @@
 package com.example.regal.controller;
 
 import com.example.regal.dto.request.PhieuGiamGiaRequest;
+import com.example.regal.entity.GioHang;
 import com.example.regal.entity.HoaDon;
 import com.example.regal.entity.PhieuGiamGia;
+import com.example.regal.exception.MessageException;
+import com.example.regal.repository.GioHangRepository;
 import com.example.regal.repository.PhieuGiamGiaRepository;
 import com.example.regal.service.PhieuGiamGiaService;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +25,7 @@ import java.util.Optional;
 public class PhieuGiamGiaController {
     private final PhieuGiamGiaService phieuGiamGiaService;
     private final PhieuGiamGiaRepository phieuGiamGiaRepository;
-//    private final GioHangRepository gioHangRepository;
+    private final GioHangRepository gioHangRepository;
     @GetMapping
     public ResponseEntity<List<PhieuGiamGia>> getAllPhieuGiamGia() {
         List<PhieuGiamGia> phieuGiamGiaList = phieuGiamGiaService.getAllPhieuGiamGia();
@@ -91,13 +94,13 @@ public class PhieuGiamGiaController {
     }
 
     // Lấy tất cả các phiếu giảm giá của một hóa đơn
-//    @GetMapping("/hoa-don/{hoaDonId}")
-//    public ResponseEntity<List<PhieuGiamGia>> getPhieuGiamGiaByHoaDon(@PathVariable Integer hoaDonId) {
-//        HoaDon hoaDon = new HoaDon(); // Assume HoaDon entity is correctly instantiated or fetched
-//        hoaDon.setId(hoaDonId);
-//        List<PhieuGiamGia> phieuGiamGiaList = phieuGiamGiaService.findAllByHoaDon(hoaDon);
-//        return ResponseEntity.ok(phieuGiamGiaList);
-//    }
+    @GetMapping("/hoa-don/{hoaDonId}")
+    public ResponseEntity<List<PhieuGiamGia>> getPhieuGiamGiaByHoaDon(@PathVariable Integer hoaDonId) {
+        HoaDon hoaDon = new HoaDon(); // Assume HoaDon entity is correctly instantiated or fetched
+        hoaDon.setId(hoaDonId);
+        List<PhieuGiamGia> phieuGiamGiaList = phieuGiamGiaService.findAllByHoaDon(hoaDon);
+        return ResponseEntity.ok(phieuGiamGiaList);
+    }
 
     // Lấy phiếu giảm giá theo mã code
     @GetMapping("/ma-code/{maCode}")
@@ -121,20 +124,19 @@ public class PhieuGiamGiaController {
         return ResponseEntity.ok(phieuGiamGiaList);
     }
 
-//    // Lấy phiếu giảm giá theo kiểu phiếu và trạng thái
-//    @PostMapping("/kiem-tra-phieu")
-//    public ResponseEntity<String> kiemTraPhieu(@RequestParam Integer id, @RequestBody List<Integer> idGioHang) {
-//        List<GioHang> list = gioHangRepository.findAllById(idGioHang);
-//        Double tong = 0D;
-//        for(GioHang g : list){
-//            tong += g.getSoLuong() * g.getSanPhamChiTiet().getGiaTien();
-//        }
-//        PhieuGiamGia phieuGiamGia = phieuGiamGiaRepository.findById(id).get();
-//        if(phieuGiamGia.getDonToiThieu() > tong){
-//            throw new MessageException("Bạn cần mua thêm "+(phieuGiamGia.getDonToiThieu() - tong)+" để được áp dụng voucher này");
-//        }
-//        return new ResponseEntity<>("success", HttpStatus.OK);
-//    }
-
+    // Lấy phiếu giảm giá theo kiểu phiếu và trạng thái
+    @PostMapping("/kiem-tra-phieu")
+    public ResponseEntity<String> kiemTraPhieu(@RequestParam Integer id, @RequestBody List<Integer> idGioHang) {
+        List<GioHang> list = gioHangRepository.findAllById(idGioHang);
+        Double tong = 0D;
+        for(GioHang g : list){
+            tong += g.getSoLuong() * g.getSanPhamChiTiet().getGiaTien();
+        }
+        PhieuGiamGia phieuGiamGia = phieuGiamGiaRepository.findById(id).get();
+        if(phieuGiamGia.getDonToiThieu() > tong){
+            throw new MessageException("Bạn cần mua thêm "+(phieuGiamGia.getDonToiThieu() - tong)+" để được áp dụng voucher này");
+        }
+        return new ResponseEntity<>("success", HttpStatus.OK);
+    }
 
 }

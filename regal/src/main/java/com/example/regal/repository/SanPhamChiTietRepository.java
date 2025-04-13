@@ -100,7 +100,7 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
 //   Page<SanPhamChiTiet> findAllBySoluongLon(Integer soluong, Pageable p);
     @Query("SELECT d FROM DotGiamGia d WHERE d.id =:IdDot")
     List<SanPhamChiTiet> findSanPhamDotGiamByIdDotgiamgia(Integer IdDot);
-//    List<DotGiamGia> findBySanPhamChiTiet(SanPhamChiTiet spct);
+    //    List<DotGiamGia> findBySanPhamChiTiet(SanPhamChiTiet spct);
     /// Đợt giảm của spct
     @Query("""
         SELECT d FROM DotGiamGia d 
@@ -112,4 +112,7 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
             SELECT s FROM SanPhamChiTiet s WHERE s.dotGiamGia.trangThai=1
             """)
     List<SanPhamChiTiet> ListDotGiamDangHD();
+
+    boolean existsBySanPhamIdAndMauSacIdAndKichCoId(
+            Integer sanPhamId, Integer mauSacId, Integer kichCoId);
 }

@@ -13,4 +13,6 @@ public interface SanPhamChiTietService {
     SanPhamChiTiet create(SanPhamChiTietRequest requestDTO);
     SanPhamChiTiet update(Integer id, SanPhamChiTietUpdateRequest requestDTO);
     void delete(Integer id);
+    boolean existsBySanPhamAndMauSacAndKichCo(
+            Integer idSanPham, Integer mauSacId, Integer kichCoId);
 }

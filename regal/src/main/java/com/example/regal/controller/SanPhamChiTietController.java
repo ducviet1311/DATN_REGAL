@@ -9,13 +9,12 @@ import com.example.regal.repository.SanPhamChiTietRepository;
 import com.example.regal.repository.SanPhamRepository;
 import com.example.regal.service.SanPhamChiTietService;
 import lombok.RequiredArgsConstructor;
+import org.aspectj.bridge.MessageUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/san-pham-chi-tiet")
@@ -97,5 +96,26 @@ public class SanPhamChiTietController {
         SanPhamChiTietSpecification sp = new SanPhamChiTietSpecification(search.getThuongHieuId(), search.getChatLieuId(), search.getDeGiayId(), search.getMauSacId(), search.getKichThuocId());
         List<SanPhamChiTiet> sanPhamList = sanPhamChiTietRepository.findAll(sp);
         return ResponseEntity.ok(sanPhamList.stream().filter(i -> i.getTrangThai() == 1));
+    }
+
+    @GetMapping("/check-exist")
+    public ResponseEntity<?> checkExist(
+            @RequestParam Integer idSanPham,
+            @RequestParam Integer mauSacId,
+            @RequestParam Integer kichCoId) {
+
+        try {
+            boolean exists = sanPhamChiTietService.existsBySanPhamAndMauSacAndKichCo(
+                    idSanPham, mauSacId, kichCoId);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("exists", exists);
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(
+                    Collections.singletonMap("error", "Đã xảy ra lỗi khi kiểm tra"));
+        }
     }
 }

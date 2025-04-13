@@ -1,6 +1,7 @@
 package com.example.regal.service;
 
 import com.example.regal.dto.request.PhieuGiamGiaRequest;
+import com.example.regal.entity.HoaDon;
 import com.example.regal.entity.PhieuGiamGia;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,8 +20,8 @@ public interface PhieuGiamGiaService {
     Page<PhieuGiamGia> findAllOrderByNgayTaoDESC(String keySearch, Timestamp tungaySearch, Timestamp denngaySearch,
                                                  Boolean kieuSearch, Boolean loaiSearch, Integer ttSearch, Pageable pageable);
 
-//    // Tìm tất cả phiếu giảm giá theo hóa đơn
-//    List<PhieuGiamGia> findAllByHoaDon(HoaDon hoaDon);
+    // Tìm tất cả phiếu giảm giá theo hóa đơn
+    List<PhieuGiamGia> findAllByHoaDon(HoaDon hoaDon);
 
     PhieuGiamGia findPhieuGiamGiaByMaCode(String maCode);
 

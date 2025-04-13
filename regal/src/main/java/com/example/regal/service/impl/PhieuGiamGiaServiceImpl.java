@@ -1,6 +1,7 @@
 package com.example.regal.service.impl;
 
 import com.example.regal.dto.request.PhieuGiamGiaRequest;
+import com.example.regal.entity.HoaDon;
 import com.example.regal.entity.PhieuGiamGia;
 import com.example.regal.repository.PhieuGiamGiaRepository;
 import com.example.regal.service.PhieuGiamGiaService;
@@ -99,10 +100,10 @@ public class PhieuGiamGiaServiceImpl implements PhieuGiamGiaService {
             throw new RuntimeException("Phiếu giảm giá không tồn tại");
         }
     }
-//    @Override
-//    public List<PhieuGiamGia> findAllByHoaDon(HoaDon hoaDon) {
-//        return null;
-//    }
+    @Override
+    public List<PhieuGiamGia> findAllByHoaDon(HoaDon hoaDon) {
+        return null;
+    }
 
     @Override
     public PhieuGiamGia findPhieuGiamGiaByMaCode(String maCode) {

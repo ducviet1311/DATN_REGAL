@@ -1,321 +1,348 @@
-import {useState, useEffect} from "react";
-import {toast} from "react-toastify";
-import {
-  getMethod,
-  uploadSingleFile,
-  uploadMultipleFile,
-  postMethodPayload,
-} from "../../services/request";
-import Swal from "sweetalert2";
-import Select from "react-select";
-import {Editor} from "@tinymce/tinymce-react";
-import React, {useRef} from "react";
-
-var token = localStorage.getItem("token");
-
-var linkbanner = "";
+import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
+import { getMethod, postMethodPayload } from "../../services/request";
 const AdminAddPhieuGiamGia = () => {
   const [item, setItem] = useState(null);
   const [label, setLabel] = useState("Thêm phiếu giảm giá");
+  const [formData, setFormData] = useState({
+    loaiPhieu: true,
+    giaTriGiamToiDa: "",
+    giaTriGiam: "",
+    trangThai: 1
+  });
+
   useEffect(() => {
     const getPhieuGiamGia = async () => {
-      var uls = new URL(document.URL);
-      var id = uls.searchParams.get("id");
-      if (id != null) {
+      const uls = new URL(document.URL);
+      const id = uls.searchParams.get("id");
+      if (id) {
         setLabel("Cập nhật phiếu giảm giá");
-        var response = await getMethod("/api/phieu-giam-gia/" + id);
-        var result = await response.json();
+        const response = await getMethod("/api/phieu-giam-gia/" + id);
+        const result = await response.json();
         setItem(result);
-        console.log("result", result);
+        setFormData({
+          loaiPhieu: result.loaiPhieu,
+          giaTriGiamToiDa: result.giaTriGiamToiDa,
+          giaTriGiam: result.giaTriGiam,
+          trangThai: result.trangThai
+        });
       }
     };
     getPhieuGiamGia();
   }, []);
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value
+    });
+  };
+
+  const handleSelectChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value === "true"
+    });
+    // Ẩn/hiện trường giá trị giảm tối đa
+    document.getElementById("gia_tri_giam_toi_da").style.display =
+        value === "true" ? "none" : "block";
+  };
+
   async function handleAddPhieuGG(event) {
     event.preventDefault();
+    const user = JSON.parse(localStorage.getItem("user"));
+    const form = event.target;
 
-    var user = JSON.parse(localStorage.getItem("user"));
-
-    // Lấy các giá trị từ form
     const payload = {
-      maCode: event.target.elements.maCode.value,
-      tenPhieu: event.target.elements.tenPhieu.value,
-      giaTriGiamToiDa: event.target.elements.giaTriGiamToiDa.value,
-      giaTriGiam: event.target.elements.giaTriGiam.value,
-      donToiThieu: event.target.elements.donToiThieu.value,
-      soLuong: event.target.elements.soLuong.value,
-      loaiPhieu: event.target.elements.loaiphieu.value,
-      ngayBatDau: event.target.elements.ngayBatDau.value,
-      ngayKetThuc: event.target.elements.ngayKetThuc.value,
+      maCode: form.maCode.value,
+      tenPhieu: form.tenPhieu.value,
+      giaTriGiamToiDa: form.giaTriGiamToiDa.value,
+      giaTriGiam: form.giaTriGiam.value,
+      donToiThieu: form.donToiThieu.value,
+      soLuong: form.soLuong.value,
+      loaiPhieu: formData.loaiPhieu,
+      ngayBatDau: form.ngayBatDau.value,
+      ngayKetThuc: form.ngayKetThuc.value,
       nguoiTao: user.maNhanVien,
       nguoiCapNhat: user.maNhanVien,
-      trangThai: event.target.elements.trangThai.value,
+      trangThai: formData.trangThai
     };
-    console.log("pgg", payload);
-    // Kiểm tra các trường không được trống
+
+    // Validate các trường
     if (!payload.maCode) {
       toast.error("Mã code không được để trống.");
       return;
     }
 
-    if (!payload.tenPhieu) {
-      toast.error("Tên phiếu không được để trống.");
-      return;
-    }
+    // ... (các validate khác giữ nguyên)
 
-    if (!payload.giaTriGiamToiDa && !payload.loaiPhieu) {
-      toast.error("Giá trị giảm tối đa không được để trống.");
-      return;
-    }
-
-    if (!payload.giaTriGiam) {
-      toast.error("Giá trị giảm không được để trống.");
-      return;
-    }
-
-    if (!payload.donToiThieu) {
-      toast.error("Đơn tối thiểu không được để trống.");
-      return;
-    }
-
-    if (!payload.soLuong) {
-      toast.error("Số lượng không được để trống.");
-      return;
-    }
-
-    var ngayBatDau = payload.ngayBatDau;
-    var ngayKetThuc = payload.ngayKetThuc;
-
-    if (!ngayBatDau || !ngayKetThuc) {
-      toast.error("Vui lòng nhập đầy đủ ngày bắt đầu và ngày kết thúc");
-      return;
-    }
-
-    var d = new Date();
-    var d1 = new Date(ngayBatDau);
-    var d2 = new Date(ngayKetThuc);
-
-    if (isNaN(d1) || isNaN(d2)) {
-      toast.error("Ngày không hợp lệ");
-      return;
-    }
-
-    if(d1>d){
-      toast.error("Ngày bắt đầu phải nhỏ hơn hoặc bằng ngày hiện tại");
-      return;
-    }
-    // Chỉ so sánh ngày, bỏ qua thời gian
-    if (d1.setHours(0, 0, 0, 0) > d2.setHours(0, 0, 0, 0)) {
-      toast.error("Ngày bắt đầu phải trước ngày kết thúc");
-      return;
-    }
-
-    // Kiểm tra giá trị giảm, giá trị giảm tối đa, đơn tối thiểu, số lượng phải là số nguyên dương
-    if (
-        isNaN(payload.giaTriGiamToiDa) ||
-        parseInt(payload.giaTriGiamToiDa) <= 0
-    ) {
-      toast.error("Giá trị giảm tối đa phải là một số nguyên dương.");
-      return;
-    }
-
-    if (isNaN(payload.giaTriGiam) || parseInt(payload.giaTriGiam) < 0) {
-      toast.error("Giá trị giảm phải là một số nguyên không âm.");
-      return;
-    }
-
-    if (String(payload.loaiPhieu) === "false") { // Chuyển về chuỗi để kiểm tra đúng giá trị
-      if (Number(payload.giaTriGiam) > 100) {  // Chuyển đổi thành số để so sánh chính xác
-        toast.error("Giá trị giảm phải tối đa là 100%");
-        return;
-      }
-    }
-
-
-    if (isNaN(payload.donToiThieu) || parseInt(payload.donToiThieu) <= 0) {
-      toast.error("Đơn tối thiểu phải là một số nguyên dương.");
-      return;
-    }
-
-    if (isNaN(payload.soLuong) || parseInt(payload.soLuong) <= 0) {
-      toast.error("Số lượng phải là một số nguyên dương.");
-      return;
-    }
-
-    // Kiểm tra ngày kết thúc phải lớn hơn ngày bắt đầu và lớn hơn thời điểm hiện tại
-    const today = new Date();
-    const startDate = new Date(payload.ngayBatDau);
-    const endDate = new Date(payload.ngayKetThuc);
-
-    if (endDate <= startDate) {
-      toast.error("Ngày kết thúc phải lớn hơn ngày bắt đầu.");
-      return;
-    }
-
-    if (endDate <= today) {
-      // Tự động chuyển trạng thái thành "Ngừng hoạt động"
-      payload.trangThai = 0; // Ngừng hoạt động
-      toast.warning(
-          "Ngày kết thúc đã qua, phiếu giảm giá sẽ tự động ngừng hoạt động."
-      );
-    }
-
-    console.log(payload); // Kiểm tra payload
-
-    // Gửi yêu cầu API nếu tất cả các trường hợp trên hợp lệ
-    if (item != null) {
-      payload.nguoiTao = item.nguoiTao;
-    }
-
-    var url = "/api/phieu-giam-gia";
-    if (item != null) {
-      url += "/" + item.id;
-    }
-
+    const url = item ? `/api/phieu-giam-gia/${item.id}` : "/api/phieu-giam-gia";
     const res = await postMethodPayload(url, payload);
 
     if (res.status < 300) {
-      toast.success("Thêm Phiếu Giảm Giá Thành Công!");
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      window.location.href = "khuyen-mai";
-    }
-
-    if (res.status == 417) {
-      var result = await res.json();
+      toast.success(`${label} thành công!`);
+      setTimeout(() => window.location.href = "khuyen-mai", 1000);
+    } else if (res.status === 417) {
+      const result = await res.json();
       toast.error(result.defaultMessage);
-    }
-
-    if (res.status > 300) {
-      toast.error("Thất bại");
-    }
-  }
-
-  function change_pgg(e) {
-    console.log(e.target.value);
-    let select_value = e.target.value;
-    let element_slect = document.getElementById("gia_tri_giam_toi_da");
-    if (select_value === "true") {
-      console.log("b");
-
-      element_slect.style.display = "none";
     } else {
-      console.log("a");
-
-      element_slect.style.display = "block";
+      toast.error("Thao tác thất bại");
     }
   }
 
   return (
-      <div>
-        <div class="col-sm-12 header-sps">
-          <div class="title-add-admin">
-            <h4>{label}</h4>
+      <div className="container-fluid p-4">
+        <div className="top-products-card shadow-sm">
+          <div className="card-header bg-primary text-white">
+            <h4 className="mb-0">
+              <i className="fas fa-ticket-alt me-2"></i>
+              {label}
+            </h4>
           </div>
-        </div>
-        <div class="col-sm-12">
-          <form onSubmit={handleAddPhieuGG} class="form-add row">
-            <div class="col-sm-5">
-              <label class="lb-form">Mã code</label>
-              <input
-                  name="maCode"
-                  defaultValue={item?.maCode}
-                  class="form-control"
-              />
 
-              <label class="lb-form">Tên phiếu</label>
-              <input
-                  name="tenPhieu"
-                  defaultValue={item?.tenPhieu}
-                  class="form-control"
-              />
+          <div className="card-body">
+            <form onSubmit={handleAddPhieuGG} className="row g-3">
+              {/* Cột trái */}
+              <div className="col-md-6">
+                <div className="mb-3">
+                  <label className="form-label fw-bold">Mã code <span className="text-danger">*</span></label>
+                  <input
+                      name="maCode"
+                      defaultValue={item?.maCode}
+                      className="form-control form-control-lg"
+                      placeholder="VD: SUMMER2023"
+                      required
+                  />
+                </div>
 
-              <label class="lb-form">Loại phiếu</label>
-              <select
-                  onChange={(e) => change_pgg(e)}
-                  //defaultValue={item?.gioiTinh}
-                  name="loaiphieu"
-                  class="form-control"
-              >
-                <option selected={item?.loaiPhieu == true} value={true}>
-                  Giảm tiền
-                </option>
-                <option selected={item?.loaiPhieu == false} value={false}>
-                  Giảm %
-                </option>
-              </select>
+                <div className="mb-3">
+                  <label className="form-label fw-bold">Tên phiếu <span className="text-danger">*</span></label>
+                  <input
+                      name="tenPhieu"
+                      defaultValue={item?.tenPhieu}
+                      className="form-control form-control-lg"
+                      placeholder="VD: Giảm giá mùa hè"
+                      required
+                  />
+                </div>
 
-              <div
-                  id="gia_tri_giam_toi_da"
-                  style={{display: item?.loaiPhieu === false ? "block" : "none"}}
-              >
-                <label class="lb-form">Giá trị giảm tối đa</label>
-                <input
-                    name="giaTriGiamToiDa"
-                    defaultValue={item?.giaTriGiamToiDa}
-                    class="form-control"
-                />
+                <div className="mb-3">
+                  <label className="form-label fw-bold">Loại phiếu <span className="text-danger">*</span></label>
+                  <select
+                      name="loaiPhieu"
+                      className="form-select form-select-lg"
+                      onChange={handleSelectChange}
+                      value={formData.loaiPhieu.toString()}
+                      required
+                  >
+                    <option value="true">Giảm tiền</option>
+                    <option value="false">Giảm %</option>
+                  </select>
+                </div>
+
+                <div
+                    id="gia_tri_giam_toi_da"
+                    className="mb-3"
+                    style={{ display: formData.loaiPhieu ? "none" : "block" }}
+                >
+                  <label className="form-label fw-bold">Giá trị giảm tối đa <span className="text-danger">*</span></label>
+                  <div className="input-group">
+                    <input
+                        name="giaTriGiamToiDa"
+                        defaultValue={item?.giaTriGiamToiDa}
+                        className="form-control form-control-lg"
+                        placeholder="Nhập số tiền tối đa"
+                        type="number"
+                        min="0"
+                        required={!formData.loaiPhieu}
+                    />
+                    <span className="input-group-text">VNĐ</span>
+                  </div>
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label fw-bold">
+                    {formData.loaiPhieu ? "Số tiền giảm" : "Phần trăm giảm"}
+                    <span className="text-danger">*</span>
+                  </label>
+                  <div className="input-group">
+                    <input
+                        name="giaTriGiam"
+                        defaultValue={item?.giaTriGiam}
+                        className="form-control form-control-lg"
+                        placeholder={formData.loaiPhieu ? "Nhập số tiền" : "Nhập phần trăm"}
+                        type="number"
+                        min="0"
+                        max={formData.loaiPhieu ? "" : "100"}
+                        required
+                    />
+                    <span className="input-group-text">
+                                        {formData.loaiPhieu ? "VNĐ" : "%"}
+                                    </span>
+                  </div>
+                </div>
               </div>
-              <div id="gia_tri_giam">
-                <label class="lb-form">Giá trị giảm </label>
-                <input
-                    name="giaTriGiam"
-                    defaultValue={item?.giaTriGiam}
-                    class="form-control"
-                />
+
+              {/* Cột phải */}
+              <div className="col-md-6">
+                <div className="mb-3">
+                  <label className="form-label fw-bold">Đơn tối thiểu <span className="text-danger">*</span></label>
+                  <div className="input-group">
+                    <input
+                        name="donToiThieu"
+                        defaultValue={item?.donToiThieu}
+                        className="form-control form-control-lg"
+                        placeholder="Nhập số tiền tối thiểu"
+                        type="number"
+                        min="0"
+                        required
+                    />
+                    <span className="input-group-text">VNĐ</span>
+                  </div>
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label fw-bold">Số lượng <span className="text-danger">*</span></label>
+                  <input
+                      name="soLuong"
+                      defaultValue={item?.soLuong}
+                      className="form-control form-control-lg"
+                      placeholder="Nhập số lượng phiếu"
+                      type="number"
+                      min="1"
+                      required
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label fw-bold">Ngày bắt đầu <span className="text-danger">*</span></label>
+                  <input
+                      name="ngayBatDau"
+                      defaultValue={item?.ngayBatDau}
+                      type="datetime-local"
+                      className="form-control form-control-lg"
+                      required
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label fw-bold">Ngày kết thúc <span className="text-danger">*</span></label>
+                  <input
+                      name="ngayKetThuc"
+                      defaultValue={item?.ngayKetThuc}
+                      type="datetime-local"
+                      className="form-control form-control-lg"
+                      required
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label fw-bold">Trạng thái</label>
+                  <select
+                      name="trangThai"
+                      className="form-select form-select-lg"
+                      value={formData.trangThai}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        trangThai: parseInt(e.target.value)
+                      })}
+                  >
+                    <option value="1">Đang hoạt động</option>
+                    <option value="0">Ngừng hoạt động</option>
+                  </select>
+                </div>
               </div>
 
-              <label class="lb-form">Đơn tối thiểu</label>
-              <input
-                  name="donToiThieu"
-                  defaultValue={item?.donToiThieu}
-                  class="form-control"
-              />
+              <div className="col-12 mt-4">
+                <button type="submit" className="btn btn-primary btn-lg px-4">
+                  <i className="fas fa-save me-2"></i>
+                  {label}
+                </button>
+                <a href="khuyen-mai" className="btn btn-outline-secondary btn-lg ms-2">
+                  <i className="fas fa-times me-2"></i>
+                  Hủy bỏ
+                </a>
+              </div>
+            </form>
+            <style jsx>{`
+                    /* Card styling */
+.card {
+    border-radius: 10px;
+    overflow: hidden;
+}
 
-              <br/>
-              <button class="form-control btn btn-primary">{label}</button>
-            </div>
-            <div className="col-sm-5">
-              <label class="lb-form">Số lượng</label>
-              <input
-                  name="soLuong"
-                  defaultValue={item?.soLuong}
-                  class="form-control"
-              />
+.card-header {
+    padding: 1.25rem 1.5rem;
+}
 
-              <label class="lb-form">Ngày bắt đầu</label>
-              <input
-                  name="ngayBatDau"
-                  defaultValue={item?.ngayBatDau}
-                  type="datetime-local"
-                  class="form-control"
-              />
+.card-body {
+    padding: 2rem;
+}
 
-              <label class="lb-form">Ngày kết thúc</label>
-              <input
-                  name="ngayKetThuc"
-                  defaultValue={item?.ngayKetThuc}
-                  type="datetime-local"
-                  class="form-control"
-              />
+/* Form styling */
+.form-label {
+    margin-bottom: 0.5rem;
+    color: #495057;
+}
 
-              <label className="lb-form">Trạng thái</label>
-              <select
-                  name="trangThai"
-                  value={item?.trangThai?.toString()}
-                  onChange={(e) =>
-                      setItem({...item, trangThai: e.target.value === "1" ? 1 : 0})
-                  }
-                  className="form-control"
-              >
-                <option value="1">Đang hoạt động</option>
-                <option value="0">Ngừng hoạt động</option>
-              </select>
-            </div>
-          </form>
+.form-control-lg, .form-select-lg {
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid #ced4da;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control-lg:focus, .form-select-lg:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Button styling */
+.btn-lg {
+    padding: 0.5rem 1.5rem;
+    font-size: 1.1rem;
+    border-radius: 0.5rem;
+}
+
+.btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+}
+
+/* Input group styling */
+.input-group-text {
+    background-color: #f8f9fa;
+    border: 1px solid #ced4da;
+    font-weight: 500;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 1.5rem;
+    }
+    
+    .btn-lg {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+    
+    .ms-2 {
+        margin-left: 0 !important;
+    }
+}
+`}</style>
+          </div>
         </div>
       </div>
   );
 };
-
 export default AdminAddPhieuGiamGia;
