@@ -50,11 +50,11 @@ function ChiTietSanPham() {
     var id = uls.searchParams.get("id");
     if (id != null) {
       var response = await getMethod(
-        "/api/san-pham/san-pham-lien-quan?id=" + id
+          "/api/san-pham/san-pham-lien-quan?id=" + id
       );
       var result = await response.json();
       var responseLq = await getMethod(
-        "/api/san-pham-chi-tiet/findBySanPham?sanpham=" + id
+          "/api/san-pham-chi-tiet/findBySanPham?sanpham=" + id
       );
       var resultLq = await responseLq.json();
       if (resultLq.length > 0) {
@@ -72,7 +72,7 @@ function ChiTietSanPham() {
     var uls = new URL(document.URL);
     var id = uls.searchParams.get("id");
     var response = await getMethod(
-      "/api/san-pham-chi-tiet/findBySanPham?sanpham=" + id
+        "/api/san-pham-chi-tiet/findBySanPham?sanpham=" + id
     );
     var result = await response.json();
     setSanPhamChiTiet(result);
@@ -127,13 +127,13 @@ function ChiTietSanPham() {
     var sl = document.getElementById("soluongaddgiohang").value;
     if (sl > selectChiTiet.soLuong) {
       toast.warning(
-        "Số lượng thêm không được vượt quá " + selectChiTiet.soLuong
+          "Số lượng thêm không được vượt quá " + selectChiTiet.soLuong
       );
       return;
     }
     console.log("id", selectChiTiet.id);
     const res = await postMethodPayload(
-      `/api/gio-hang/add?idChiTietSanPham=${selectChiTiet.id}&soLuong=${sl}`
+        `/api/gio-hang/add?idChiTietSanPham=${selectChiTiet.id}&soLuong=${sl}`
     );
     if (res.status < 300) {
       toast.success("Đã thêm sản phẩm vào giỏ gàng!");
@@ -167,267 +167,260 @@ function ChiTietSanPham() {
   }
 
   return (
-    <div class="maincontentweb">
-      <div class="containercustom container">
-        <div class="container-fluid">
-          <div class="bgwhite">
-            <div class="row">
-              <div class="col-sm-12">
-                <div class="row">
-                  <div class="col-sm-7">
-                    <div
-                      id="carouselExampleControls"
-                      class="carousel slide bannerindex"
-                      data-bs-ride="carousel"
-                    >
-                      <div class="carousel-inner carousel-chitiet">
-                        <div class="carousel-item  active">
-                          <img
-                            src={productAnh}
-                            class="d-block w-100"
-                            alt="..."
-                          />
+      <div class="maincontentweb">
+        <div class="containercustom container">
+          <div class="container-fluid">
+            <div class="bgwhite">
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="row">
+                    <div class="col-sm-7">
+                      <div
+                          id="carouselExampleControls"
+                          className="carousel slide bannerindex"
+                          data-bs-ride="carousel"
+                      >
+                        <div className="carousel-inner carousel-chitiet">
+                          {/* Ảnh đầu tiên từ productAnh, có class 'active' */}
+                          <div className="carousel-item active">
+                            <img src={productAnh} className="d-block w-100" alt="..." />
+                          </div>
+
+                          {/* Các ảnh khác từ anhs.map() */}
+                          {anhs
+                              .filter((item) => item.tenAnh !== productAnh) // Lọc tránh ảnh trùng
+                              .map((item, index) => (
+                                  <div className="carousel-item" key={index}>
+                                    <img src={item.tenAnh} className="d-block w-100" alt="..." />
+                                  </div>
+                              ))}
                         </div>
-                        {anhs.map((item, index ) => {
-                          return (
-                            <div class="carousel-item">
-                              <img
-                                src={item.tenAnh}
-                                class="d-block w-100"
-                                alt="..."
-                              />
-                            </div>
-                          );
-                        })}
+
+                        <button
+                            className="carousel-control-prev"
+                            type="button"
+                            data-bs-target="#carouselExampleControls"
+                            data-bs-slide="prev"
+                        >
+                          <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+                        </button>
+
+                        <button
+                            className="carousel-control-next"
+                            type="button"
+                            data-bs-target="#carouselExampleControls"
+                            data-bs-slide="next"
+                        >
+                          <span className="carousel-control-next-icon" aria-hidden="true"></span>
+                        </button>
                       </div>
-                      <button
-                        class="carousel-control-prev"
-                        type="button"
-                        data-bs-target="#carouselExampleControls"
-                        data-bs-slide="prev"
-                      >
-                        <span
-                          class="carousel-control-prev-icon"
-                          aria-hidden="true"
-                        ></span>
-                      </button>
-                      <button
-                        class="carousel-control-next"
-                        type="button"
-                        data-bs-target="#carouselExampleControls"
-                        data-bs-slide="next"
-                      >
-                        <span
-                          class="carousel-control-next-icon"
-                          aria-hidden="true"
-                        ></span>
-                      </button>
+
                     </div>
-                  </div>
-                  <div class="col-sm-5">
-                    <h4 class="pronamedetail" id="detailnamepro">
-                      {product?.tenSanPham}
-                    </h4>
-                    <div>
-                      <strong
-                        class="newpricestr"
-                        id="pricedetail"
-                        style={{ color: "red" }}
-                      >
-                        {formatMoney(giaTien)}
-                      </strong>
-                    </div>
-                    <span id="storagedetaillable" class="storagedetaillable">
+                    <div class="col-sm-5">
+                      <h4 class="pronamedetail" id="detailnamepro">
+                        {product?.tenSanPham}
+                      </h4>
+                      <div>
+                        <strong
+                            class="newpricestr"
+                            id="pricedetail"
+                            style={{ color: "red" }}
+                        >
+                          {formatMoney(giaTien)}
+                        </strong>
+                      </div>
+                      <span id="storagedetaillable" class="storagedetaillable">
                       Lựa chọn màu sắc
                     </span>
-                    <div class="listsize row" id="listcolor">
-                      {mausac.map((item, index) => {
-                        const divClass = `${"colorcdiv"} ${
-                          index === indexmausac ? "activecolor" : ""
-                        }`;
-                        return (
-                          <div
-                            className="col-lg-2 col-md-3 col-sm-6 col-6 mb-3 color-item"
-                            key={index}
-                          >
-                            <div
-                              className={divClass}
-                              onClick={() => loadKichThuoc(item, index)}
-                            >
+                      <div class="listsize row" id="listcolor">
+                        {mausac.map((item, index) => {
+                          const divClass = `${"colorcdiv"} ${
+                              index === indexmausac ? "activecolor" : ""
+                          }`;
+                          return (
+                              <div
+                                  className="col-lg-2 col-md-3 col-sm-6 col-6 mb-3 color-item"
+                                  key={index}
+                              >
+                                <div
+                                    className={divClass}
+                                    onClick={() => loadKichThuoc(item, index)}
+                                >
                               <span className="storagedetail">
                                 {item.mauSac.tenMauSac}
                               </span>
-                              <br />
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                    {kichthuoc.length != 0 && (
-                      <span
-                        id="storagedetaillable"
-                        class={`storagedetaillable`}
-                      >
+                                  <br />
+                                </div>
+                              </div>
+                          );
+                        })}
+                      </div>
+                      {kichthuoc.length != 0 && (
+                          <span
+                              id="storagedetaillable"
+                              class={`storagedetaillable`}
+                          >
                         Lựa chọn kích thước
                       </span>
-                    )}
-                    <div
-                      class="listsize"
-                      id="listcolor"
-                      style={{
-                        position: "relative",
-                      }}
-                    >
-                      {kichthuoc.map((item, index) => {
-                        const divClass = `${
-                          item.soLuong === 0 ? "colorcdiv hetsp" : "colorcdiv"
-                        } ${index === indexkichthuoc ? "activecolor" : ""}`;
-                        return (
-                          <>
-                            <div>
-                              <div
-                                className="col-lg-3 col-md-3 col-sm-6 col-6"
-                                key={index}
-                              >
-                                <div
-                                  className={divClass}
-                                  onClick={() => {
-                                    setGiaTien(item?.giaTien);
-                                    if (item.soLuong > 0) {
-                                      setChiTietSpChon(item, index);
-                                    }
-                                  }}
-                                >
+                      )}
+                      <div
+                          class="listsize"
+                          id="listcolor"
+                          style={{
+                            position: "relative",
+                          }}
+                      >
+                        {kichthuoc.map((item, index) => {
+                          const divClass = `${
+                              item.soLuong === 0 ? "colorcdiv hetsp" : "colorcdiv"
+                          } ${index === indexkichthuoc ? "activecolor" : ""}`;
+                          return (
+                              <>
+                                <div>
+                                  <div
+                                      className="col-lg-3 col-md-3 col-sm-6 col-6"
+                                      key={index}
+                                  >
+                                    <div
+                                        className={divClass}
+                                        onClick={() => {
+                                          setGiaTien(item?.giaTien);
+                                          if (item.soLuong > 0) {
+                                            setChiTietSpChon(item, index);
+                                          }
+                                        }}
+                                    >
                                   <span className="storagedetail">
                                     {item.kichCo.tenKichCo}
                                   </span>
-                                  <br />
-                                  {/* <span className="pricestorage">{formatMoney(item.giaTien)}</span> */}
+                                      <br />
+                                      {/* <span className="pricestorage">{formatMoney(item.giaTien)}</span> */}
+                                    </div>
+                                  </div>
                                 </div>
-                              </div>
-                            </div>
-                            {index === indexkichthuoc && (
-                              <div
-                                className="mt-2 sanphamcon"
-                                style={{ fontSize: "12px" }}
-                              >
-                                Còn:{" "}
-                                <span
-                                  style={{ color: "green", fontWeight: "800" }}
-                                >
+                                {index === indexkichthuoc && (
+                                    <div
+                                        className="mt-2 sanphamcon"
+                                        style={{ fontSize: "12px" }}
+                                    >
+                                      Còn:{" "}
+                                      <span
+                                          style={{ color: "green", fontWeight: "800" }}
+                                      >
                                   {item.soLuong}
                                 </span>{" "}
-                                sản phẩm
-                              </div>
-                            )}
-                          </>
-                        );
-                      })}
-                    </div>
-                    <span id="storagedetaillable" class="storagedetaillable">
+                                      sản phẩm
+                                    </div>
+                                )}
+                              </>
+                          );
+                        })}
+                      </div>
+                      <span id="storagedetaillable" class="storagedetaillable">
                       Lựa chọn số lượng
                     </span>
-                    <div className="sl-container">
+                      <div className="sl-container">
+                        <button
+                            onClick={() => upDownQuantity(-1)}
+                            class="cartbtn"
+                        >
+                          {" "}
+                          -{" "}
+                        </button>
+                        <input
+                            onKeyUp={checkSoLuong}
+                            defaultValue={1}
+                            id="soluongaddgiohang"
+                            class="inputslcart"
+                        />
+                        <button onClick={() => upDownQuantity(1)} class="cartbtn">
+                          {" "}
+                          +{" "}
+                        </button>
+                      </div>
+                      <br />
+                      <br />
                       <button
-                        onClick={() => upDownQuantity(-1)}
-                        class="cartbtn"
+                          disabled={selectChiTiet == null}
+                          onClick={() => addToCart()}
+                          class={
+                            selectChiTiet != null
+                                ? "btnthemgiohang"
+                                : "btnthemgiohang disablethemgh"
+                          }
                       >
-                        {" "}
-                        -{" "}
+                        <i className="fa fa-shopping-bag"></i> Thêm giỏ hàng
                       </button>
-                      <input
-                        onKeyUp={checkSoLuong}
-                        defaultValue={1}
-                        id="soluongaddgiohang"
-                        class="inputslcart"
-                      />
-                      <button onClick={() => upDownQuantity(1)} class="cartbtn">
-                        {" "}
-                        +{" "}
-                      </button>
-                    </div>
-                    <br />
-                    <br />
-                    <button
-                      disabled={selectChiTiet == null}
-                      onClick={() => addToCart()}
-                      class={
-                        selectChiTiet != null
-                          ? "btnthemgiohang"
-                          : "btnthemgiohang disablethemgh"
-                      }
-                    >
-                      <i className="fa fa-shopping-bag"></i> Thêm giỏ hàng
-                    </button>
-                    <div class="cauhinhchitiet">
-                      <p class="tieudesanpham">Thông tin sản phẩm</p>
-                      <div id="thongtincauhinh" class="thongtincauhinhdv">
+                      <div class="cauhinhchitiet">
+                        <p class="tieudesanpham">Thông tin sản phẩm</p>
+                        <div id="thongtincauhinh" class="thongtincauhinhdv">
                         <span class="congnghect">
                           Mã sản phẩm:{" "}
                           <span class="chitietcongnghe">
                             {product?.maSanPham}
                           </span>
                         </span>
-                        <span class="congnghect">
+                          <span class="congnghect">
                           Thương hiệu:{" "}
-                          <span class="chitietcongnghe">
+                            <span class="chitietcongnghe">
                             {product?.thuongHieu?.tenThuongHieu}
                           </span>
                         </span>
-                        <span class="congnghect">
+                          <span class="congnghect">
                           Chất liệu:{" "}
-                          <span class="chitietcongnghe">
+                            <span class="chitietcongnghe">
                             {product?.chatLieu?.tenChatLieu}
                           </span>
                         </span>
-                        <span class="congnghect">
+                          <span class="congnghect">
                           Đế giày:{" "}
-                          <span class="chitietcongnghe">
+                            <span class="chitietcongnghe">
                             {product?.deGiay?.tenDeGiay}
                           </span>
                         </span>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
 
-                <div class="sanphamtuongtudetail">
-                  <p class="tieudesanpham">Sản phẩm cùng thương hiệu</p>
-                  <div id="listsanphamlienquan" class="row">
-                    {sanPhamLienQuan.map((item) => {
-                      return (
-                        <div class="col-lg-3 col-md-12 col-sm-12 col-12">
-                          <div class="singleproduct">
-                            <a href={"chitietsanpham?id=" + item.id}>
-                              <div className="productimg-container">
-                                <img
-                                  src={
-                                    item.sanPhamChiTiets[0]?.anhs[0]?.tenAnh ||
-                                    ""
-                                  }
-                                  class="productimg"
-                                />
-                              </div>
-                            </a>
-                            <div class="contentsinglepro">
-                              <p class="productname">
-                                <a
-                                  class="productname"
-                                  href={"chitietsanpham?id=" + item.id}
-                                >
-                                  {item.tenSanPham}
+                  <div class="sanphamtuongtudetail">
+                    <p class="tieudesanpham">Sản phẩm cùng thương hiệu</p>
+                    <div id="listsanphamlienquan" class="row">
+                      {sanPhamLienQuan.map((item) => {
+                        return (
+                            <div class="col-lg-3 col-md-12 col-sm-12 col-12">
+                              <div class="singleproduct">
+                                <a href={"chitietsanpham?id=" + item.id}>
+                                  <div className="productimg-container">
+                                    <img
+                                        src={
+                                            item.sanPhamChiTiets[0]?.anhs[0]?.tenAnh ||
+                                            ""
+                                        }
+                                        class="productimg"
+                                    />
+                                  </div>
                                 </a>
-                              </p>
-                              {/* <div class="priceproduct">
+                                <div class="contentsinglepro">
+                                  <p class="productname">
+                                    <a
+                                        class="productname"
+                                        href={"chitietsanpham?id=" + item.id}
+                                    >
+                                      {item.tenSanPham}
+                                    </a>
+                                  </p>
+                                  {/* <div class="priceproduct">
                                 <strong class="newprice">
                                   {formatMoney(item.giaBan)}
                                 </strong>
                               </div>  */}
+                                </div>
+                              </div>
                             </div>
-                          </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -435,7 +428,6 @@ function ChiTietSanPham() {
           </div>
         </div>
       </div>
-    </div>
   );
 }
 
