@@ -18,7 +18,7 @@ import Typography from "@mui/material/Typography";
 import Select from "react-select";
 import ReactPaginate from "react-paginate";
 
-var size = 6;
+var size = 8;
 var url = "";
 function Product() {
   const [thuongHieu, setThuongHieu] = useState([]);
@@ -54,38 +54,34 @@ function Product() {
   };
 
   async function getInitProduct() {
-    console.log("dấda");
     var uls = new URL(document.URL);
     var thuonghieu = uls.searchParams.get("thuonghieu");
     var search = uls.searchParams.get("search");
     var urls = "/api/san-pham/public";
     if (thuonghieu == null && search == null) {
       filterProduct();
-      console.log("a??");
       return;
     }
     if (thuonghieu != null) {
       urls +=
-        "/tim-theo-thuong-hieu?thuongHieu=" +
-        thuonghieu +
-        "&size=" +
-        size +
-        "&sort=id,desc" +
-        "&page=";
+          "/tim-theo-thuong-hieu?thuongHieu=" +
+          thuonghieu +
+          "&size=" +
+          size +
+          "&sort=id,desc" +
+          "&page=";
     }
     if (search != null) {
       urls +=
-        "/tim-theo-ten?search=" +
-        search +
-        "&size=" +
-        size +
-        "&sort=id,desc" +
-        "&page=";
+          "/tim-theo-ten?search=" +
+          search +
+          "&size=" +
+          size +
+          "&sort=id,desc" +
+          "&page=";
     }
-    console.log("ủl", uls);
     var response = await getMethod(urls + 0);
     var result = await response.json();
-    console.log("ád", result);
     setSanPham(result.content);
     setpageCount(result.totalPages);
     url = urls;
@@ -111,23 +107,21 @@ function Product() {
       small: price[0],
       large: price[1],
     };
-    console.log(obj);
 
     setPayload(obj);
     var response = await postMethodPayload(
-      "/api/san-pham/public/loc-san-pham?size=" +
+        "/api/san-pham/public/loc-san-pham?size=" +
         size +
         "&sort=id,desc&page=" +
         0,
-      obj
+        obj
     );
     var result = await response.json();
-    console.log("res", result);
 
     setSanPham(result.content);
     setpageCount(result.totalPages);
     url =
-      "/api/san-pham/public/loc-san-pham?size=" + size + "&sort=id,desc&page=";
+        "/api/san-pham/public/loc-san-pham?size=" + size + "&sort=id,desc&page=";
   }
 
   const handlePageClick = async (data) => {
@@ -146,151 +140,154 @@ function Product() {
   };
 
   return (
-    <div class="maincontentweb">
-      <div class="containercustom container">
-        <div class="container-fluid">
-          <div className="row">
-            <div className="col-sm-4">
-              {/*<ul class="navbar-nav me-auto mb-2 mb-lg-0 listheadermenu">*/}
-              {/*  <h3>Tìm kiếm sản phẩm</h3>*/}
-              {/*  <form class="mb-3" action="product">*/}
-              {/*    <input*/}
-              {/*      class="form-control"*/}
-              {/*      type="search"*/}
-              {/*      name="search"*/}
-              {/*      placeholder="Tìm kiếm sản phẩm"*/}
-              {/*      aria-label="Search"*/}
-              {/*    />*/}
-              {/*  </form>*/}
-              {/*</ul>*/}
-              <div className="headerloc">
-                <span>Bộ lọc sản phẩm</span>
-              </div>
-              <div>
-                <Typography variant="h6">Chọn khoảng giá</Typography>
-                <Slider
-                  value={price}
-                  onChange={handleChange}
-                  valueLabelDisplay="auto"
-                  min={100000}
-                  max={10000000}
+      <div className="maincontentweb">
+        <div className="containercustom container">
+          <div className="container-fluid my-3">
+            <div className="row">
+              <div className="col-lg-3 col-md-4 col-sm-12 p-10">
+                <div className="headerloc">
+                  <span>Bộ lọc sản phẩm</span>
+                </div>
+                <div>
+                  <Typography variant="h6">Chọn khoảng giá</Typography>
+                  <Slider
+                      value={price}
+                      onChange={handleChange}
+                      valueLabelDisplay="auto"
+                      min={100000}
+                      max={10000000}
+                  />
+                  <Typography className="text-danger fw-bold">
+                    Khoảng giá: {formatMoney(price[0])} - {formatMoney(price[1])}
+                  </Typography>
+                </div>
+                <br />
+                <h5>Chọn thương hiệu</h5>
+                <Select
+                    className="select-container selectheader"
+                    options={thuongHieu}
+                    onChange={setselectThuongHieu}
+                    value={selectThuongHieu}
+                    getOptionLabel={(option) => option.tenThuongHieu}
+                    getOptionValue={(option) => option.id}
+                    isMulti
+                    placeholder="Chọn thương hiệu"
                 />
-                <Typography>
-                  Khoảng giá: {formatMoney(price[0])} - {formatMoney(price[1])}
-                </Typography>
+                <br />
+                <h5>Chọn chất liệu</h5>
+                <Select
+                    className="select-container selectheader"
+                    options={chatlieu}
+                    onChange={setselectChatLieu}
+                    value={selectChatLieu}
+                    getOptionLabel={(option) => option.tenChatLieu}
+                    getOptionValue={(option) => option.id}
+                    isMulti
+                    placeholder="Chọn chất liệu"
+                />
+                <br />
+                <h5>Chọn loại đế giày</h5>
+                <Select
+                    className="select-container selectheader"
+                    options={deGiay}
+                    onChange={setselectDeGiay}
+                    value={selectDeGiay}
+                    getOptionLabel={(option) => option.tenDeGiay}
+                    getOptionValue={(option) => option.id}
+                    isMulti
+                    placeholder="Chọn loại đế giày"
+                />
+                <br />
+                <button
+                    style={{
+                      backgroundColor: "rgb(236, 221, 198)",
+                      color: "#212529",
+                      borderColor: "rgb(236, 221, 198)",
+                    }}
+                    onClick={() => filterProduct()}
+                    className="form-control btn btn-success"
+                >
+                  Tìm kiếm sản phẩm
+                </button>
+                <br />
+                <br />
+                <br />
               </div>
-              <br />
-              <h5>Chọn thương hiệu</h5>
-              <Select
-                className="select-container selectheader"
-                options={thuongHieu}
-                onChange={setselectThuongHieu}
-                value={selectThuongHieu}
-                getOptionLabel={(option) => option.tenThuongHieu}
-                getOptionValue={(option) => option.id}
-                isMulti
-                placeholder="Chọn thương hiệu"
-              />
-              <br />
-              <h5>Chọn chất liệu</h5>
-              <Select
-                className="select-container selectheader"
-                options={chatlieu}
-                onChange={setselectChatLieu}
-                value={selectChatLieu}
-                getOptionLabel={(option) => option.tenChatLieu}
-                getOptionValue={(option) => option.id}
-                isMulti
-                placeholder="Chọn chất liệu"
-              />
-              <br />
-              <h5>Chọn loại đế giày</h5>
-              <Select
-                className="select-container selectheader"
-                options={deGiay}
-                onChange={setselectDeGiay}
-                value={selectDeGiay}
-                getOptionLabel={(option) => option.tenDeGiay}
-                getOptionValue={(option) => option.id}
-                isMulti
-                placeholder="Chọn loại đế giày"
-              />
-              <br />
-
-              <button
-                style={{
-                  backgroundColor: "rgb(236, 221, 198)",
-                  color: "#212529",
-                  borderColor: "rgb(236, 221, 198)",
-                }}
-                onClick={() => filterProduct()}
-                className="form-control btn btn-primary"
-              >
-                Tìm kiếm sản phẩm
-              </button>
-              <br />
-              <br />
-              <br />
-            </div>
-            <div className="col-sm-8">
-              <div className="row">
-                {sanPham.map((item) => {
-                  console.log("item", item);
-                  return (
-                    <div class="col-lg-4 col-md-4 col-sm-6 col-6">
-                      <div class="singleproduct">
-                        <a href={"chitietsanpham?id=" + item.id}>
-                          <div className="productimg-container">
-                            <img
-                              src={item?.sanPhamChiTiets[0]?.anhs[0]?.tenAnh}
-                              class="productimg"
-                            />
-                          </div>
-                        </a>
-                        <div class="contentsinglepro">
-                          <p class="productname">
-                            <a
-                              class="productname"
-                              href={"chitietsanpham?id=" + item.id}
-                            >
-                              {item.tenSanPham}
-                            </a>
-                          </p>
-                          <div class="priceproduct">
-                            <strong class="newprice">
+              <div className="col-lg-9 col-md-8 col-sm-12">
+                <div className="row">
+                  {sanPham.map((item) => (
+                      <div className="col-lg-3 col-md-4 col-sm-6 col-6 d-flex flex-column align-items-center" key={item.id}>
+                        <div
+                            style={{
+                              border: "1px solid #eee",
+                              borderRadius: "10px",
+                              padding: "10px",
+                              marginBottom: "20px",
+                              textAlign: "center",
+                              backgroundColor: "#fff",
+                              display: "flex",
+                              flexDirection: "column",
+                              height: "100%",  // Ensures the container takes up full height for consistent sizing
+                            }}
+                        >
+                          <a href={`chitietsanpham?id=${item.id}`}>
+                            <div>
+                              <img
+                                  src={item?.sanPhamChiTiets[0]?.anhs[0]?.tenAnh}
+                                  alt={item.tenSanPham}
+                                  style={{
+                                    width: "100%",
+                                    height: "200px",
+                                    objectFit: "cover",
+                                    borderRadius: "10px",
+                                  }}
+                              />
+                            </div>
+                          </a>
+                          <div style={{ marginTop: "10px", flexGrow: 1 }}>
+                            <p style={{ fontWeight: "500", fontSize: "14px", margin: "5px 0" }}>
+                              <a
+                                  href={`chitietsanpham?id=${item.id}`}
+                                  style={{ textDecoration: "none", color: "#333" }}
+                              >
+                                {item.tenSanPham}
+                              </a>
+                            </p>
+                            <strong style={{ color: "#d0021b", fontSize: "16px" }}>
                               {formatMoney(item.sanPhamChiTiets[0].giaTien)}
                             </strong>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
+                  ))}
+                </div>
+
+
+                <br />
+                <ReactPaginate
+                    marginPagesDisplayed={2}
+                    pageCount={pageCount}
+                    onPageChange={handlePageClick}
+                    containerClassName="pagination d-flex justify-content-center mx-auto"  // Added d-flex, justify-content-center, mx-auto
+                    pageClassName="page-item"
+                    pageLinkClassName="page-link"
+                    previousClassName="page-item"
+                    previousLinkClassName="page-link"
+                    nextClassName="page-item"
+                    nextLinkClassName="page-link"
+                    breakClassName="page-item"
+                    breakLinkClassName="page-link"
+                    previousLabel="Trang trước"
+                    nextLabel="Trang sau"
+                    activeClassName="active"
+                />
+
               </div>
-              <br />
-              <br />
-              <ReactPaginate
-                marginPagesDisplayed={2}
-                pageCount={pageCount}
-                onPageChange={handlePageClick}
-                containerClassName={"pagination"}
-                pageClassName={"page-item"}
-                pageLinkClassName={"page-link"}
-                previousClassName="page-item"
-                previousLinkClassName="page-link"
-                nextClassName="page-item"
-                nextLinkClassName="page-link"
-                breakClassName="page-item"
-                breakLinkClassName="page-link"
-                previousLabel="Trang trước"
-                nextLabel="Trang sau"
-                activeClassName="active"
-              />
+
             </div>
           </div>
         </div>
       </div>
-    </div>
   );
 }
 
