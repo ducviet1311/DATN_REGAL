@@ -30,17 +30,17 @@ const AdminAddNhanVien = () => {
                 setRole(result.vaiTro);
                 linkbanner = result.anh
             }else {
-                // Tạo mã sản phẩm mới khi thêm sản phẩm
+                // Tạo mã nhân viên mới khi thêm
                 try {
                     const listResponse = await getMethod('/api/nhan-vien/all?size=1000');
                     const listResult = await listResponse.json();
                     console.log('sdgshgsdhgshs', listResult);
 
-    
-                    const maMoi = `SP${String(Number(listResult.totalElements) + 1).padStart(3, '0')}`;
+
+                    const maMoi = `NV${String(Number(listResult.totalElements) + 1).padStart(3, '0')}`;
                     setItem(prev => ({ ...prev, maNhanVien: maMoi }));
                 } catch (error) {
-                    toast.error("Không thể tạo mã sản phẩm mới.");
+                    toast.error("Không thể tạo mã nhân viên mới.");
                 }
             }
         };
@@ -196,98 +196,197 @@ const AdminAddNhanVien = () => {
     };
 
     return (
-        <div>
-            <div class="col-sm-12 header-sps d-flex justify-content-center align-items-center">
-                <div class="title-add-admin">
-                    <h4>{label}</h4>
+        <div className="container-fluid py-4">
+            <div className="top-products-card shadow-lg">
+                <div className="card-header bg-primary text-white">
+                    <h4 className="mb-0">{label}</h4>
                 </div>
-            </div>
-            <div class="col-sm-12 d-flex justify-content-center align-items-center">
-                <form onSubmit={handleAddNhanVien} class="form-add row">
-                    <div class="col-sm-5">
-                        <label class="lb-form">Mã nhân viên</label>
-                        <input name='manv' defaultValue={item?.maNhanVien} class="form-control" />
+                <div className="card-body">
+                    <form onSubmit={handleAddNhanVien}>
+                        <div className="row">
+                            {/* Cột trái */}
+                            <div className="col-md-6">
+                                <div className="mb-3">
+                                    <label className="form-label fw-bold">Mã nhân viên</label>
+                                    <input
+                                        name="manv"
+                                        defaultValue={item?.maNhanVien}
+                                        className="form-control"
+                                        disabled
+                                    />
+                                </div>
 
-                        <label class="lb-form">Họ tên</label>
-                        <input name='hoten' defaultValue={item?.hoVaTen} class="form-control" />
+                                <div className="mb-3">
+                                    <label className="form-label fw-bold">Họ tên</label>
+                                    <input
+                                        name="hoten"
+                                        defaultValue={item?.hoVaTen}
+                                        className="form-control"
+                                        placeholder="Nhập họ tên đầy đủ"
+                                    />
+                                </div>
 
-                        <label class="lb-form">Giới tính</label>
-                        <div>
-                            <label>
-                                <input
-                                    type="radio"
-                                    name="gioitinh"
-                                    value="true"
-                                    checked={gender === true}
-                                    onChange={() => setGender(true)}
-                                />
-                                Nam
-                            </label>
-                            <label>
-                                <input
-                                    type="radio"
-                                    name="gioitinh"
-                                    value="false"
-                                    checked={gender === false}
-                                    onChange={() => setGender(false)}
-                                />
-                                Nữ
-                            </label>
+                                <div className="mb-3">
+                                    <label className="form-label fw-bold">Giới tính</label>
+                                    <div className="d-flex gap-4">
+                                        <div className="form-check">
+                                            <input
+                                                className="form-check-input"
+                                                type="radio"
+                                                name="gioitinh"
+                                                id="male"
+                                                checked={gender === true}
+                                                onChange={() => setGender(true)}
+                                            />
+                                            <label className="form-check-label" htmlFor="male">
+                                                Nam
+                                            </label>
+                                        </div>
+                                        <div className="form-check">
+                                            <input
+                                                className="form-check-input"
+                                                type="radio"
+                                                name="gioitinh"
+                                                id="female"
+                                                checked={gender === false}
+                                                onChange={() => setGender(false)}
+                                            />
+                                            <label className="form-check-label" htmlFor="female">
+                                                Nữ
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="mb-3">
+                                    <label className="form-label fw-bold">Ngày sinh</label>
+                                    <input
+                                        name="ngsinh"
+                                        defaultValue={item?.ngaySinh}
+                                        type="date"
+                                        className="form-control"
+                                    />
+                                </div>
+
+                                <div className="mb-3">
+                                    <label className="form-label fw-bold">Quê quán</label>
+                                    <input
+                                        name="queQuan"
+                                        defaultValue={item?.queQuan}
+                                        className="form-control"
+                                        placeholder="Nhập quê quán"
+                                    />
+                                </div>
+
+                                <div className="mb-3">
+                                    <label className="form-label fw-bold">Căn cước công dân</label>
+                                    <input
+                                        name="cccd"
+                                        defaultValue={item?.cccd}
+                                        className="form-control"
+                                        placeholder="Nhập số CCCD"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Cột phải */}
+                            <div className="col-md-6">
+                                <div className="mb-3">
+                                    <label className="form-label fw-bold">Ảnh đại diện</label>
+                                    <input
+                                        id="imgbanner"
+                                        type="file"
+                                        className="form-control"
+                                        accept="image/*"
+                                    />
+                                </div>
+
+                                <div className="mb-3">
+                                    <label className="form-label fw-bold">Email</label>
+                                    <input
+                                        name="email"
+                                        defaultValue={item?.email}
+                                        className="form-control"
+                                        placeholder="Nhập email"
+                                        type="email"
+                                    />
+                                </div>
+
+                                <div className="mb-3">
+                                    <label className="form-label fw-bold">Số điện thoại</label>
+                                    <input
+                                        name="Sdt"
+                                        defaultValue={item?.soDienThoai}
+                                        className="form-control"
+                                        placeholder="Nhập số điện thoại"
+                                    />
+                                </div>
+
+                                <div className="mb-3">
+                                    <label className="form-label fw-bold">Vai trò</label>
+                                    <div className="d-flex gap-4">
+                                        <div className="form-check">
+                                            <input
+                                                className="form-check-input"
+                                                type="radio"
+                                                name="vaiTro"
+                                                id="admin"
+                                                checked={role === 1}
+                                                onChange={() => setRole(1)}
+                                            />
+                                            <label className="form-check-label" htmlFor="admin">
+                                                Admin
+                                            </label>
+                                        </div>
+                                        <div className="form-check">
+                                            <input
+                                                className="form-check-input"
+                                                type="radio"
+                                                name="vaiTro"
+                                                id="staff"
+                                                checked={role === 0}
+                                                onChange={() => setRole(0)}
+                                            />
+                                            <label className="form-check-label" htmlFor="staff">
+                                                Nhân viên
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="mb-3">
+                                    <label className="form-label fw-bold">Mật khẩu</label>
+                                    <input
+                                        name="password"
+                                        required
+                                        id="pass"
+                                        type="password"
+                                        className="form-control"
+                                        placeholder="Nhập mật khẩu"
+                                    />
+                                </div>
+
+                                <div className="mb-3">
+                                    <label className="form-label fw-bold">Nhập lại mật khẩu</label>
+                                    <input
+                                        name="repassword"
+                                        required
+                                        id="repass"
+                                        type="password"
+                                        className="form-control"
+                                        placeholder="Nhập lại mật khẩu"
+                                    />
+                                </div>
+                            </div>
                         </div>
 
-                        <label class="lb-form">Ngày sinh</label>
-                        <input name='ngsinh' defaultValue={item?.ngaySinh} type='date' class="form-control" />
-
-                        <label class="lb-form">Quê quán</label>
-                        <input name='queQuan' defaultValue={item?.queQuan} class="form-control" />
-
-                        <label class="lb-form">Căn cước công dân</label>
-                        <input name='cccd' defaultValue={item?.cccd} class="form-control" />
-
-                        <br />
-                        <button class="form-control btn btn-primary">{label}</button>
-                    </div>
-                    <div className='col-sm-5'>
-                        <label class="lb-form">Ảnh</label>
-                        <input id='imgbanner' type='file' class="form-control" />
-
-                        <label class="lb-form">Email</label>
-                        <input name='email' defaultValue={item?.email} class="form-control" />
-
-                        <label class="lb-form">Số điện thoại</label>
-                        <input name='Sdt' defaultValue={item?.soDienThoai} class="form-control" />
-
-                        <label class="lb-form">Vai trò</label>
-                        <div>
-                            <label>
-                                <input
-                                    type="radio"
-                                    name="vaiTro"
-                                    value="1"
-                                    checked={role === 1}
-                                    onChange={() => setRole(1)}
-                                />
-                                Admin
-                            </label>
-                            <label>
-                                <input
-                                    type="radio"
-                                    name="vaiTro"
-                                    value="0"
-                                    checked={role === 0}
-                                    onChange={() => setRole(0)}
-                                />
-                                Nhân viên
-                            </label>
+                        <div className="d-flex justify-content-end mt-4">
+                            <button type="submit" className="btn btn-primary px-4 py-2">
+                                {label}
+                            </button>
                         </div>
-
-                        <label class="lb-form">Mật khẩu</label>
-                        <input name='password' required id="pass" type="password" class="form-control" />
-
-                        <label class="lb-form">Nhắc lại mật khẩu</label>
-                        <input name='repassword' required id="repass" type="password" class="form-control" />
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
     );

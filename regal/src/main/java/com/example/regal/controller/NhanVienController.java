@@ -5,7 +5,7 @@ import com.example.regal.dto.response.NhanVienResponse;
 import com.example.regal.entity.NhanVien;
 import com.example.regal.repository.NhanVienRepository;
 import com.example.regal.service.NhanVienService;
-//import com.example.regal.utils.UserUltis;
+import com.example.regal.utils.UserUltis;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +35,8 @@ public class NhanVienController {
     @Autowired
     private final NhanVienRepository nhanVienRepository;
 
-//    @Autowired
-//    private UserUltis userUltis;
+    @Autowired
+    private UserUltis userUltis;
 
     // Lấy tất cả nhân viên
     @GetMapping
@@ -141,15 +141,16 @@ public class NhanVienController {
         boolean exists = nhanVienService.existsByEmail(email);
         return ResponseEntity.ok(exists);
     }
-//    @PostMapping("/dang-dang-nhap")
-//    public ResponseEntity<?> nhanVienDangDangNhap(HttpServletRequest request) {
-//        NhanVien nhanVien = userUltis.getLoggedInNhanVien(request);
-//        NhanVienResponse nhanVienResponse = new NhanVienResponse();
-//        nhanVienResponse.setMaNhanVien(nhanVien.getMaNhanVien());
-//        nhanVienResponse.setEmail(nhanVien.getEmail());
-//        nhanVienResponse.setAnh(nhanVien.getAnh());
-//        nhanVienResponse.setHoVaTen(nhanVienResponse.getHoVaTen());
-//        nhanVienResponse.setId(nhanVien.getId());
-//        return new ResponseEntity<>(nhanVienResponse, HttpStatus.OK);
-//    }
+    @PostMapping("/dang-dang-nhap")
+    public ResponseEntity<?> nhanVienDangDangNhap(HttpServletRequest request) {
+        NhanVien nhanVien = userUltis.getLoggedInNhanVien(request);
+        NhanVienResponse nhanVienResponse = new NhanVienResponse();
+        nhanVienResponse.setMaNhanVien(nhanVien.getMaNhanVien());
+        nhanVienResponse.setEmail(nhanVien.getEmail());
+        nhanVienResponse.setAnh(nhanVien.getAnh());
+        nhanVienResponse.setHoVaTen(nhanVienResponse.getHoVaTen());
+        nhanVienResponse.setId(nhanVien.getId());
+        return new ResponseEntity<>(nhanVienResponse, HttpStatus.OK);
+    }
+
 }

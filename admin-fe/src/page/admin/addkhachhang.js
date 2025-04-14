@@ -17,38 +17,38 @@ const AdminAddKhachHang = () => {
   const [newMaKhachHang, setNewMaKhachHang] = useState("");
 
   useEffect(() => {
-      const fetchInitialData = async () => {
-          var uls = new URL(document.URL);
-          var id = uls.searchParams.get("id");
+    const fetchInitialData = async () => {
+      var uls = new URL(document.URL);
+      var id = uls.searchParams.get("id");
 
-          if (id != null) {
-              setLabel("Cập nhật thông tin khách hàng");
-              var response = await getMethod('/api/khachhang/' + id);
-              var result = await response.json();
-              setItem(result);
-              setGender(result.gioiTinh);
-              linkbanner = result.anh;
-          } else {
-              // Nếu là thêm mới, lấy danh sách khách hàng và tạo mã KH mới
-              try {
-                  const listResponse = await getMethod('/api/khachhang');
-                  const listResult = await listResponse.json();
+      if (id != null) {
+        setLabel("Cập nhật thông tin khách hàng");
+        var response = await getMethod('/api/khachhang/' + id);
+        var result = await response.json();
+        setItem(result);
+        setGender(result.gioiTinh);
+        linkbanner = result.anh;
+      } else {
+        // Nếu là thêm mới, lấy danh sách khách hàng và tạo mã KH mới
+        try {
+          const listResponse = await getMethod('/api/khachhang');
+          const listResult = await listResponse.json();
 
-                  // Tính toán mã khách hàng mới
-                  const maxMaKhachHang = listResult
-                      .map(kh => parseInt(kh.maKhachHang.replace("KH", ""), 10))
-                      .filter(num => !isNaN(num)) // Loại bỏ các mã không hợp lệ
-                      .reduce((max, current) => Math.max(max, current), 0);
+          // Tính toán mã khách hàng mới
+          const maxMaKhachHang = listResult
+              .map(kh => parseInt(kh.maKhachHang.replace("KH", ""), 10))
+              .filter(num => !isNaN(num)) // Loại bỏ các mã không hợp lệ
+              .reduce((max, current) => Math.max(max, current), 0);
 
-                  const maMoi = `KH${String(maxMaKhachHang + 1)}`;
-                  setNewMaKhachHang(maMoi);
-              } catch (error) {
-                  toast.error("Không thể tạo mã khách hàng.");
-              }
-          }
-      };
+          const maMoi = `KH${String(maxMaKhachHang + 1)}`;
+          setNewMaKhachHang(maMoi);
+        } catch (error) {
+          toast.error("Không thể tạo mã khách hàng.");
+        }
+      }
+    };
 
-      fetchInitialData();
+    fetchInitialData();
   }, []);
 
 
@@ -93,7 +93,7 @@ const AdminAddKhachHang = () => {
     const phoneRegex = /^(09|08|05|02|03|01)\d{7,9}$/; // Đầu số (09, 08, 05, 02, 03) + 9-11 số
     if (!phoneRegex.test(soDienThoai)) {
       toast.error(
-        "Số điện thoại không đúng định dạng. Đầu số hợp lệ: 09, 08, 05, 02, 03, 01 và độ dài từ 9-11 số."
+          "Số điện thoại không đúng định dạng. Đầu số hợp lệ: 09, 08, 05, 02, 03, 01 và độ dài từ 9-11 số."
       );
       return;
     }
@@ -106,7 +106,7 @@ const AdminAddKhachHang = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       toast.error(
-        "Email không đúng định dạng. Đảm bảo email có ký tự '@' và '.'"
+          "Email không đúng định dạng. Đảm bảo email có ký tự '@' và '.'"
       );
       return;
     }
@@ -114,10 +114,10 @@ const AdminAddKhachHang = () => {
     // Kiểm tra trùng số điện thoại và email qua API
     try {
       const phoneExistsResponse = await getMethod(
-        `/api/khachhang/exists/soDienThoai?soDienThoai=${soDienThoai}`
+          `/api/khachhang/exists/soDienThoai?soDienThoai=${soDienThoai}`
       );
       const emailExistsResponse = await getMethod(
-        `/api/khachhang/exists/email?email=${email}`
+          `/api/khachhang/exists/email?email=${email}`
       );
 
       const phoneExists = await phoneExistsResponse.json();
@@ -177,92 +177,123 @@ const AdminAddKhachHang = () => {
   }
 
   return (
-    <div>
-      <div class="col-sm-12 header-sps d-flex justify-content-center align-items-center">
-        <div class="title-add-admin">
-          <h4>{label}</h4>
+      <div className="container-fluid py-4">
+        <div className="top-products-card shadow-lg">
+          <div className="card-header bg-primary text-white">
+            <h4 className="mb-0">{label}</h4>
+          </div>
+          <div className="card-body">
+            <form onSubmit={handleAddKhachHang}>
+              <div className="row">
+                {/* Cột trái */}
+                <div className="col-md-6">
+                  <div className="mb-3">
+                    <label className="form-label fw-bold">Mã khách hàng</label>
+                    <input
+                        name="makh"
+                        value={item?.maKhachHang || newMaKhachHang}
+                        className="form-control bg-light"
+                        readOnly
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label fw-bold">Họ tên</label>
+                    <input
+                        name="hoten"
+                        defaultValue={item?.hoVaTen}
+                        className="form-control"
+                        placeholder="Nhập họ tên đầy đủ"
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label fw-bold">Giới tính</label>
+                    <div className="d-flex gap-4">
+                      <div className="form-check">
+                        <input
+                            className="form-check-input"
+                            type="radio"
+                            name="gioitinh"
+                            id="male"
+                            checked={gender === true}
+                            onChange={() => setGender(true)}
+                        />
+                        <label className="form-check-label" htmlFor="male">
+                          Nam
+                        </label>
+                      </div>
+                      <div className="form-check">
+                        <input
+                            className="form-check-input"
+                            type="radio"
+                            name="gioitinh"
+                            id="female"
+                            checked={gender === false}
+                            onChange={() => setGender(false)}
+                        />
+                        <label className="form-check-label" htmlFor="female">
+                          Nữ
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label fw-bold">Ngày sinh</label>
+                    <input
+                        name="ngsinh"
+                        defaultValue={item?.ngaySinh}
+                        type="date"
+                        className="form-control"
+                    />
+                  </div>
+                </div>
+
+                {/* Cột phải */}
+                <div className="col-md-6">
+                  <div className="mb-3">
+                    <label className="form-label fw-bold">Ảnh đại diện</label>
+                    <input
+                        id="imgbanner"
+                        type="file"
+                        className="form-control"
+                        accept="image/*"
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label fw-bold">Số điện thoại</label>
+                    <input
+                        name="Sdt"
+                        defaultValue={item?.soDienThoai}
+                        className="form-control"
+                        placeholder="Nhập số điện thoại"
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label fw-bold">Email</label>
+                    <input
+                        name="email"
+                        defaultValue={item?.email}
+                        className="form-control"
+                        placeholder="Nhập email"
+                        type="email"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="d-flex justify-content-end mt-4">
+                <button type="submit" className="btn btn-primary px-4 py-2">
+                  {label}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
-      <div
-        class="col-sm-12"
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <form onSubmit={handleAddKhachHang} class="form-add row">
-          <div class="col-sm-5">
-            <label  class="lb-form">Mã khách hàng</label>
-            <input style={{pointerEvents:"none", backgroundColor:"#eee8e8"}}
-              name="makh"
-              value={item?.maKhachHang || newMaKhachHang}
-              class="form-control"
-            />
-
-            <label class="lb-form">Họ tên</label>
-            <input
-              name="hoten"
-              defaultValue={item?.hoVaTen}
-              class="form-control"
-            />
-
-            <label class="lb-form">Giới tính</label>
-            <div>
-              <label>
-                <input
-                  type="radio"
-                  name="gioitinh"
-                  value="true"
-                  checked={gender === true}
-                  onChange={() => setGender(true)}
-                />
-                Nam
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  name="gioitinh"
-                  value="false"
-                  checked={gender === false}
-                  onChange={() => setGender(false)}
-                />
-                Nữ
-              </label>
-            </div>
-
-            <label class="lb-form">Ngày sinh</label>
-            <input
-              name="ngsinh"
-              defaultValue={item?.ngaySinh}
-              type="date"
-              class="form-control"
-            />
-
-            <br />
-            <button class="form-control btn btn-primary">{label}</button>
-          </div>
-          <div className="col-sm-5">
-            <label class="lb-form">Ảnh</label>
-            <input id="imgbanner" type="file" class="form-control" />
-
-            <label class="lb-form">Số điện thoại</label>
-            <input
-              name="Sdt"
-              defaultValue={item?.soDienThoai}
-              class="form-control"
-            />
-
-            <label class="lb-form">Email</label>
-            <input
-              name="email"
-              defaultValue={item?.email}
-              class="form-control"
-            />
-          </div>
-        </form>
-      </div>
-    </div>
   );
 };
 

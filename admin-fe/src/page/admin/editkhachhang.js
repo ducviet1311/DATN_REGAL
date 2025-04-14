@@ -146,7 +146,7 @@ const AdminEditKhachHang = () => {
             window.location.href = 'khach-hang';
         }
         if (res.status == 417) {
-            var result = await res.json(); 
+            var result = await res.json();
             toast.error(result.defaultMessage);
         }
         if (res.status > 300) {
@@ -155,90 +155,153 @@ const AdminEditKhachHang = () => {
     };
 
     return (
-        <div>
-            <div class="col-sm-12 header-sps d-flex justify-content-center align-items-center">
-                <div class="title-add-admin">
-                    <h4>{label}</h4>
+        <div className="container-fluid py-4">
+            <div className="top-products-card shadow-lg">
+                <div className="card-header bg-primary text-white">
+                    <h4 className="mb-0">{label}</h4>
                 </div>
-            </div>
-            <div class="col-sm-12" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                <form onSubmit={handleAddKhachHang} class="form-add row">
-                    <div class="col-sm-5">
-                        <label class="lb-form">Mã khách hàng</label>
-                        <input name='makh' defaultValue={item?.maKhachHang} class="form-control" />
+                <div className="card-body">
+                    <form onSubmit={handleAddKhachHang}>
+                        <div className="row">
+                            <div className="col-md-6">
+                                <div className="mb-3">
+                                    <label className="form-label fw-bold">Mã khách hàng</label>
+                                    <input
+                                        name="makh"
+                                        defaultValue={item?.maKhachHang}
+                                        className="form-control bg-light"
+                                        readOnly
+                                    />
+                                </div>
 
-                        <label class="lb-form">Họ tên</label>
-                        <input name='hoten' defaultValue={item?.hoVaTen} class="form-control" />
+                                <div className="mb-3">
+                                    <label className="form-label fw-bold">Họ tên</label>
+                                    <input
+                                        name="hoten"
+                                        defaultValue={item?.hoVaTen}
+                                        className="form-control"
+                                        placeholder="Nhập họ tên"
+                                    />
+                                </div>
 
-                        <label class="lb-form">Giới tính</label>
-                        <div>
-                            <label>
-                                <input
-                                    type="radio"
-                                    name="gioitinh"
-                                    value="true"
-                                    checked={gender === true}
-                                    onChange={() => setGender(true)}
-                                />
-                                Nam
-                            </label>
-                            <label>
-                                <input
-                                    type="radio"
-                                    name="gioitinh"
-                                    value="false"
-                                    checked={gender === false}
-                                    onChange={() => setGender(false)}
-                                />
-                                Nữ
-                            </label>
+                                <div className="mb-3">
+                                    <label className="form-label fw-bold">Giới tính</label>
+                                    <div className="d-flex gap-4">
+                                        <div className="form-check">
+                                            <input
+                                                className="form-check-input"
+                                                type="radio"
+                                                name="gioitinh"
+                                                id="male"
+                                                checked={gender === true}
+                                                onChange={() => setGender(true)}
+                                            />
+                                            <label className="form-check-label" htmlFor="male">
+                                                Nam
+                                            </label>
+                                        </div>
+                                        <div className="form-check">
+                                            <input
+                                                className="form-check-input"
+                                                type="radio"
+                                                name="gioitinh"
+                                                id="female"
+                                                checked={gender === false}
+                                                onChange={() => setGender(false)}
+                                            />
+                                            <label className="form-check-label" htmlFor="female">
+                                                Nữ
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="mb-3">
+                                    <label className="form-label fw-bold">Ngày sinh</label>
+                                    <input
+                                        name="ngsinh"
+                                        defaultValue={item?.ngaySinh}
+                                        type="date"
+                                        className="form-control"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="col-md-6">
+                                <div className="mb-3">
+                                    <label className="form-label fw-bold">Ảnh đại diện</label>
+                                    <input
+                                        id="imgbanner"
+                                        type="file"
+                                        className="form-control"
+                                        accept="image/*"
+                                    />
+                                </div>
+
+                                <div className="mb-3">
+                                    <label className="form-label fw-bold">Số điện thoại</label>
+                                    <input
+                                        name="Sdt"
+                                        defaultValue={item?.soDienThoai}
+                                        className="form-control"
+                                        placeholder="Nhập số điện thoại"
+                                    />
+                                </div>
+
+                                <div className="mb-3">
+                                    <label className="form-label fw-bold">Email</label>
+                                    <input
+                                        name="email"
+                                        defaultValue={item?.email}
+                                        className="form-control"
+                                        placeholder="Nhập email"
+                                        type="email"
+                                    />
+                                </div>
+
+                                <div className="mb-3">
+                                    <label className="form-label fw-bold">Trạng thái</label>
+                                    <div className="d-flex gap-4">
+                                        <div className="form-check">
+                                            <input
+                                                className="form-check-input"
+                                                type="radio"
+                                                name="trangThai"
+                                                id="active"
+                                                value="1"
+                                                checked={trangThai === "1"}
+                                                onChange={() => setTrangThai("1")}
+                                            />
+                                            <label className="form-check-label" htmlFor="active">
+                                                Đang hoạt động
+                                            </label>
+                                        </div>
+                                        <div className="form-check">
+                                            <input
+                                                className="form-check-input"
+                                                type="radio"
+                                                name="trangThai"
+                                                id="inactive"
+                                                value="0"
+                                                checked={trangThai === "0"}
+                                                onChange={() => setTrangThai("0")}
+                                            />
+                                            <label className="form-check-label" htmlFor="inactive">
+                                                Ngưng hoạt động
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <label class="lb-form">Ngày sinh</label>
-                        <input name='ngsinh' defaultValue={item?.ngaySinh} type='date' class="form-control" />
-
-                        <br />
-                        <button class="form-control btn btn-primary">{label}</button>
-                    </div>
-                    <div className='col-sm-5'>
-                        <label class="lb-form">Ảnh</label>
-                        <input id='imgbanner' type='file' class="form-control" />
-
-                        <label class="lb-form">Số điện thoại</label>
-                        <input name='Sdt' defaultValue={item?.soDienThoai} class="form-control" />
-
-                        <label class="lb-form">Email</label>
-                        <input name='email' defaultValue={item?.email} class="form-control" />
-
-                        {/* <label class="lb-form">Trạng thái</label>
-                        <input name='trangThai' defaultValue={item?.trangThai} class="form-control" /> */}
-                        <label class="lb-form">Trạng thái</label>
-                        <div>
-                            <label>
-                                <input
-                                    type="radio"
-                                    name="trangThai"
-                                    value="1"
-                                    checked={trangThai === "1"} // Kiểm tra trạng thái
-                                    onChange={() => setTrangThai("1")}
-                                />
-                                Đang hoạt động
-                            </label>
-                            <br />
-                            <label>
-                                <input
-                                    type="radio"
-                                    name="trangThai"
-                                    value="0"
-                                    checked={trangThai === "0"} // Kiểm tra trạng thái
-                                    onChange={() => setTrangThai("0")}
-                                />
-                                Ngưng hoạt động
-                            </label>
+                        <div className="d-flex justify-content-end mt-4">
+                            <button type="submit" className="btn btn-primary px-4 py-2">
+                                {label}
+                            </button>
                         </div>
-
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
     );
