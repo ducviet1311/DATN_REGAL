@@ -116,43 +116,144 @@ const AdminAddDotGiamGia = () => {
   };
 
   return (
-      <div>
-        <div class="col-sm-12 header-sps">
-          <div class="title-add-admin">
-            <h4>{label}</h4>
+      <div className="container-fluid py-4">
+        <div className="top-products-card shadow-lg">
+          <div className="card-header bg-primary text-white">
+            <h4 className="mb-0">{label}</h4>
+          </div>
+          <div className="card-body">
+            <form onSubmit={handleAddPhieuGG}>
+              <div className="row">
+                <div className="col-md-6">
+                  <div className="mb-3">
+                    <label className="form-label fw-bold">Giá trị giảm (VNĐ)</label>
+                    <input
+                        name="giatrigiam"
+                        defaultValue={item?.maCode}
+                        className="form-control p-2 border-2"
+                        placeholder="Nhập giá trị giảm"
+                    />
+                    <small className="text-muted">Giá trị phải là số nguyên dương và nhỏ hơn 10,000,000 VNĐ</small>
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label fw-bold">Ngày bắt đầu</label>
+                    <input
+                        type="datetime-local"
+                        name="ngaybatdau"
+                        defaultValue={item?.tenPhieu}
+                        className="form-control p-2 border-2"
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label fw-bold">Ngày kết thúc</label>
+                    <input
+                        type="datetime-local"
+                        name="ngayketthuc"
+                        defaultValue={item?.tenPhieu}
+                        className="form-control p-2 border-2"
+                    />
+                  </div>
+                </div>
+
+                <div className="col-md-6">
+                  <div className="mb-3">
+                    <label className="form-label fw-bold">Chọn sản phẩm</label>
+                    <Select
+                        className="select-container"
+                        classNamePrefix="select"
+                        options={products}
+                        value={productSelect}
+                        onChange={setproductSelect}
+                        getOptionLabel={(option) => option.tenSanPham}
+                        getOptionValue={(option) => option.id}
+                        name="sanpham"
+                        placeholder="Chọn sản phẩm..."
+                        isMulti
+                        noOptionsMessage={() => "Không có sản phẩm nào"}
+                        styles={{
+                          control: (base) => ({
+                            ...base,
+                            minHeight: '45px',
+                            border: '2px solid #dee2e6',
+                            boxShadow: 'none',
+                            '&:hover': {
+                              borderColor: '#86b7fe'
+                            }
+                          })
+                        }}
+                    />
+                    <small className="text-muted">Chọn ít nhất một sản phẩm để áp dụng giảm giá</small>
+                  </div>
+
+                  <div className="selected-products mt-3">
+                    <h6 className="fw-bold">Sản phẩm đã chọn ({productSelect.length}):</h6>
+                    {productSelect.length > 0 ? (
+                        <div
+                            className="list-group scrollable-list"
+                            style={{
+                              maxHeight: '200px',
+                              overflowY: 'auto',
+                              border: '1px solid #dee2e6',
+                              borderRadius: '0.375rem'
+                            }}
+                        >
+                          {productSelect.map(product => (
+                              <div
+                                  key={product.id}
+                                  className="list-group-item d-flex justify-content-between align-items-center"
+                              >
+                                                    <span className="text-truncate" style={{maxWidth: '70%'}}>
+                                                        {product.tenSanPham}
+                                                    </span>
+                                <button
+                                    type="button"
+                                    className="btn btn-sm btn-outline-danger"
+                                    onClick={() => setproductSelect(productSelect.filter(p => p.id !== product.id))}
+                                >
+                                  ×
+                                </button>
+                              </div>
+                          ))}
+                        </div>
+                    ) : (
+                        <div className="alert alert-info">Chưa có sản phẩm nào được chọn</div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="d-flex justify-content-end mt-4">
+                <button
+                    type="submit"
+                    className="btn btn-primary px-4 py-2 fw-bold"
+                    style={{minWidth: '150px'}}
+                >
+                  {label}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
-        <div class="col-sm-12">
-          <form onSubmit={handleAddPhieuGG} class="form-add row">
-            <div class="col-sm-5">
-              <label class="lb-form">Giá trị giảm (VNĐ)</label>
-              <input name='giatrigiam' defaultValue={item?.maCode} class="form-control"/>
 
-              <label class="lb-form">Ngày bắt đầu</label>
-              <input type='datetime-local' name='ngaybatdau' defaultValue={item?.tenPhieu}
-                     class="form-control"/>
-
-              <label class="lb-form">Ngày kết thúc</label>
-              <input type='datetime-local' name='ngayketthuc' defaultValue={item?.tenPhieu}
-                     class="form-control"/>
-
-              <label class="lb-form">Chọn sản phẩm</label>
-              <Select
-                  className="select-container ms-2"
-                  options={products}
-                  value={productSelect}
-                  onChange={setproductSelect}
-                  getOptionLabel={(option) => option.tenSanPham}
-                  getOptionValue={(option) => option.id}
-                  name='sanpham'
-                  placeholder="Chọn sản phẩm"
-                  isMulti
-              />
-              <br/>
-              <button class="form-control btn btn-primary">{label}</button>
-            </div>
-          </form>
-        </div>
+        {/* Add custom scrollbar styling */}
+        <style jsx>{`
+                .scrollable-list::-webkit-scrollbar {
+                    width: 8px;
+                }
+                .scrollable-list::-webkit-scrollbar-track {
+                    background: #f1f1f1;
+                    border-radius: 10px;
+                }
+                .scrollable-list::-webkit-scrollbar-thumb {
+                    background: #888;
+                    border-radius: 10px;
+                }
+                .scrollable-list::-webkit-scrollbar-thumb:hover {
+                    background: #555;
+                }
+            `}</style>
       </div>
   );
 }

@@ -111,74 +111,114 @@ const AdminUpdateDotGiamGia = () => {
     }
 
     return (
-        <div>
-            <div className="col-sm-12 header-sps">
-                <div className="title-add-admin">
-                    <h4>{label}</h4>
+        <div className="container-fluid py-4">
+            <div className="top-products-card shadow-lg">
+                <div className="card-header bg-primary text-white">
+                    <h4 className="mb-0">{label}</h4>
                 </div>
-            </div>
-            <div className="col-sm-12">
-                <form onSubmit={handleAddPhieuGG} className="form-add row">
-                    <div className="col-sm-5">
-                        <label className="lb-form">Giá trị giảm (VNĐ)</label>
-                        <input
-                            name="giatrigiam"
-                            defaultValue={item?.giaTriGiam}
-                            className="form-control"
-                            type="number"
-                        />
+                <div className="card-body">
+                    <form onSubmit={handleAddPhieuGG}>
+                        <div className="row">
+                            <div className="col-md-6">
+                                <div className="mb-3">
+                                    <label className="form-label fw-bold">Giá trị giảm (VNĐ)</label>
+                                    <input
+                                        name="giatrigiam"
+                                        defaultValue={item?.giaTriGiam}
+                                        className="form-control form-control-lg"
+                                        type="number"
+                                        placeholder="Nhập giá trị giảm"
+                                    />
+                                </div>
 
-                        <label className="lb-form">Ngày bắt đầu</label>
-                        <input
-                            type="datetime-local"
-                            name="ngaybatdau"
-                            defaultValue={item?.ngayBatDau?.slice(0, 16)}
-                            className="form-control"
-                        />
+                                <div className="mb-3">
+                                    <label className="form-label fw-bold">Ngày bắt đầu</label>
+                                    <input
+                                        type="datetime-local"
+                                        name="ngaybatdau"
+                                        defaultValue={item?.ngayBatDau?.slice(0, 16)}
+                                        className="form-control form-control-lg"
+                                    />
+                                </div>
 
-                        <label className="lb-form">Ngày kết thúc</label>
-                        <input
-                            type="datetime-local"
-                            name="ngayketthuc"
-                            defaultValue={item?.ngayKetThuc?.slice(0, 16)}
-                            className="form-control"
-                        />
+                                <div className="mb-3">
+                                    <label className="form-label fw-bold">Ngày kết thúc</label>
+                                    <input
+                                        type="datetime-local"
+                                        name="ngayketthuc"
+                                        defaultValue={item?.ngayKetThuc?.slice(0, 16)}
+                                        className="form-control form-control-lg"
+                                    />
+                                </div>
 
-                        <label className="lb-form">Chọn sản phẩm thêm vào phiếu giảm giá</label>
-                        <Select
-                            className="select-container ms-2"
-                            options={products}
-                            value={productSelect}
-                            onChange={setProductSelect}
-                            getOptionLabel={(option) => option.tenSanPham}
-                            getOptionValue={(option) => option.id}
-                            name="sanpham"
-                            placeholder="Chọn sản phẩm"
-                            isMulti
-                        />
-                        <br />
-                        <button className="form-control btn btn-primary">{label}</button>
-                    </div>
-                    <div className="col-sm-5">
-                        <h5>Các sản phẩm đã add đợt giảm giá này</h5>
-                        <table className="table">
-                            <thead>
-                            <tr>
-                                <th>Id sản phẩm</th>
-                                <th>Tên sản phẩm</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {productDaThem.map((item) => (
-                                <tr key={item.id}>
-                                    <td>{item.id}</td>
-                                    <td>{item.tenSanPham}</td>
-                                </tr>
-                            ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </form>
+                                <div className="mb-4">
+                                    <label className="form-label fw-bold">Chọn sản phẩm</label>
+                                    <Select
+                                        className="select-container"
+                                        options={products}
+                                        value={productSelect}
+                                        onChange={setProductSelect}
+                                        getOptionLabel={(option) => option.tenSanPham}
+                                        getOptionValue={(option) => option.id}
+                                        name="sanpham"
+                                        placeholder="Chọn sản phẩm..."
+                                        isMulti
+                                    />
+                                </div>
+
+                                <button className="btn btn-primary btn-lg w-100 py-3">
+                                    <i className="bi bi-save me-2"></i>
+                                    {label}
+                                </button>
+                            </div>
+
+                            <div className="col-md-6">
+                                <div className="top-products-card h-100">
+                                    <div className="card-header bg-light">
+                                        <h5 className="mb-0 fw-bold">
+                                            <i className="bi bi-list-check me-2"></i>
+                                            Sản phẩm đã được chọn
+                                        </h5>
+                                    </div>
+                                    <div className="card-body p-0">
+                                        <div className="table-responsive" style={{ maxHeight: "500px", overflowY: "auto" }}>
+                                            <table className="table table-hover mb-0">
+                                                <thead className="table-light sticky-top">
+                                                <tr>
+                                                    <th width="100">ID</th>
+                                                    <th>Tên sản phẩm</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {productDaThem.length > 0 ? (
+                                                    productDaThem.map((item) => (
+                                                        <tr key={item.id}>
+                                                            <td className="fw-bold">{item.id}</td>
+                                                            <td>{item.tenSanPham}</td>
+                                                        </tr>
+                                                    ))
+                                                ) : (
+                                                    <tr>
+                                                        <td colSpan="2" className="text-center text-muted py-4">
+                                                            <i className="bi bi-info-circle me-2"></i>
+                                                            Chưa có sản phẩm nào được chọn
+                                                        </td>
+                                                    </tr>
+                                                )}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div className="top-products-card-footer bg-light">
+                                        <small className="text-muted">
+                                            Tổng số sản phẩm: <span className="fw-bold">{productDaThem.length}</span>
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     );

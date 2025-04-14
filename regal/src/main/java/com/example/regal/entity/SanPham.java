@@ -2,16 +2,7 @@ package com.example.regal.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -72,9 +63,9 @@ public class SanPham {
     @Column(name = "TrangThai", columnDefinition = "int default 1")
     private Integer trangThai;
 
-//    @OneToMany(mappedBy = "sanPham", cascade = CascadeType.REMOVE)
-//    @JsonIgnoreProperties(value = {"sanPham"})
-//    private List<SanPhamChiTiet> sanPhamChiTiets;
+    @OneToMany(mappedBy = "sanPham", cascade = CascadeType.REMOVE)
+    @JsonIgnoreProperties(value = {"sanPham"})
+    private List<SanPhamChiTiet> sanPhamChiTiets;
 
     @Override
     public boolean equals(Object o) {
