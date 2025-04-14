@@ -1,5 +1,7 @@
 package com.example.regal.service;
 
+import com.example.regal.dto.request.SanPhamBanChay;
+import com.example.regal.dto.request.TopSanPhamDTO;
 import com.example.regal.entity.HoaDon;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,4 +25,7 @@ public interface HoaDonService {
     List<HoaDon> timHDGanNhat();
     HoaDon timHDTheoMaHD(String mahd);
     boolean existsById(Integer id);
+    List<TopSanPhamDTO> getTop5SanPhamBanChay() ;
+    Double tinhDoanhThuTheoNam(Integer nam);
+    List<SanPhamBanChay> getTop8SanPhamBanChay();
 }

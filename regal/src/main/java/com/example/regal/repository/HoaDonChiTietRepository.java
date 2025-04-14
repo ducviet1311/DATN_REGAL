@@ -1,5 +1,6 @@
 package com.example.regal.repository;
 
+import com.example.regal.dto.request.TopSanPhamDTO;
 import com.example.regal.entity.HoaDon;
 import com.example.regal.entity.HoaDonChiTiet;
 import com.example.regal.entity.SanPhamChiTiet;
@@ -7,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -26,4 +28,15 @@ public interface HoaDonChiTietRepository extends JpaRepository<HoaDonChiTiet, In
 
     @Query("SELECT h FROM HoaDonChiTiet h WHERE h.hoaDon.id =?1")
     List<HoaDonChiTiet> findHoaDonChiTietByIdHoaDon(Integer idHoaDon);
+
+    @Query(value = "SELECT new com.example.regal.dto.request.TopSanPhamDTO(sp.id, sp.tenSanPham, SUM(hdct.soLuong)) " +
+            "FROM HoaDonChiTiet hdct " +
+            "JOIN hdct.hoaDon hd " +
+            "JOIN hdct.sanPhamChiTiet spct " +
+            "JOIN spct.sanPham sp " +
+            "WHERE hd.trangThai = :trangThai " +
+            "GROUP BY sp.id, sp.tenSanPham " +
+            "ORDER BY SUM(hdct.soLuong) DESC " +
+            "LIMIT 5", nativeQuery = false)
+    List<TopSanPhamDTO> findTop5SanPhamBanChay(@Param("trangThai") int trangThai);
 }

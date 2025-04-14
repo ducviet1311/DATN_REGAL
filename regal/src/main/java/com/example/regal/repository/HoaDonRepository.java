@@ -1,10 +1,12 @@
 package com.example.regal.repository;
 
+import com.example.regal.dto.request.TopSanPhamDTO;
 import com.example.regal.entity.HoaDon;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Date;
@@ -110,6 +112,36 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
             "GROUP BY DATEPART(WEEKDAY, ngayTao)", nativeQuery = true)
     List<Object[]> tinhDoanhThuTheoThuTrongTuan();
 
+    @Query("SELECT new com.example.regal.dto.request.TopSanPhamDTO(sp.id, sp.tenSanPham, SUM(hdct.soLuong)) " +
+            "FROM HoaDonChiTiet hdct " +
+            "JOIN hdct.hoaDon hd " +
+            "JOIN hdct.sanPhamChiTiet spct " +
+            "JOIN spct.sanPham sp " +
+            "WHERE hd.trangThai = 8 " +  // Chỉ lấy hóa đơn hoàn tất
+            "GROUP BY sp.id, sp.tenSanPham " +
+            "ORDER BY SUM(hdct.soLuong) DESC")
+    List<TopSanPhamDTO> findTop5SanPhamBanChay(Pageable pageable);
 
+    @Query(value = "SELECT sum(tongTien) " +
+            "FROM HoaDon " +
+            "WHERE year(ngayTao) = ?1 and trangThai = 8",
+            nativeQuery = true)
+    Double tinhDoanhThuTheoNam(Integer nam);
+
+    // Phương thức tìm kiếm mới
+    @Query("SELECT h FROM HoaDon h WHERE " +
+            "(:trangthai IS NULL OR h.trangThai = :trangthai) AND " +
+            "(:loaiHoaDon IS NULL OR h.loaiHoaDon = :loaiHoaDon) AND " +
+            "(h.maHoaDon LIKE %:keyword% OR " +
+            "h.khachHang.hoVaTen LIKE %:keyword% OR " +
+            "h.khachHang.soDienThoai LIKE %:keyword%)")
+    Page<HoaDon> searchHoaDon(@Param("keyword") String keyword,
+                              @Param("trangthai") Integer trangthai,
+                              @Param("loaiHoaDon") Boolean loaiHoaDon,
+                              Pageable pageable);
+
+    Page<HoaDon> findByTrangThaiAndLoaiHoaDon(Integer trangThai, Boolean loaiHoaDon, Pageable pageable);
+    Page<HoaDon> findByLoaiHoaDon(Boolean loaiHoaDon, Pageable pageable);
+    // Các phương thức hiện có khác...
 
 }

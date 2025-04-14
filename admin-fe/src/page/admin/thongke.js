@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import ReactPaginate from "react-paginate";
+import { useState, useEffect, useRef } from "react";import ReactPaginate from "react-paginate";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
@@ -13,11 +12,19 @@ import * as XLSX from "xlsx";
 
 const AdminThongKe = () => {
   const [thongKe, setThongKe] = useState(null);
+  const [topSanPham, setTopSanPham] = useState([]);
+  const [loadingTopSP, setLoadingTopSP] = useState(false);
+  const [errorTopSP, setErrorTopSP] = useState(null);
+  const [tongDoanhThuNam, setTongDoanhThuNam] = useState(null);
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const pieChartRef = useRef(null);
+
   useEffect(() => {
     revenueYear(new Date().getFullYear());
     getMauSac();
     getThongKe();
-    // veBieuDoTron();
+    veBieuDoTron();
+    getTopSanPhamBanChay();
   }, []);
   async function revenueYear(nam) {
     if (nam < 2000) {
@@ -83,6 +90,75 @@ const AdminThongKe = () => {
     });
   }
 
+  async function getTongDoanhThuNam(nam) {
+    try {
+      const response = await getMethod(`/api/thong-ke/doanh-thu-nam?nam=${nam}`);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.text();
+      setTongDoanhThuNam(result);
+    } catch (error) {
+      console.error("Lỗi khi lấy tổng doanh thu:", error);
+      setTongDoanhThuNam("Không thể lấy dữ liệu doanh thu");
+    }
+  }
+  async function getTopSanPhamBanChay() {
+    setLoadingTopSP(true);
+    setErrorTopSP(null);
+
+    try {
+      console.log("[DEBUG] Đang gọi API /api/thong-ke/top5-ban-chay...");
+
+      // 1. Gọi API
+      const response = await getMethod("/api/thong-ke/top5-ban-chay");
+
+      // 2. Kiểm tra HTTP status
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // 3. Parse JSON
+      const result = await response.json();
+      console.log("[DEBUG] Dữ liệu nhận được:", result);
+
+      // 4. Validate dữ liệu
+      if (!result) {
+        throw new Error("Không có dữ liệu trả về");
+      }
+
+      let products = [];
+
+      // 5. Xử lý nhiều định dạng response khác nhau
+      if (Array.isArray(result)) {
+        products = result.slice(0, 5); // Lấy top 5
+      } else if (typeof result === 'object' && result !== null) {
+        // Nếu là object, chuyển thành mảng
+        products = Object.values(result).slice(0, 5);
+      } else {
+        throw new Error("Định dạng dữ liệu không hợp lệ");
+      }
+
+      // 6. Kiểm tra cấu trúc từng item
+      const validatedProducts = products.map(item => ({
+        id: item?.id || 0,
+        tenSanPham: item?.tenSanPham || item?.productName || "Không có tên",
+        tongSoLuongBan: item?.tongSoLuongBan || item?.totalSold || 0
+      }));
+
+      console.log("[DEBUG] Dữ liệu đã xử lý:", validatedProducts);
+      setTopSanPham(validatedProducts);
+
+    } catch (error) {
+      console.error("[ERROR] Lỗi khi lấy top sản phẩm:", error);
+      setErrorTopSP(error.message);
+      setTopSanPham([]); // Reset về mảng rỗng nếu có lỗi
+    } finally {
+      setLoadingTopSP(false);
+    }
+  }
   async function revenueTheoThuTrongTuan() {
     const response = await getMethod(
         "/api/thong-ke/admin/doanhthuthutrongtuan"
@@ -166,45 +242,6 @@ const AdminThongKe = () => {
       var doanhThu = item[1];
       doanhThuTheoGio[gio] = doanhThu;
     });
-
-    // Nhãn cho các giờ trong ngày (0h, 1h, ..., 23h)
-    const labels = Array.from({ length: 24 }, (_, i) => `${i}h`);
-
-    // Vẽ biểu đồ Line
-    const ctx = document.getElementById("chartGio").getContext("2d");
-    let chartStatus = Chart.getChart("chartGio");
-    if (chartStatus != undefined) {
-      chartStatus.destroy();
-    }
-
-    var myChart = new Chart(ctx, {
-      type: "line",
-      data: {
-        labels: labels,
-        datasets: [
-          {
-            label: "Doanh thu theo giờ trong ngày",
-            fill: false,
-            borderColor: "rgb(47, 128, 237)",
-            backgroundColor: "rgba(161, 198, 247, 1)",
-            data: doanhThuTheoGio,
-          },
-        ],
-      },
-      options: {
-        scales: {
-          yAxes: [
-            {
-              ticks: {
-                callback: function (value) {
-                  return formatmoney(value);
-                },
-              },
-            },
-          ],
-        },
-      },
-    });
   }
 
   async function getThongKe() {
@@ -214,8 +251,10 @@ const AdminThongKe = () => {
   }
 
   function loadByNam() {
-    var nam = document.getElementById("nams").value;
+    const nam = document.getElementById("nams").value;
+    setSelectedYear(nam);
     revenueYear(nam);
+    getTongDoanhThuNam(nam); // Gọi hàm mới
   }
 
   const VND = new Intl.NumberFormat("vi-VN", {
@@ -246,67 +285,96 @@ const AdminThongKe = () => {
     }
   }
 
-  // async function veBieuDoTron() {
-  //   const response = await getMethod("/api/thong-ke/admin/thong-ke-trang-thai");
-  //   var result = await response.json();
-  //   console.log(result);
-  //
-  //   var arrTen = Object.keys(result);
-  //   var arrvalue = Object.values(result);
-  //   const ctx = document.getElementById("myPieChart").getContext("2d");
-  //
-  //   // Kiểm tra và hủy biểu đồ nếu có
-  //   let chartStatus = Chart.getChart("myPieChart"); // <canvas> id
-  //   if (chartStatus != undefined) {
-  //     chartStatus.destroy(); // Hủy biểu đồ cũ nếu có
-  //   }
-  //
-  //   // Dữ liệu biểu đồ
-  //   const data = {
-  //     labels: arrTen,
-  //     datasets: [
-  //       {
-  //         label: "Số lượng đơn hàng",
-  //         data: arrvalue, // Giá trị
-  //         backgroundColor: [
-  //           "rgba(255, 99, 132, 0.6)", // Màu sắc từng phần
-  //           "rgba(54, 162, 235, 0.6)",
-  //           "rgba(255, 206, 86, 0.6)",
-  //           "rgba(75, 192, 192, 0.6)",
-  //           "rgba(168, 142, 69, 0.6)",
-  //           "rgba(86, 55, 196, 0.6)",
-  //           "rgba(58, 152, 161, 0.6)",
-  //           "rgba(171, 91, 55, 0.6)",
-  //         ],
-  //         borderWidth: 1,
-  //       },
-  //     ],
-  //   };
-  //
-  //   const config = {
-  //     type: "pie",
-  //     data: data,
-  //     options: {
-  //       responsive: true,
-  //       plugins: {
-  //         legend: {
-  //           position: "right",
-  //         },
-  //         tooltip: {
-  //           callbacks: {
-  //             label: function (context) {
-  //               const label = context.label || "";
-  //               const value = context.raw || 0;
-  //               return `${label}: ${value}`;
-  //             },
-  //           },
-  //         },
-  //       },
-  //     },
-  //   };
-  //
-  //   new Chart(ctx, config);
-  // }
+  async function veBieuDoTron() {
+    try {
+      // 1. Gọi API lấy dữ liệu
+      const response = await getMethod("/api/thong-ke/admin/thong-ke-trang-thai");
+
+      // 2. Kiểm tra response
+      if (!response.ok) {
+        throw new Error(`Lỗi HTTP: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log("Dữ liệu biểu đồ tròn:", result);
+
+      // 3. Kiểm tra ref và canvas
+      if (!pieChartRef.current) {
+        throw new Error("Không tìm thấy canvas cho biểu đồ tròn");
+      }
+
+      const ctx = pieChartRef.current.getContext("2d");
+      if (!ctx) {
+        throw new Error("Không thể lấy context từ canvas");
+      }
+
+      // 4. Chuẩn bị dữ liệu
+      const arrTen = Object.keys(result);
+      const arrValue = Object.values(result);
+
+      // 5. Kiểm tra và hủy biểu đồ cũ nếu có
+      const existingChart = Chart.getChart(pieChartRef.current);
+      if (existingChart) {
+        existingChart.destroy();
+      }
+
+      // 6. Tạo màu sắc động nếu cần
+      const backgroundColors = [
+        "rgba(255, 99, 132, 0.6)",
+        "rgba(54, 162, 235, 0.6)",
+        "rgba(255, 206, 86, 0.6)",
+        "rgba(75, 192, 192, 0.6)",
+        "rgba(153, 102, 255, 0.6)",
+        "rgba(255, 159, 64, 0.6)",
+        "rgba(199, 199, 199, 0.6)",
+        "rgba(83, 102, 255, 0.6)"
+      ];
+
+      // 7. Tạo biểu đồ mới
+      new Chart(ctx, {
+        type: "pie",
+        data: {
+          labels: arrTen,
+          datasets: [{
+            label: "Số lượng đơn hàng",
+            data: arrValue,
+            backgroundColor: backgroundColors.slice(0, arrTen.length),
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: "right",
+              labels: {
+                padding: 20,
+                font: {
+                  size: 12
+                }
+              }
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const label = context.label || '';
+                  const value = context.raw || 0;
+                  const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                  const percentage = Math.round((value / total) * 100);
+                  return `${label}: ${value} (${percentage}%)`;
+                }
+              }
+            }
+          }
+        }
+      });
+
+    } catch (error) {
+      console.error("Lỗi khi vẽ biểu đồ tròn:", error);
+      toast.error(`Lỗi khi tải biểu đồ: ${error.message}`);
+    }
+  }
 
   useEffect(() => {
     revenueTheoGioTrongNgay();
@@ -373,15 +441,51 @@ const AdminThongKe = () => {
             Xuất Excel
           </button>
         </div>
-        <div className="tron-line-container">
-          {/*<div className="col-sm-4 tron-view">*/}
-          {/*  <canvas id="myPieChart"></canvas>*/}
-          {/*</div>*/}
-          <div class="col-sm-12 line-view">
-            <div class="card chart-container divtale">
-              <canvas id="chartGio"></canvas>
+        <br></br>
+        <div className="row mt-4">
+          {/* Cột phải - Biểu đồ tròn */}
+          <div className="col-md-6">
+            <div className="top-products-card">
+              <div className="card-header">
+                <h5>Thống kê trạng thái đơn hàng</h5>
+              </div>
+              <div className="card-body">
+                <div className="chart-container" style={{ height: '300px' }}>
+                  <canvas ref={pieChartRef}></canvas>
+                </div>
+              </div>
             </div>
           </div>
+          {/* Cột trái - Top 5 sản phẩm */}
+          <div className="col-md-6">
+            <div className="top-products-card">
+              <div className="card-header">
+                <h5>Top 5 sản phẩm bán chạy</h5>
+              </div>
+              <div className="card-body">
+                <table className="table table-striped table-hover">
+                  <thead className="table-primary">
+                  <tr>
+                    <th>STT</th>
+                    <th>Tên sản phẩm</th>
+                    <th>Số lượng bán</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  {topSanPham.map((item, index) => (
+                      <tr key={`product-${index}`}>
+                        <td>{index + 1}</td>
+                        <td>{item.tenSanPham}</td>
+                        <td>{item.tongSoLuongBan.toLocaleString()}</td>
+                      </tr>
+                  ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+
         </div>
 
         <div class="col-sm-12 header-sp row ">
@@ -408,6 +512,15 @@ const AdminThongKe = () => {
             </button>
           </div>
         </div>
+
+        {/* Thêm phần hiển thị tổng doanh thu */}
+        {tongDoanhThuNam && (
+            <div className="tong-doanh-thu-nam mt-3 mb-3">
+              <h5>
+                Tổng doanh thu năm {selectedYear} là: <strong>{tongDoanhThuNam}</strong>
+              </h5>
+            </div>
+        )}
         <div className="cot-container">
           <div className="cot">
             <div class="col-sm-12 divtale">

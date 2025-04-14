@@ -1,5 +1,7 @@
 package com.example.regal.repository;
 
+import com.example.regal.dto.request.SanPhamBanChay;
+import com.example.regal.dto.request.TopSanPhamDTO;
 import com.example.regal.entity.SanPham;
 import com.example.regal.entity.SanPhamChiTiet;
 import org.springframework.data.domain.Page;
@@ -7,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -19,25 +22,19 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer>, JpaS
                ORDER BY NgayTao DESC
             """)
     List<SanPham> getAllByNgayTao();
-
-//    @Query("""
-//    SELECT DISTINCT sp
-//    FROM SanPham sp
-//    JOIN sp.sanPhamChiTiets spct
-//    WHERE (:giaTienNhoNhat IS NULL OR spct.giaTien >= :giaTienNhoNhat)
-//      AND (:giaTienLonNhat IS NULL OR spct.giaTien <= :giaTienLonNhat)
-//      AND (:idThuongHieu IS NULL OR sp.thuongHieu.id = :idThuongHieu)
-//      AND (:idChatLieu IS NULL OR sp.chatLieu.id = :idChatLieu)
-//      AND (:idDeGiay IS NULL OR sp.deGiay.id = :idDeGiay)
-//    """)
-//    Page<SanPham> findByMultipleCriteria(
-//            @Param("giaTienNhoNhat") Double giaTienNhoNhat,
-//            @Param("giaTienLonNhat") Double giaTienLonNhat,
-//            @Param("idThuongHieu") Integer idThuongHieu,
-//            @Param("idChatLieu") Integer idChatLieu,
-//            @Param("idDeGiay") Integer idDeGiay,
-//            Pageable pageable
-//    );
+    //        list san pham ban chay
+    @Query("SELECT new com.example.regal.dto.request.SanPhamBanChay(" +
+            "sp.id, " +
+            "sp.tenSanPham, " +
+            "MAX(a.tenAnh), " +
+            "MIN(spct.giaTien)) " +
+            "FROM SanPham sp " +
+            "JOIN sp.sanPhamChiTiets spct " +
+            "LEFT JOIN HoaDonChiTiet hdct ON hdct.sanPhamChiTiet.id = spct.id " +
+            "LEFT JOIN spct.anhs a " +
+            "GROUP BY sp.id, sp.tenSanPham " +
+            "ORDER BY SUM(hdct.soLuong) DESC")
+    Page<SanPhamBanChay> findTopSanPhamBanChay(Pageable pageable);
 
 
     @Query("select s from SanPham s where s.thuongHieu.id = ?1")
