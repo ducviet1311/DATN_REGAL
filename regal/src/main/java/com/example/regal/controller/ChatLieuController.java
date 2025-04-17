@@ -126,9 +126,4 @@ public class ChatLieuController {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/search1")
-    public ResponseEntity<List<ChatLieu>> searchChatLieu1(@RequestParam String ten, @RequestParam(required = false) Integer trangThai) {
-        List<ChatLieu> result = chatLieuService.findByTenAndTrangThai(ten, trangThai);
-        return ResponseEntity.ok(result);
-    }
 }
