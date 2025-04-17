@@ -201,13 +201,13 @@ const AdminPhieuGiamGia = () => {
             <a href="add-khuyen-mai" class="btn btn-primary ms-2">
               <i className="fa fa-plus"></i>
             </a>
-            {/*<a*/}
-            {/*    href="#"*/}
-            {/*    onClick={() => exportToExcel()}*/}
-            {/*    className="btn btn-success ms-2"*/}
-            {/*>*/}
-            {/*  <i className="fa fa-excel-o"></i>Excel*/}
-            {/*</a>*/}
+            <a
+                href="#"
+                onClick={() => exportToExcel()}
+                className="btn btn-success ms-2"
+            >
+              <i className="fa fa-excel-o"></i>Excel
+            </a>
             <select
                 className="form-select ms-2"
                 value={selectedStatus}
@@ -285,12 +285,6 @@ const AdminPhieuGiamGia = () => {
                         <a href={"add-khuyen-mai?id=" + item.id} class="edit-btn">
                           <i className="fa fa-edit"></i>
                         </a>
-                        {/*<button*/}
-                        {/*    onClick={() => deletePhieuGiamGia(item.id)}*/}
-                        {/*    class="delete-btn"*/}
-                        {/*>*/}
-                        {/*  <i className="fa fa-trash"></i>*/}
-                        {/*</button>*/}
                       </td>
                     </tr>
                 );
