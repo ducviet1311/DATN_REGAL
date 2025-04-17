@@ -396,13 +396,6 @@ const AdminSanPhamChiTiet = () => {
             >
               <i className="fa fa-plus"></i>
             </button>
-            <a
-                href="#"
-                onClick={() => exportToExcel()}
-                className="btn btn-success ms-2"
-            >
-              <i className="fa fa-excel-o"></i>Excel
-            </a>
           </div>
         </div>
         <div class="tablediv">

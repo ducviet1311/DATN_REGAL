@@ -951,46 +951,6 @@ const AdminDatTaiQuay = () => {
                     style={{ marginTop: "10px", width: "100%" }}
                 >
                   <tbody>
-                  <tr>
-                    {/*<th style={{verticalAlign: "middle", width: "30%"}}>*/}
-                    {/*  Phiếu giảm giá*/}
-                    {/*</th>*/}
-                    {/*<td style={{width: "70%"}}>*/}
-                    {/*  <Select*/}
-                    {/*      className="select-container selectheader"*/}
-                    {/*      options={dotGiamGia}*/}
-                    {/*      value={selectDotGiamGia}*/}
-                    {/*      onChange={(e) => {*/}
-                    {/*        change_dotGiamGia(e);*/}
-                    {/*      }}*/}
-                    {/*      getOptionLabel={(option) =>*/}
-                    {/*          option.id + " - " + option.tenPhieu*/}
-                    {/*      }*/}
-                    {/*      getOptionValue={(option) => option.id}*/}
-                    {/*      placeholder="Chọn phiếu giảm giá"*/}
-                    {/*      styles={{*/}
-                    {/*        container: (provided) => ({*/}
-                    {/*          ...provided,*/}
-                    {/*          width: "100%",*/}
-                    {/*          margin: 0,*/}
-                    {/*        }),*/}
-                    {/*        control: (provided) => ({*/}
-                    {/*          ...provided,*/}
-                    {/*          border: "none",*/}
-                    {/*          boxShadow: "none",*/}
-                    {/*          minHeight: "36px",*/}
-                    {/*        }),*/}
-                    {/*        dropdownIndicator: (provided) => ({*/}
-                    {/*          ...provided,*/}
-                    {/*          padding: "4px",*/}
-                    {/*        }),*/}
-                    {/*        indicatorSeparator: () => ({*/}
-                    {/*          display: "none",*/}
-                    {/*        }),*/}
-                    {/*      }}*/}
-                    {/*  />*/}
-                    {/*</td>*/}
-                  </tr>
                   {/* Tiền hàng */}
                   <tr>
                     <th style={{width: "30%"}}>Tiền hàng</th>
@@ -1006,17 +966,6 @@ const AdminDatTaiQuay = () => {
                       )}
                     </td>
                   </tr>
-                  {/* Giảm giá */}
-                  {/*<tr>*/}
-                  {/*  <th style={{width: "30%"}}>Giảm giá</th>*/}
-                  {/*  <td>*/}
-                  {/*    {selectDotGiamGia.loaiPhieu*/}
-                  {/*        ? formatMoney(selectDotGiamGia.giaTriGiam)*/}
-                  {/*        : `${selectDotGiamGia.giaTriGiam} %` ||*/}
-                  {/*        "________________"}*/}
-                  {/*  </td>*/}
-                  {/*</tr>*/}
-                  {/* Tổng tiền (sau khi áp dụng giảm giá) */}
                   <tr>
                     <th style={{width: "30%"}}>Tổng tiền</th>
                     <td>
