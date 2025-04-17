@@ -91,13 +91,13 @@ public class GioHangController {
         return ResponseEntity.noContent().build();
     }
 
-//    @PostMapping("/tinh-tong")
-//    public ResponseEntity<?> kiemTraPhieu(@RequestBody List<Integer> idGioHang) {
-//        List<GioHang> list = gioHangRepository.findAllById(idGioHang);
-//        Double tong = 0D;
-//        for(GioHang g : list){
-//            tong += g.getSoLuong() * g.getSanPhamChiTiet().getGiaTien();
-//        }
-//        return new ResponseEntity<>(tong, HttpStatus.OK);
-//    }
+    @PostMapping("/tinh-tong")
+    public ResponseEntity<?> kiemTraPhieu(@RequestBody List<Integer> idGioHang) {
+        List<GioHang> list = gioHangRepository.findAllById(idGioHang);
+        Double tong = 0D;
+        for(GioHang g : list){
+            tong += g.getSoLuong() * g.getSanPhamChiTiet().getGiaTien();
+        }
+        return new ResponseEntity<>(tong, HttpStatus.OK);
+    }
 }
