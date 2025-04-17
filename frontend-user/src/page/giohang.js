@@ -547,12 +547,12 @@ function GioHang() {
                   </tr>
                 </tbody>
               </table>
-              <button
-                onClick={() => xacNhanDatHang()}
-                class="form-control btndathang"
-              >
-                Xác nhận đặt hàng
-              </button>
+              {/*<button*/}
+              {/*  onClick={() => xacNhanDatHang()}*/}
+              {/*  class="form-control btndathang"*/}
+              {/*>*/}
+              {/*  Xác nhận đặt hàng*/}
+              {/*</button>*/}
             </div>
           </div>
         </div>

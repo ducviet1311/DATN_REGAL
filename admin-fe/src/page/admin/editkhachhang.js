@@ -295,11 +295,11 @@ const AdminEditKhachHang = () => {
                             </div>
                         </div>
 
-                        {/*<div className="d-flex justify-content-end mt-4">*/}
-                        {/*    <button type="submit" className="btn btn-primary px-4 py-2">*/}
-                        {/*        {label}*/}
-                        {/*    </button>*/}
-                        {/*</div>*/}
+                        <div className="d-flex justify-content-end mt-4">
+                            <button type="submit" className="btn btn-primary px-4 py-2">
+                                {label}
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>
