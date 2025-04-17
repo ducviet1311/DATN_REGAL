@@ -44,11 +44,11 @@ const AdminDotGiamGia = () => {
       setItems(updatedItems); // Cập nhật lại state chỉ khi có thay đổi
     }
   }, [items]); // Dùng items làm dependency để chỉ chạy lại khi items thay đổi
-  // const getDotGiamGia = async () => {
-  //   var response = await getMethod("/api/dot-giam-gia");
-  //   var result = await response.json();
-  //   setItems(result);
-  // };
+  const getDotGiamGia = async () => {
+    var response = await getMethod("/api/dot-giam-gia");
+    var result = await response.json();
+    setItems(result);
+  };
   const handleStatusFilter = (e) => {
     setSelectedStatus(e.target.value); // Lưu trạng thái được chọn
   };
@@ -215,12 +215,12 @@ const AdminDotGiamGia = () => {
                         >
                           <i className="fa fa-trash"></i>
                         </button>
-                        {/*<a*/}
-                        {/*    href={"update-dot-giam-gia?id=" + item.id}*/}
-                        {/*    className="edit-btn"*/}
-                        {/*>*/}
-                        {/*  <i className="fa fa-edit"></i>*/}
-                        {/*</a>*/}
+                        <a
+                            href={"update-dot-giam-gia?id=" + item.id}
+                            className="edit-btn"
+                        >
+                          <i className="fa fa-edit"></i>
+                        </a>
                       </td>
                     </tr>
                 );

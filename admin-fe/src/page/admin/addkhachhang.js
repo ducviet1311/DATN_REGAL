@@ -68,10 +68,10 @@ const AdminAddKhachHang = () => {
       toast.error("Mã KH Không đc để trống");
       return;
     }
-    if (!hoVaTen) {
-      toast.error("Họ tên không được để trống");
-      return;
-    }
+    // if (!hoVaTen) {
+    //   toast.error("Họ tên không được để trống");
+    //   return;
+    // }
     if (!ngaySinh) {
       toast.error("Ngày sinh không được để trống");
       return;
