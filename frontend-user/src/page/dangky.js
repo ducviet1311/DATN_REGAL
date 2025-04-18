@@ -23,7 +23,7 @@ function DangKy(){
         const res = await postMethodPayload('/api/v1/auth/public/register', payload);
         var result = await res.json()
         if (res.status == 417) {
-          toast.warning(result.defaultMessage);
+            toast.warning(result.defaultMessage);
         }
         if(res.status < 300){
             Swal.fire({
@@ -34,49 +34,49 @@ function DangKy(){
                 }
             });
         }
-      };
+    };
 
     return(
         <div class="contentweb">
-        <div class="container">
-            <div class="dangnhapform">
-                <div class="divctlogin">
-                    <p class="labeldangnhap">Đăng Ký</p>
-                    <form onSubmit={handleRegis} autocomplete="off">
-                        <div className='row'>
-                            <div className='col-sm-6'>
-                                <label class="lbform">Email</label>
-                                <input required name='email' type='email' class="inputlogin"/>
-                                <label class="lbform">Họ tên</label>
-                                <input required name='hoten' class="inputlogin"/>
-                                <label class="lbform">Ngày sinh</label>
-                                <input required name='ngaysinh' type='date' class="inputlogin"/>
-                                <label class="lbform">Số điện thoại</label>
-                                <input required name='sdt' class="inputlogin"/>
-                            </div>
-                            <div className='col-sm-6'>
-                                <label class="lbform">Mật khẩu</label>
-                                <input required name='matkhau' type="password" id="password" class="inputlogin"/>
-                                <label class="lbform">Nhập lại mật khẩu</label>
-                                <input required name='repassword' type="password" id="password" class="inputlogin"/>
-                                <label class="lbform">Giới tính</label>
-                                <div className='d-flex' style={{marginTop:'15px'}}>
-                                <label class="radiocustom"> Nam
-                                    <input type="radio" name="gioitinh" value={true} defaultChecked={true}/>
-                                <span class="checkmark"></span></label>
-                                <label class="radiocustom" style={{marginLeft:'20px'}}> Nữ
-                                    <input type="radio" name="gioitinh" value={false}/>
-                                <span class="checkmark"></span></label>
+            <div class="container">
+                <div class="dangnhapform">
+                    <div class="divctlogin">
+                        <p class="labeldangnhap">Đăng Ký</p>
+                        <form onSubmit={handleRegis} autocomplete="off">
+                            <div className='row'>
+                                <div className='col-sm-6'>
+                                    <label class="lbform">Email</label>
+                                    <input required name='email' type='email' class="inputlogin"/>
+                                    <label class="lbform">Họ tên</label>
+                                    <input required name='hoten' class="inputlogin"/>
+                                    <label class="lbform">Ngày sinh</label>
+                                    <input required name='ngaysinh' type='date' class="inputlogin"/>
+                                    <label class="lbform">Số điện thoại</label>
+                                    <input required name='sdt' class="inputlogin"/>
+                                </div>
+                                <div className='col-sm-6'>
+                                    <label class="lbform">Mật khẩu</label>
+                                    <input required name='matkhau' type="password" id="password" class="inputlogin"/>
+                                    <label class="lbform">Nhập lại mật khẩu</label>
+                                    <input required name='repassword' type="password" id="password" class="inputlogin"/>
+                                    <label class="lbform">Giới tính</label>
+                                    <div className='d-flex' style={{marginTop:'15px'}}>
+                                        <label class="radiocustom"> Nam
+                                            <input type="radio" name="gioitinh" value={true} defaultChecked={true}/>
+                                            <span class="checkmark"></span></label>
+                                        <label class="radiocustom" style={{marginLeft:'20px'}}> Nữ
+                                            <input type="radio" name="gioitinh" value={false}/>
+                                            <span class="checkmark"></span></label>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <button class="btndangnhap">ĐĂNG KÝ</button>
-                        <button type="button" onClick={()=>window.location.href='login'} class="btndangky">ĐĂNG NHẬP</button>
-                    </form><br/><br/><br/>
+                            <button class="btndangnhap">ĐĂNG KÝ</button>
+                            <button type="button" onClick={()=>window.location.href='login'} class="btndangky">ĐĂNG NHẬP</button>
+                        </form><br/><br/><br/>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
     );
 }
 export default DangKy;
