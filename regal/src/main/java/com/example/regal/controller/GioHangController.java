@@ -85,19 +85,12 @@ public class GioHangController {
     }
 
     // Xóa giỏ hàng theo ID
-//    @DeleteMapping("/delete/{id}")
-//    public ResponseEntity<Void> deleteGioHang(@PathVariable Integer id) {
-//        gioHangService.deleteGioHang(id);
-//        return ResponseEntity.noContent().build();
-//    }
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteGioHang(@PathVariable Integer id) {
-        if (!gioHangService.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
         gioHangService.deleteGioHang(id);
         return ResponseEntity.noContent().build();
     }
+
 
     //
     @PostMapping("/tinh-tong")
