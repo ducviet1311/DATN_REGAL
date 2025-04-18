@@ -8,10 +8,10 @@ import {
 } from "../../services/request";
 import Swal from "sweetalert2";
 import Select from "react-select";
-import giotrong from "../../assest/images/giotrong.png";
+import giotrong from "../../assest/images/no-cart.png";
 import qrthanhtoan from "../../assest/images/qrthanhtoan.jpg";
 import timo from "../../assest/images/timo.jpg";
-import nodata from "../../assest/images/nodata.png";
+import nodata from "../../assest/images/no-data4.png";
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { formatMoney } from "../../services/money";
@@ -243,13 +243,6 @@ const AdminDatTaiQuay = () => {
         }
       }
     }
-    // else if(selectHoaDonCho.id == 0){
-    //   setSelecDotGiamGia(prevState => ({
-    //     ...prevState,
-    //     giamGia: 0, // Chỉ thay đổi giá trị giamGia
-    //   }));
-
-    // }
 
     // Xử lý khi có `hoadoncho` được truyền vào
     if (hoadoncho != null) {
@@ -262,70 +255,97 @@ const AdminDatTaiQuay = () => {
   }
 
   async function loadChiTietHdCho(item) {
-    var response = await getMethod("/api/v1/hoa-don/find-by-id?id=" + item.id);
-    var result = await response.json();
-    setSelectHoaDonCho(result);
-    const invoiceData = {
-      maHoaDon: result.maHoaDon,
-      nguoitao: result.nguoiTao,
-      date: result.ngayTao,
-      customerName: result.khachHang || "Khách Lẻ", // Tên khách hàng từ response hoặc từ dữ liệu có sẵn
-      // customerAddress: selectHoaDonCho.customerAddress, // Địa chỉ khách hàng
-      items: result.hoaDonChiTiets.map((item) => ({
-        name: item.sanPhamChiTiet?.sanPham.tenSanPham || "", // Tên sản phẩm
-        quantity: item.soLuong, // Số lượng sản phẩm
-        price: item.giaSanPham, // Đơn giá
-      })),
-      total: result.hoaDonChiTiets.reduce((total, item) => {
-        return total + item.soLuong * item.giaSanPham; // Tính tổng tiền của từng mặt hàng
-      }, 0),
-      // Giá trị khởi tạo là 0
-    };
+    try {
+      const response = await getMethod("/api/v1/hoa-don/find-by-id?id=" + item.id);
+      const result = await response.json();
+      setSelectHoaDonCho(result);
 
-    console.log("àd", invoiceData);
-    setDataInvoice(invoiceData);
-    if (result.khachHang != null) setselectKhachHang(result.khachHang);
-    else setselectKhachHang({ id: -1, hoVaTen: "Khách lẻ", soDienThoai: "" });
-    var tong = 0;
-    for (var i = 0; i < result.hoaDonChiTiets.length; i++) {
-      tong =
-          Number(tong) +
-          Number(
-              result.hoaDonChiTiets[i].soLuong * result.hoaDonChiTiets[i].giaSanPham
-          );
+      const invoiceData = {
+        maHoaDon: result.maHoaDon,
+        nguoitao: result.nguoiTao,
+        date: result.ngayTao,
+        soDienThoai: result.khachHang?.soDienThoai || "",
+        customerName: result.khachHang ? result.khachHang.hoVaTen : "Khách Lẻ",
+        items: result.hoaDonChiTiets.map((item) => ({
+          name: item.sanPhamChiTiet?.sanPham.tenSanPham || "",
+          thuongHieu: item.sanPhamChiTiet?.sanPham.thuongHieu.tenThuongHieu || "",
+          mauSac: item.sanPhamChiTiet?.mauSac.tenMauSac || "",
+          kichCo: item.sanPhamChiTiet?.kichCo.tenKichCo || "",
+          quantity: item.soLuong,
+          price: item.giaSanPham,
+        })),
+        total: result.hoaDonChiTiets.reduce((total, item) => {
+          return total + Number(item.soLuong) * Number(item.giaSanPham);
+        }, 0),
+      };
+
+      console.log("Invoice Data:", invoiceData);
+      setDataInvoice(invoiceData);
+
+      // Cập nhật trạng thái khách hàng
+      if (result.khachHang) {
+        setselectKhachHang(result.khachHang);
+      } else {
+        setselectKhachHang({ id: -1, hoVaTen: "Khách lẻ", soDienThoai: "" });
+      }
+
+      // Tính tổng tiền
+      const tong = result.hoaDonChiTiets.reduce((total, item) => {
+        return total + Number(item.soLuong) * Number(item.giaSanPham);
+      }, 0);
+
+      loadDotGiamGia(result);
+      setTongTienNew(tong);
+      setTongTien(tong);
+
+      console.log("Item:", item);
+    } catch (error) {
+      console.error("Lỗi khi tải chi tiết hóa đơn:", error);
+      toast.error("Không thể tải chi tiết hóa đơn");
     }
-    loadDotGiamGia(result);
-    setTongTienNew(tong);
-    setTongTien(tong);
-    // setselectSoluong(item);
-    console.log(item);
   }
-
   async function getKhachHang() {
-    loadDotGiamGia();
-
-    var response = await getMethod("/api/khachhang");
-    var list = await response.json();
-    var arr = [{ id: -1, hoVaTen: "Khách lẻ", soDienThoai: "" }];
-    arr = arr.concat(list);
-    setKhachHang(arr);
+    try {
+      const response = await getMethod("/api/khachhang");
+      const list = await response.json();
+      const arr = [{ id: -1, hoVaTen: "Khách lẻ", soDienThoai: "" }].concat(list);
+      setKhachHang(arr);
+    } catch (error) {
+      console.error("Lỗi khi tải danh sách khách hàng:", error);
+      toast.error("Không thể tải danh sách khách hàng");
+    }
   }
 
   async function CapNhatKhachHang() {
-    var res = await postMethod(
-        "/api/v1/hoa-don/cap-nhat-khach-hang?idKhachHang=" +
-        selectKhachHang.id +
-        "&idHoaDon=" +
-        selectHoaDonCho.id
-    );
-    if (res.status < 300) {
-      toast.success("Cập nhật khách hàng thành công");
-      // var result = await res.json();
-      loadChiTietHdCho(selectHoaDonCho);
-    } else {
-      toast.error("Thất bại");
+    if (!selectHoaDonCho || !selectHoaDonCho.id) {
+      toast.error("Vui lòng chọn hóa đơn trước!");
+      return;
+    }
+    if (!selectKhachHang || selectKhachHang.id === undefined) {
+      toast.error("Vui lòng chọn khách hàng!");
+      return;
+    }
+
+    try {
+      const res = await postMethod(
+          "/api/v1/hoa-don/cap-nhat-khach-hang?idKhachHang=" +
+          selectKhachHang.id +
+          "&idHoaDon=" +
+          selectHoaDonCho.id
+      );
+      if (res.status < 300) {
+        toast.success("Cập nhật khách hàng thành công");
+        loadChiTietHdCho(selectHoaDonCho);
+      } else {
+        const errorData = await res.json();
+        toast.error(errorData.message || "Cập nhật thất bại");
+      }
+    } catch (error) {
+      console.error("Lỗi khi cập nhật khách hàng:", error);
+      toast.error("Có lỗi xảy ra khi cập nhật khách hàng");
     }
   }
+
 
   async function getChiTietSanPham() {
     var payload = {
@@ -668,9 +688,11 @@ const AdminDatTaiQuay = () => {
             id="anh"
             style={{
               margin: "12.5rem",
+              marginLeft:"30rem"
+
             }}
         >
-          <img className="imganhnodata" src={nodata} />
+          <img className="divrong" src={nodata} />
         </div>
 
         <div id="an">
@@ -951,6 +973,47 @@ const AdminDatTaiQuay = () => {
                     style={{ marginTop: "10px", width: "100%" }}
                 >
                   <tbody>
+                  {/* Thông tin giảm giá */}
+                  <tr>
+                    {/*<th style={{verticalAlign: "middle", width: "30%"}}>*/}
+                    {/*  Phiếu giảm giá*/}
+                    {/*</th>*/}
+                    {/*<td style={{width: "70%"}}>*/}
+                    {/*  <Select*/}
+                    {/*      className="select-container selectheader"*/}
+                    {/*      options={dotGiamGia}*/}
+                    {/*      value={selectDotGiamGia}*/}
+                    {/*      onChange={(e) => {*/}
+                    {/*        change_dotGiamGia(e);*/}
+                    {/*      }}*/}
+                    {/*      getOptionLabel={(option) =>*/}
+                    {/*          option.id + " - " + option.tenPhieu*/}
+                    {/*      }*/}
+                    {/*      getOptionValue={(option) => option.id}*/}
+                    {/*      placeholder="Chọn phiếu giảm giá"*/}
+                    {/*      styles={{*/}
+                    {/*        container: (provided) => ({*/}
+                    {/*          ...provided,*/}
+                    {/*          width: "100%",*/}
+                    {/*          margin: 0,*/}
+                    {/*        }),*/}
+                    {/*        control: (provided) => ({*/}
+                    {/*          ...provided,*/}
+                    {/*          border: "none",*/}
+                    {/*          boxShadow: "none",*/}
+                    {/*          minHeight: "36px",*/}
+                    {/*        }),*/}
+                    {/*        dropdownIndicator: (provided) => ({*/}
+                    {/*          ...provided,*/}
+                    {/*          padding: "4px",*/}
+                    {/*        }),*/}
+                    {/*        indicatorSeparator: () => ({*/}
+                    {/*          display: "none",*/}
+                    {/*        }),*/}
+                    {/*      }}*/}
+                    {/*  />*/}
+                    {/*</td>*/}
+                  </tr>
                   {/* Tiền hàng */}
                   <tr>
                     <th style={{width: "30%"}}>Tiền hàng</th>
@@ -958,14 +1021,25 @@ const AdminDatTaiQuay = () => {
                       {formatMoney(
                           selectHoaDonCho != null
                               ? selectHoaDonCho.hoaDonChiTiets.reduce(
-                                  (tong, sanPham) =>
-                                      tong + sanPham.giaSanPham * sanPham.soLuong,
-                                  0
+                              (tong, sanPham) =>
+                                  tong + sanPham.giaSanPham * sanPham.soLuong,
+                              0
                               )
                               : 0
                       )}
                     </td>
                   </tr>
+                  {/* Giảm giá */}
+                  {/*<tr>*/}
+                  {/*  <th style={{width: "30%"}}>Giảm giá</th>*/}
+                  {/*  <td>*/}
+                  {/*    {selectDotGiamGia.loaiPhieu*/}
+                  {/*        ? formatMoney(selectDotGiamGia.giaTriGiam)*/}
+                  {/*        : `${selectDotGiamGia.giaTriGiam} %` ||*/}
+                  {/*        "________________"}*/}
+                  {/*  </td>*/}
+                  {/*</tr>*/}
+                  {/* Tổng tiền (sau khi áp dụng giảm giá) */}
                   <tr>
                     <th style={{width: "30%"}}>Tổng tiền</th>
                     <td>
@@ -1195,6 +1269,7 @@ const AdminDatTaiQuay = () => {
                       <thead>
                       <tr>
                         <th>STT</th>
+                        <th>Ảnh</th>
                         <th>Sản phẩm</th>
                         <th>Giá bán</th>
                         <th>Hành động</th>
@@ -1205,6 +1280,12 @@ const AdminDatTaiQuay = () => {
                           filteredSanPham.map((item, index) => (
                               <tr key={index}>
                                 <td>{index + 1}</td>
+                                <td>
+                                  <img
+                                      src={item.anhs[0].tenAnh}
+                                      className="imgtable"
+                                  />
+                                </td>
                                 <td>
                                   {item.sanPham?.maSanPham} -{" "}
                                   {item.sanPham?.tenSanPham}
@@ -1375,7 +1456,7 @@ const AdminDatTaiQuay = () => {
                             marginBottom: "10px",
                           }}
                       />
-                      <span>Timo</span>
+                      <span>MB Bank</span>
                     </div>
                   </div>
 
