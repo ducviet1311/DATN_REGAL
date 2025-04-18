@@ -40,6 +40,7 @@ a {
 .divctlogin {
   width: 70%;
   margin-left: 15%;
+  margin-top: 60px;
   padding: 70px 150px;
   border-radius: 15px;
   -webkit-box-shadow: 0 0 10px #cfcfcf;
@@ -68,9 +69,8 @@ a {
   font-size: 0.9rem;
 }
 .btndangnhap {
-  background: transparent linear-gradient(180deg, #ff5645 0%, #262626 100%) 0%
-    0% no-repeat padding-box;
-  box-shadow: 0 4px 6px #00000029;
+  background: transparent linear-gradient(180deg, #e50914 0%, #000000 100%) 0%
+  0% no-repeat padding-box;
   border-radius: 3px;
   color: #fff;
   border: none;
@@ -78,17 +78,28 @@ a {
   margin-top: 30px;
   width: 46%;
   float: left;
+  transition: opacity 0.3s ease;
+}
+
+.btndangnhap:hover {
+  opacity: 0.9;
 }
 .btndoimk {
-  background: transparent linear-gradient(180deg, #00917a 0%, #00483d 100%) 0%
-    0% no-repeat padding-box;
+  background: white;
   box-shadow: 0 4px 6px #00000029;
   border-radius: 3px;
-  color: #fff;
-  border: none;
+  color: #000000; /* Đổi màu chữ sang màu tối để đọc được trên nền trắng */
+  border: 1px solid #2F80ED; /* Thêm viền để button rõ ràng hơn */
   padding: 10px;
   margin-top: 30px;
   width: 50%;
+  transition: background 0.3s ease; /* Thêm hiệu ứng chuyển đổi mượt mà */
+}
+
+.btndoimk:hover {
+  background: linear-gradient(180deg, #116be3 0%, #1468d9 100%);
+  color: white; /* Đổi màu chữ sang trắng khi hover */
+  border-color: transparent; /* Ẩn viền khi hover */
 }
 .btndangky {
   background: #fff;
@@ -1399,14 +1410,14 @@ tr {
 }
 
 .select2-container--default
-  .select2-selection--single
-  .select2-selection__rendered {
+.select2-selection--single
+.select2-selection__rendered {
   color: #495057; /* Màu chữ giống với .form-control */
 }
 
 .select2-container--default
-  .select2-selection--single
-  .select2-selection__arrow {
+.select2-selection--single
+.select2-selection__arrow {
   height: 100%;
   top: 0; /* Đặt mũi tên ở giữa */
   right: 0.75rem; /* Khoảng cách bên phải */
@@ -1514,7 +1525,7 @@ tr {
 }
 .tablepay {
   // border: 1px solid #e0e0d1;
-  /* border-collapse:separate; 
+  /* border-collapse:separate;
     border-spacing: 0 1em; */
 }
 
@@ -2048,3 +2059,12 @@ input[type="checkbox"] {
   display: flex;
   padding: 10px;
 }
+/* Hiệu ứng zoom cho hình ảnh khi hover */
+.hover-scale {
+  transition: transform 0.3s ease;
+}
+
+.hover-scale:hover {
+  transform: scale(1.05); /* Phóng to 5% */
+}
+
