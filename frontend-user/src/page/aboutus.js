@@ -37,7 +37,7 @@ const AboutUs = () => {
       marginBottom: "5px",
     },
   };
-
+  //fix
   return (
     <div style={styles.container}>
         <br></br>
