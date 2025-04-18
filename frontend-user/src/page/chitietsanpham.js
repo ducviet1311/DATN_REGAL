@@ -40,7 +40,6 @@ function ChiTietSanPham() {
     if (id != null) {
       var response = await getMethod("/api/san-pham/" + id);
       var result = await response.json();
-
       setProduct(result);
     }
   };
@@ -113,7 +112,6 @@ function ChiTietSanPham() {
     }
     setKichthuoc(listkichthuoc);
     setindexkichthuoc(-1);
-
     setSelectChiTiet(null);
     console.log("ksdf", listkichthuoc);
   }
@@ -124,6 +122,14 @@ function ChiTietSanPham() {
   }
 
   async function addToCart() {
+    // Check if user is logged in by verifying token in localStorage
+    const token = localStorage.getItem("token"); // Adjust based on your auth method
+    if (!token) {
+      toast.warning("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng!");
+      window.location.href = "/login";
+      return;
+    }
+
     var sl = document.getElementById("soluongaddgiohang").value;
     if (sl > selectChiTiet.soLuong) {
       toast.warning(
@@ -153,6 +159,7 @@ function ChiTietSanPham() {
     }
     document.getElementById("soluongaddgiohang").value = sl;
   }
+
   function checkSoLuong() {
     var sl = document.getElementById("soluongaddgiohang").value;
     if (isNumeric(sl) == false) {
@@ -175,24 +182,19 @@ function ChiTietSanPham() {
                 <div className="col-sm-12">
                   <div className="row">
                     <div className="col-sm-7">
-                      {/* Phần carousel ảnh (giữ nguyên) */}
                       <div id="carouselExampleControls" className="carousel slide bannerindex" data-bs-ride="carousel">
                         <div className="carousel-inner carousel-chitiet">
-                          {/* Ảnh đầu tiên từ productAnh, có class 'active' */}
                           <div className="carousel-item active">
                             <img src={productAnh} className="d-block w-100" alt="..."/>
                           </div>
-
-                          {/* Các ảnh khác từ anhs.map() */}
                           {anhs
-                              .filter((item) => item.tenAnh !== productAnh) // Lọc tránh ảnh trùng
+                              .filter((item) => item.tenAnh !== productAnh)
                               .map((item, index) => (
                                   <div className="carousel-item" key={index}>
                                     <img src={item.tenAnh} className="d-block w-100" alt="..."/>
                                   </div>
                               ))}
                         </div>
-
                         <button
                             className="carousel-control-prev"
                             type="button"
@@ -201,7 +203,6 @@ function ChiTietSanPham() {
                         >
                           <span className="carousel-control-prev-icon" aria-hidden="true"></span>
                         </button>
-
                         <button
                             className="carousel-control-next"
                             type="button"
@@ -211,8 +212,6 @@ function ChiTietSanPham() {
                           <span className="carousel-control-next-icon" aria-hidden="true"></span>
                         </button>
                       </div>
-
-                      {/* Di chuyển phần thông tin sản phẩm xuống đây */}
                       <div className="cauhinhchitiet mt-4">
                         <p className="tieudesanpham">Thông tin sản phẩm</p>
                         <div id="thongtincauhinh" className="thongtincauhinhdv">
@@ -231,7 +230,6 @@ function ChiTietSanPham() {
                         </div>
                       </div>
                     </div>
-
                     <div className="col-sm-5">
                       <h4 className="pronamedetail" id="detailnamepro">
                         {product?.tenSanPham}
@@ -249,7 +247,6 @@ function ChiTietSanPham() {
                         >
                           {formatMoney(giaTien)}
                         </strong>
-
                         <p style={{
                           color: "red",
                           margin: "8px 0",
@@ -259,7 +256,6 @@ function ChiTietSanPham() {
                           <i className="fa fa-check" aria-hidden="true" style={{marginRight: "8px"}}></i>
                           Tặng gói bảo hành Vip: Bảo hành keo trọn đời, da 1 năm (vẫn hỗ trợ kể cả do lỗi người dùng)
                         </p>
-
                         <p style={{
                           color: "red",
                           margin: "8px 0",
@@ -270,8 +266,6 @@ function ChiTietSanPham() {
                           Hỗ trợ đổi size tại nhà
                         </p>
                       </div>
-
-                      {/* Phần chọn màu sắc và kích thước (giữ nguyên) */}
                       <span id="storagedetaillable" className="storagedetaillable">
                   Lựa chọn màu sắc
                 </span>
@@ -291,7 +285,6 @@ function ChiTietSanPham() {
                           );
                         })}
                       </div>
-
                       {kichthuoc.length != 0 && (
                           <span id="storagedetaillable" className={`storagedetaillable`} style={{marginTop:"-25px"}}>
                     Lựa chọn kích thước
@@ -331,8 +324,6 @@ function ChiTietSanPham() {
                           );
                         })}
                       </div>
-
-                      {/* Nhóm phần chọn số lượng và nút thêm giỏ hàng lại gần nhau */}
                       <div style={{marginTop: '20px'}}>
                   <span id="storagedetaillable" className="storagedetaillable">
                     Lựa chọn số lượng
@@ -343,7 +334,6 @@ function ChiTietSanPham() {
                                  className="inputslcart"/>
                           <button onClick={() => upDownQuantity(1)} className="cartbtn"> +</button>
                         </div>
-
                         <button
                             disabled={selectChiTiet == null}
                             onClick={() => addToCart()}
@@ -355,8 +345,6 @@ function ChiTietSanPham() {
                       </div>
                     </div>
                   </div>
-
-                  {/* Phần sản phẩm cùng thương hiệu (giữ nguyên) */}
                   <div className="sanphamtuongtudetail">
                     <p className="tieudesanpham">Sản phẩm cùng thương hiệu</p>
                     <div id="listsanphamlienquan" className="row">
@@ -394,7 +382,6 @@ function ChiTietSanPham() {
           </div>
         </div>
       </div>
-
   );
 }
 
