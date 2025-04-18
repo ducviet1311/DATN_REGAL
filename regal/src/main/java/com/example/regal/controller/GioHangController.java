@@ -91,6 +91,8 @@ public class GioHangController {
         return ResponseEntity.noContent().build();
     }
 
+
+    //
     @PostMapping("/tinh-tong")
     public ResponseEntity<?> kiemTraPhieu(@RequestBody List<Integer> idGioHang) {
         List<GioHang> list = gioHangRepository.findAllById(idGioHang);
