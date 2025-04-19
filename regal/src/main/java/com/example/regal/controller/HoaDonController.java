@@ -17,13 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -110,7 +104,7 @@ public class HoaDonController {
         lichSuHoaDon.setNgayTao(new Timestamp(System.currentTimeMillis()));
         lichSuHoaDonRepository.save(lichSuHoaDon);
 
-        if(trangThai == 6 || trangThai == 7){
+        if(trangThai == 6 || trangThai == 8){
             List<HoaDonChiTiet> hoaDonChiTiets = hoaDon.get().getHoaDonChiTiets();
             for(HoaDonChiTiet h : hoaDonChiTiets){
                 h.getSanPhamChiTiet().setSoLuong(h.getSoLuong() + h.getSanPhamChiTiet().getSoLuong());
@@ -454,4 +448,36 @@ public class HoaDonController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<?> searchHoaDon(
+            Pageable pageable,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Integer trangthai,
+            @RequestParam(required = false) Boolean loaiHoaDon) {
+        Page<HoaDon> page;
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            page = hoaDonRepository.searchHoaDon(keyword.trim(), trangthai, loaiHoaDon, pageable);
+        } else {
+            if (trangthai != null && loaiHoaDon != null) {
+                page = hoaDonRepository.findByTrangThaiAndLoaiHoaDon(trangthai, loaiHoaDon, pageable);
+            } else if (trangthai != null) {
+                page = hoaDonRepository.findByTrangThai(trangthai, pageable);
+            } else if (loaiHoaDon != null) {
+                page = hoaDonRepository.findByLoaiHoaDon(loaiHoaDon, pageable);
+            } else {
+                page = hoaDonRepository.findAllHd(pageable);
+            }
+        }
+        return new ResponseEntity<>(page, HttpStatus.OK);
+    }
+
+    @GetMapping("/loai-hoa-don-options")
+    public ResponseEntity<?> getLoaiHoaDonOptions() {
+        List<Map<String, Object>> options = List.of(
+                Map.of("value", true, "label", "Đặt hàng online"),
+                Map.of("value", false, "label", "Thanh toán tại quầy")
+        );
+        return new ResponseEntity<>(options, HttpStatus.OK);
+    }
 }
