@@ -10,15 +10,8 @@ import com.example.regal.service.AnhService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
-
-import org.apache.naming.java.javaURLContextFactory.sql.Timestamp;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -51,15 +44,19 @@ public class AnhController {
     }
 
     @PostMapping("")
-    public void addAnh(@RequestBody List<String> listLink, @RequestParam Integer chiTietSanPhamId){
-        Optional<SanPhamChiTiet> sanPhamChiTiet = sanPhamChiTietRepository.findById(chiTietSanPhamId);
-        if(sanPhamChiTiet.isEmpty()){
+    public void updateAnh(@RequestBody List<String> listLink, @RequestParam Integer chiTietSanPhamId) {
+        Optional<SanPhamChiTiet> sanPhamChiTietOpt = sanPhamChiTietRepository.findById(chiTietSanPhamId);
+        if (sanPhamChiTietOpt.isEmpty()) {
             throw new MessageException("Không tồn tại sản phẩm chi tiết");
         }
-        for(String s : listLink){
+
+        SanPhamChiTiet sanPhamChiTiet = sanPhamChiTietOpt.get();
+        anhRepository.deleteBySanPhamChiTiet(sanPhamChiTiet); // Xóa ảnh cũ trước khi thêm mới
+
+        for (String s : listLink) {
             Anh anh = new Anh();
             anh.setTenAnh(s);
-            anh.setSanPhamChiTiet(sanPhamChiTiet.get());
+            anh.setSanPhamChiTiet(sanPhamChiTiet);
             anh.setNgayTao(new Timestamp(System.currentTimeMillis()));
             anh.setTrangThai(true);
             anhRepository.save(anh);
