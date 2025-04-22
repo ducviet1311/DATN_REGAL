@@ -91,12 +91,12 @@ public class SanPhamChiTietController {
     }
 
 
-    @PostMapping("/public/loc-chi-tiet-san-pham-list")
-    public ResponseEntity<?> locSanPhamChiTiet(@RequestBody ChiTietSpSearch search) {
-        SanPhamChiTietSpecification sp = new SanPhamChiTietSpecification(search.getThuongHieuId(), search.getChatLieuId(), search.getDeGiayId(), search.getMauSacId(), search.getKichThuocId());
-        List<SanPhamChiTiet> sanPhamList = sanPhamChiTietRepository.findAll(sp);
-        return ResponseEntity.ok(sanPhamList.stream().filter(i -> i.getTrangThai() == 1));
-    }
+//    @PostMapping("/public/loc-chi-tiet-san-pham-list")
+//    public ResponseEntity<?> locSanPhamChiTiet(@RequestBody ChiTietSpSearch search) {
+//        SanPhamChiTietSpecification sp = new SanPhamChiTietSpecification(search.getThuongHieuId(), search.getChatLieuId(), search.getDeGiayId(), search.getMauSacId(), search.getKichThuocId());
+//        List<SanPhamChiTiet> sanPhamList = sanPhamChiTietRepository.findAll(sp);
+//        return ResponseEntity.ok(sanPhamList.stream().filter(i -> i.getTrangThai() == 1));
+//    }
 
     @GetMapping("/check-exist")
     public ResponseEntity<?> checkExist(
