@@ -1,5 +1,5 @@
-import {useState, useEffect, useRef} from "react";
-import {toast} from "react-toastify";
+import { useState, useEffect, useRef } from "react";
+import { toast } from "react-toastify";
 import {
     getMethod,
     deleteMethod,
@@ -14,15 +14,14 @@ import timo from "../../assest/images/timo.jpg";
 import nodata from "../../assest/images/no-data4.png";
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import {formatMoney} from "../../services/money";
-import {Modal, Button} from "react-bootstrap";
-import {Nav} from "react-bootstrap"; // Import Nav
-import {FaTimesCircle, FaCreditCard} from "react-icons/fa";
-import {InputGroup, Form} from "react-bootstrap";
+import { formatMoney } from "../../services/money";
+import { Modal, Button } from "react-bootstrap";
+import { Nav } from "react-bootstrap"; // Import Nav
+import { FaTimesCircle, FaCreditCard } from "react-icons/fa";
+import { InputGroup, Form } from "react-bootstrap";
 import Invoice from "./invoice";
-import {jsPDF} from "jspdf";
+import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
-
 const AdminDatTaiQuay = () => {
     const [hoaDonCho, sethoaDonCho] = useState([]);
     const [khachHang, setKhachHang] = useState([]);
@@ -77,7 +76,7 @@ const AdminDatTaiQuay = () => {
         if (!element) return;
 
         // Tạo PDF từ nội dung hóa đơn
-        const canvas = await html2canvas(element, {scale: 3});
+        const canvas = await html2canvas(element, { scale: 3 });
         const imgData = canvas.toDataURL("image/png");
         const pdf = new jsPDF("p", "mm", "a4");
         const pdfWidth = pdf.internal.pageSize.getWidth();
@@ -287,7 +286,7 @@ const AdminDatTaiQuay = () => {
             if (result.khachHang) {
                 setselectKhachHang(result.khachHang);
             } else {
-                setselectKhachHang({id: -1, hoVaTen: "Khách lẻ", soDienThoai: ""});
+                setselectKhachHang({ id: -1, hoVaTen: "Khách lẻ", soDienThoai: "" });
             }
 
             // Tính tổng tiền
@@ -305,12 +304,11 @@ const AdminDatTaiQuay = () => {
             toast.error("Không thể tải chi tiết hóa đơn");
         }
     }
-
     async function getKhachHang() {
         try {
             const response = await getMethod("/api/khachhang");
             const list = await response.json();
-            const arr = [{id: -1, hoVaTen: "Khách lẻ", soDienThoai: ""}].concat(list);
+            const arr = [{ id: -1, hoVaTen: "Khách lẻ", soDienThoai: "" }].concat(list);
             setKhachHang(arr);
         } catch (error) {
             console.error("Lỗi khi tải danh sách khách hàng:", error);
@@ -625,13 +623,17 @@ const AdminDatTaiQuay = () => {
         setShowModal(false);
     };
 
+    async function reset() {
+        tienThua = "0";
+        soTienThanhToan = "0";
+    }
     console.log("self", selectDotGiamGia);
     return (
-        <div style={{marginBottom: "150px", boxSizing: "border-box"}}>
+        <div style={{ marginBottom: "150px", boxSizing: "border-box" }}>
             {/* Header */}
             <div
                 className="headerpageadmin d-flex justify-content-between align-items-center p-3 bg-light border"
-                style={{boxSizing: "border-box"}}
+                style={{ boxSizing: "border-box" }}
             >
                 <strong className="text-left">
                     <i className="fa fa-list"></i> Bán hàng tại quầy
@@ -670,7 +672,7 @@ const AdminDatTaiQuay = () => {
                             {`Đơn hàng ${index + 1} + HĐ ${item.id}`}
                             {/* Icon xóa - Giống phần xóa trong bảng */}
                             <FaTimesCircle
-                                style={{marginLeft: "10px", color: "red", cursor: "pointer"}}
+                                style={{ marginLeft: "10px", color: "red", cursor: "pointer" }}
                                 onClick={(e) => {
                                     e.stopPropagation(); // Ngăn chặn click ngoài ý muốn
                                     handleShowDeleteModal(item.id); // Gọi hàm xóa và hiển thị modal xác nhận
@@ -680,17 +682,17 @@ const AdminDatTaiQuay = () => {
                     </Nav.Item>
                 ))}
             </Nav>
-            <hr/>
+            <hr />
 
             <div
                 id="anh"
                 style={{
                     margin: "12.5rem",
-                    marginLeft: "30rem"
+                    marginLeft:"30rem"
 
                 }}
             >
-                <img className="divrong" src={nodata}/>
+                <img className="divrong" src={nodata} />
             </div>
 
             <div id="an">
@@ -711,7 +713,7 @@ const AdminDatTaiQuay = () => {
                 <div className="listSpChon">
                     {selectHoaDonCho?.hoaDonChiTiets.length == 0 ? (
                         <div className="divrong">
-                            <img className="imganhgiohangrong" src={giotrong}/>
+                            <img className="imganhgiohangrong" src={giotrong} />
                         </div>
                     ) : (
                         <div className="divlistspct">
@@ -742,17 +744,17 @@ const AdminDatTaiQuay = () => {
                                             <td>
                                                 {item.sanPhamChiTiet.sanPham?.maSanPham} -{" "}
                                                 {item.sanPhamChiTiet.sanPham?.tenSanPham}
-                                                <br/>
+                                                <br />
                                                 Chất liệu:{" "}
                                                 {item.sanPhamChiTiet.sanPham.chatLieu.tenChatLieu}
-                                                <br/>
+                                                <br />
                                                 Đế giày: {item.sanPhamChiTiet.sanPham.deGiay.tenDeGiay}
-                                                <br/>
+                                                <br />
                                                 Thương hiệu:{" "}
                                                 {item.sanPhamChiTiet.sanPham.thuongHieu.tenThuongHieu}
-                                                <br/>
+                                                <br />
                                                 Kích thước: {item.sanPhamChiTiet.kichCo.tenKichCo}
-                                                <br/>
+                                                <br />
                                                 Màu sắc: {item.sanPhamChiTiet.mauSac.tenMauSac}
                                                 <span
                                                     class="square"
@@ -760,7 +762,7 @@ const AdminDatTaiQuay = () => {
                                                         background: item.sanPhamChiTiet.mauSac.maMauSac,
                                                     }}
                                                 ></span>
-                                                <br/>
+                                                <br />
                                                 {item.sanPhamChiTiet.soLuong}
                                             </td>
                                             <td>
@@ -870,7 +872,7 @@ const AdminDatTaiQuay = () => {
                                                 >
                                                     <i
                                                         className="fa fa-trash"
-                                                        style={{fontSize: "14px"}}
+                                                        style={{ fontSize: "14px" }}
                                                     ></i>
                                                 </button>
                                             </td>
@@ -881,7 +883,7 @@ const AdminDatTaiQuay = () => {
                         </div>
                     )}
                 </div>
-                <hr/>
+                <hr />
 
                 <div
                     className="row"
@@ -900,7 +902,7 @@ const AdminDatTaiQuay = () => {
                         }}
                     >
                         {/* Thông tin khách hàng */}
-                        <div className="dssanphamhoadon" style={{padding: "10px"}}>
+                        <div className="dssanphamhoadon" style={{ padding: "10px" }}>
                             <div
                                 className="d-flex"
                                 style={{
@@ -919,7 +921,7 @@ const AdminDatTaiQuay = () => {
                                     </strong>
                                 </div>
                             </div>
-                            <div className="row mt-3" style={{marginTop: "1rem"}}>
+                            <div className="row mt-3" style={{ marginTop: "1rem" }}>
                                 <div className="col-sm-7">
                                     <Select
                                         className="select-container selectheader"
@@ -937,7 +939,7 @@ const AdminDatTaiQuay = () => {
                                     <button
                                         onClick={() => CapNhatKhachHang()}
                                         className="btn btn-primary w-100"
-                                        style={{marginTop: "1px"}}
+                                        style={{ marginTop: "1px" }}
                                     >
                                         Chọn khách hàng
                                     </button>
@@ -955,7 +957,7 @@ const AdminDatTaiQuay = () => {
                         }}
                     >
                         {/* Thông tin hóa đơn */}
-                        <div className="dssanphamhoadon" style={{padding: "10px"}}>
+                        <div className="dssanphamhoadon" style={{ padding: "10px" }}>
                             <div
                                 className="d-flex"
                                 style={{
@@ -968,9 +970,50 @@ const AdminDatTaiQuay = () => {
                             </div>
                             <table
                                 className="table mt-3"
-                                style={{marginTop: "10px", width: "100%"}}
+                                style={{ marginTop: "10px", width: "100%" }}
                             >
                                 <tbody>
+                                {/* Thông tin giảm giá */}
+                                <tr>
+                                    {/*<th style={{verticalAlign: "middle", width: "30%"}}>*/}
+                                    {/*  Phiếu giảm giá*/}
+                                    {/*</th>*/}
+                                    {/*<td style={{width: "70%"}}>*/}
+                                    {/*  <Select*/}
+                                    {/*      className="select-container selectheader"*/}
+                                    {/*      options={dotGiamGia}*/}
+                                    {/*      value={selectDotGiamGia}*/}
+                                    {/*      onChange={(e) => {*/}
+                                    {/*        change_dotGiamGia(e);*/}
+                                    {/*      }}*/}
+                                    {/*      getOptionLabel={(option) =>*/}
+                                    {/*          option.id + " - " + option.tenPhieu*/}
+                                    {/*      }*/}
+                                    {/*      getOptionValue={(option) => option.id}*/}
+                                    {/*      placeholder="Chọn phiếu giảm giá"*/}
+                                    {/*      styles={{*/}
+                                    {/*        container: (provided) => ({*/}
+                                    {/*          ...provided,*/}
+                                    {/*          width: "100%",*/}
+                                    {/*          margin: 0,*/}
+                                    {/*        }),*/}
+                                    {/*        control: (provided) => ({*/}
+                                    {/*          ...provided,*/}
+                                    {/*          border: "none",*/}
+                                    {/*          boxShadow: "none",*/}
+                                    {/*          minHeight: "36px",*/}
+                                    {/*        }),*/}
+                                    {/*        dropdownIndicator: (provided) => ({*/}
+                                    {/*          ...provided,*/}
+                                    {/*          padding: "4px",*/}
+                                    {/*        }),*/}
+                                    {/*        indicatorSeparator: () => ({*/}
+                                    {/*          display: "none",*/}
+                                    {/*        }),*/}
+                                    {/*      }}*/}
+                                    {/*  />*/}
+                                    {/*</td>*/}
+                                </tr>
                                 {/* Tiền hàng */}
                                 <tr>
                                     <th style={{width: "30%"}}>Tiền hàng</th>
@@ -986,6 +1029,17 @@ const AdminDatTaiQuay = () => {
                                         )}
                                     </td>
                                 </tr>
+                                {/* Giảm giá */}
+                                {/*<tr>*/}
+                                {/*  <th style={{width: "30%"}}>Giảm giá</th>*/}
+                                {/*  <td>*/}
+                                {/*    {selectDotGiamGia.loaiPhieu*/}
+                                {/*        ? formatMoney(selectDotGiamGia.giaTriGiam)*/}
+                                {/*        : `${selectDotGiamGia.giaTriGiam} %` ||*/}
+                                {/*        "________________"}*/}
+                                {/*  </td>*/}
+                                {/*</tr>*/}
+                                {/* Tổng tiền (sau khi áp dụng giảm giá) */}
                                 <tr>
                                     <th style={{width: "30%"}}>Tổng tiền</th>
                                     <td>
@@ -1070,7 +1124,7 @@ const AdminDatTaiQuay = () => {
                         <Modal.Title>Xác nhận đặt hàng</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        Bạn có chắc chắn muốn xác nhận đặt hàng không? <br/>
+                        Bạn có chắc chắn muốn xác nhận đặt hàng không? <br />
                         <strong>Hành động này không thể quay lại!</strong>
                     </Modal.Body>
                     <Modal.Footer>
@@ -1119,7 +1173,7 @@ const AdminDatTaiQuay = () => {
                                         justifyContent: "space-between",
                                     }}
                                 >
-                                    <div style={{flex: "1 1 calc(20% - 10px)"}}>
+                                    <div style={{ flex: "1 1 calc(20% - 10px)" }}>
                                         <label className="lb-form">Chọn thương hiệu</label>
                                         <Select
                                             options={thuongHieu}
@@ -1129,7 +1183,7 @@ const AdminDatTaiQuay = () => {
                                             getOptionValue={(option) => option.id}
                                         />
                                     </div>
-                                    <div style={{flex: "1 1 calc(20% - 10px)"}}>
+                                    <div style={{ flex: "1 1 calc(20% - 10px)" }}>
                                         <label className="lb-form">Chọn chất liệu</label>
                                         <Select
                                             options={chatlieu}
@@ -1139,7 +1193,7 @@ const AdminDatTaiQuay = () => {
                                             getOptionValue={(option) => option.id}
                                         />
                                     </div>
-                                    <div style={{flex: "1 1 calc(20% - 10px)"}}>
+                                    <div style={{ flex: "1 1 calc(20% - 10px)" }}>
                                         <label className="lb-form">Chọn đế giày</label>
                                         <Select
                                             options={deGiay}
@@ -1149,7 +1203,7 @@ const AdminDatTaiQuay = () => {
                                             getOptionValue={(option) => option.id}
                                         />
                                     </div>
-                                    <div style={{flex: "1 1 calc(20% - 10px)"}}>
+                                    <div style={{ flex: "1 1 calc(20% - 10px)" }}>
                                         <label className="lb-form">Chọn màu sắc</label>
                                         <Select
                                             options={mauSac}
@@ -1159,7 +1213,7 @@ const AdminDatTaiQuay = () => {
                                             getOptionValue={(option) => option.id}
                                         />
                                     </div>
-                                    <div style={{flex: "1 1 calc(20% - 10px)"}}>
+                                    <div style={{ flex: "1 1 calc(20% - 10px)" }}>
                                         <label className="lb-form">Chọn kích thước</label>
                                         <Select
                                             options={kichThuoc}
@@ -1169,16 +1223,13 @@ const AdminDatTaiQuay = () => {
                                             getOptionValue={(option) => option.id}
                                         />
                                     </div>
-                                    <div style={{flex: "1 1 20%", maxWidth: "500px"}}>
+                                    <div style={{ flex: "1 1 20%", maxWidth: "500px" }}>
                                         <label className="lb-form">Tìm kiếm sản phẩm</label>
                                         <InputGroup
-                                            style={{display: "flex", alignItems: "center"}}
+                                            style={{ display: "flex", alignItems: "center" }}
                                         >
                                             <Form.Control
-                                                style={{
-                                                    flex: "1",
-                                                    padding: "0.375rem 0.75rem"
-                                                }} // Giảm kích thước và sát nút
+                                                style={{ flex: "1", padding: "0.375rem 0.75rem" }} // Giảm kích thước và sát nút
                                                 placeholder="Nhập từ khóa tìm kiếm"
                                                 value={searchKeyword}
                                                 onChange={(e) => setSearchKeyword(e.target.value)}
@@ -1194,7 +1245,7 @@ const AdminDatTaiQuay = () => {
                                         marginTop: "20px",
                                     }}
                                 >
-                                    <div style={{flex: "0 0 15%"}}>
+                                    <div style={{ flex: "0 0 15%" }}>
                                         <button
                                             onClick={getChiTietSanPham}
                                             className="btn btn-primary form-control"
@@ -1202,7 +1253,7 @@ const AdminDatTaiQuay = () => {
                                             Lọc sản phẩm
                                         </button>
                                     </div>
-                                    <div style={{flex: "0 0 10%"}}>
+                                    <div style={{ flex: "0 0 10%" }}>
                                         <button
                                             onClick={resetFilters}
                                             className="btn btn-secondary form-control"
@@ -1212,7 +1263,7 @@ const AdminDatTaiQuay = () => {
                                     </div>
                                 </div>
 
-                                <br/>
+                                <br />
                                 <div className="dsChitietsp">
                                     <table className="table table-bordered">
                                         <thead>
@@ -1238,22 +1289,22 @@ const AdminDatTaiQuay = () => {
                                                     <td>
                                                         {item.sanPham?.maSanPham} -{" "}
                                                         {item.sanPham?.tenSanPham}
-                                                        <br/>
+                                                        <br />
                                                         Chất liệu: {item.sanPham.chatLieu.tenChatLieu}
-                                                        <br/>
+                                                        <br />
                                                         Đế giày: {item.sanPham.deGiay.tenDeGiay}
-                                                        <br/>
+                                                        <br />
                                                         Thương hiệu:{" "}
                                                         {item.sanPham.thuongHieu.tenThuongHieu}
-                                                        <br/>
+                                                        <br />
                                                         Kích thước: {item.kichCo.tenKichCo}
-                                                        <br/>
+                                                        <br />
                                                         Màu sắc: {item.mauSac.tenMauSac}
                                                         <span
                                                             className="square"
-                                                            style={{background: item.mauSac.maMauSac}}
+                                                            style={{ background: item.mauSac.maMauSac }}
                                                         ></span>
-                                                        <br/>
+                                                        <br />
                                                         Số lượng: {item.soLuong}
                                                     </td>
                                                     <td>{formatMoney(item.giaTien)}</td>
@@ -1314,7 +1365,7 @@ const AdminDatTaiQuay = () => {
 
                         <Modal show={showModal} onHide={() => setShowModal(false)} centered>
                             <Modal.Header closeButton>
-                                <Modal.Title style={{textAlign: "center", width: "100%"}}>
+                                <Modal.Title style={{ textAlign: "center", width: "100%" }}>
                                     Thanh toán hóa đơn
                                 </Modal.Title>
                             </Modal.Header>
@@ -1330,9 +1381,9 @@ const AdminDatTaiQuay = () => {
                                     }}
                                 >
                                     Tổng tiền:{" "}
-                                    <span style={{color: "red"}}>
-                                        {Math.max(tongTien, 0).toLocaleString()} VNĐ
-                                      </span>
+                                    <span style={{ color: "red" }}>
+    {Math.max(tongTien, 0).toLocaleString()} VNĐ
+  </span>
                                 </div>
 
                                 {/* Chọn phương thức thanh toán */}
@@ -1411,7 +1462,7 @@ const AdminDatTaiQuay = () => {
 
                                 {/* Hiển thị mã QR khi chọn timo */}
                                 {paymentMethod === "timo" && (
-                                    <div style={{textAlign: "center", marginBottom: "20px"}}>
+                                    <div style={{ textAlign: "center", marginBottom: "20px" }}>
                                         <img
                                             src={qrthanhtoan}
                                             alt="QR Code"
@@ -1427,7 +1478,7 @@ const AdminDatTaiQuay = () => {
 
                                 {/* Input tiền khách đưa (chỉ hiện nếu chọn tiền mặt) */}
                                 {paymentMethod === "tienMat" && (
-                                    <div style={{marginBottom: "20px"}}>
+                                    <div style={{ marginBottom: "20px" }}>
                                         <p
                                             style={{
                                                 fontSize: "16px",
@@ -1457,6 +1508,36 @@ const AdminDatTaiQuay = () => {
                                         />
                                     </div>
                                 )}
+
+                                {/* Hiển thị tiền thiếu hoặc thừa */}
+                                {/*{paymentMethod === "tienMat" && (*/}
+                                {/*    <div*/}
+                                {/*        style={{*/}
+                                {/*          textAlign: "center",*/}
+                                {/*          marginBottom: "20px",*/}
+                                {/*          fontSize: "16px",*/}
+                                {/*          fontWeight: "500",*/}
+                                {/*        }}*/}
+                                {/*    >*/}
+                                {/*      {tienThieu > 0 ? (*/}
+                                {/*          <>*/}
+                                {/*            Tiền thiếu:{" "}*/}
+                                {/*            <span style={{ color: "red" }}>*/}
+                                {/*        {Math.max(tienThieu, 0).toLocaleString()} VNĐ*/}
+                                {/*      </span>*/}
+                                {/*          </>*/}
+                                {/*      ) : tienThieu === 0 ? (*/}
+                                {/*          <>Đủ tiền</>*/}
+                                {/*      ) : (*/}
+                                {/*          <>*/}
+                                {/*            Tiền thừa:{" "}*/}
+                                {/*            <span style={{ color: "green" }}>*/}
+                                {/*        {Math.abs(tienThieu).toLocaleString()} VNĐ*/}
+                                {/*      </span>*/}
+                                {/*          </>*/}
+                                {/*      )}*/}
+                                {/*    </div>*/}
+                                {/*)}*/}
 
                                 {/* Nút Xác nhận */}
                                 <button

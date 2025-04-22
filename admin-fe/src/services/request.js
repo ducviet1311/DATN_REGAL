@@ -90,5 +90,19 @@ async function deleteMethod(url) {
 }
 
 
+async function putMethodPayload(url, payload) {
+    if (!url.includes(firstUrl)) {
+        url = firstUrl + url;
+    }
+    const response = await fetch(url, {
+        method: 'PUT',
+        headers: new Headers({
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+        }),
+        body: JSON.stringify(payload)
+    });
+    return response;
+}
 
-export {getMethod,postMethod, uploadSingleFile,uploadMultipleFile,postMethodPayload,deleteMethod}
+export { getMethod, postMethod, uploadSingleFile, uploadMultipleFile, postMethodPayload, deleteMethod, putMethodPayload };
