@@ -1061,27 +1061,27 @@ const AdminDatTaiQuay = () => {
                 </div>
 
                 {/* Modal Xác nhận */}
-                {/*<Modal*/}
-                {/*    show={showConfirmModal}*/}
-                {/*    onHide={handleCloseConfirmModal}*/}
-                {/*    centered*/}
-                {/*>*/}
-                {/*    <Modal.Header closeButton>*/}
-                {/*        <Modal.Title>Xác nhận đặt hàng</Modal.Title>*/}
-                {/*    </Modal.Header>*/}
-                {/*    <Modal.Body>*/}
-                {/*        Bạn có chắc chắn muốn xác nhận đặt hàng không? <br/>*/}
-                {/*        <strong>Hành động này không thể quay lại!</strong>*/}
-                {/*    </Modal.Body>*/}
-                {/*    <Modal.Footer>*/}
-                {/*        <Button variant="secondary" onClick={handleCloseConfirmModal}>*/}
-                {/*            Hủy*/}
-                {/*        </Button>*/}
-                {/*        <Button variant="primary" onClick={handleFinalConfirm}>*/}
-                {/*            Xác nhận*/}
-                {/*        </Button>*/}
-                {/*    </Modal.Footer>*/}
-                {/*</Modal>*/}
+                <Modal
+                    show={showConfirmModal}
+                    onHide={handleCloseConfirmModal}
+                    centered
+                >
+                    <Modal.Header closeButton>
+                        <Modal.Title>Xác nhận đặt hàng</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        Bạn có chắc chắn muốn xác nhận đặt hàng không? <br/>
+                        <strong>Hành động này không thể quay lại!</strong>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={handleCloseConfirmModal}>
+                            Hủy
+                        </Button>
+                        <Button variant="primary" onClick={handleFinalConfirm}>
+                            Xác nhận
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
 
                 <div
                     class="modal fade"
