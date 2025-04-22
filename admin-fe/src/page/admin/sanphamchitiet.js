@@ -182,12 +182,12 @@ const AdminSanPhamChiTiet = () => {
     if (!trangThai || !["1","2"].includes(trangThai)) {
       errors.push("Vui lòng chọn trạng thái hợp lệ");
     }
-    if (!selectedMauSac?.id) errors.push("Vui lòng chọn màu sắc");
-    if (!selectedKichCo?.id) errors.push("Vui lòng chọn kích cỡ");
-    if (errors.length > 0) {
-      errors.forEach(err => toast.error(err));
-      return;
-    }
+    // if (!selectedMauSac?.id) errors.push("Vui lòng chọn màu sắc");
+    // if (!selectedKichCo?.id) errors.push("Vui lòng chọn kích cỡ");
+    // if (errors.length > 0) {
+    //   errors.forEach(err => toast.error(err));
+    //   return;
+    // }
 
     // Check duplicate (only for new items)
     if (item == null) {
