@@ -39,44 +39,6 @@ const AdminPhieuGiamGia = () => {
         ? item.trangThai !== 0 // Lọc "Đang hoạt động"
         : item.trangThai === 0; // Lọc "Không hoạt động"
   });
-  async function deletePhieuGiamGia(id) {
-    Swal.fire({
-      title: "Xác nhận xóa",
-      text: "Bạn có chắc chắn muốn xóa mục này không?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Xóa",
-      cancelButtonText: "Hủy",
-      reverseButtons: true,
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        const response = await deleteMethod("/api/phieu-giam-gia/" + id);
-        if (response.status < 300) {
-          toast.success("Xóa thành công!");
-          getPhieuGiamGia(); // Hàm cập nhật dữ liệu sau khi xóa
-        } else if (response.status === 417) {
-          const result = await response.json();
-          toast.warning(result.defaultMessage); // Thông báo lỗi từ server
-        } else {
-          toast.warning("Xóa thất bại"); // Thông báo lỗi chung
-        }
-      } else if (result.dismiss === Swal.DismissReason.cancel) {
-        console.log("Hủy thao tác xóa.");
-      }
-    });
-  }
-
-  const exportToExcel = () => {
-    const worksheet = XLSX.utils.json_to_sheet(items);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-    const excelBuffer = XLSX.write(workbook, {
-      bookType: "xlsx",
-      type: "array",
-    });
-    const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
-    saveAs(blob, `PhieuGiamGia.xlsx`);
-  };
 
   function trangThai(tt) {
     console.log(tt);
@@ -145,11 +107,6 @@ const AdminPhieuGiamGia = () => {
     }
   };
 
-  function handleShowAllClick() {
-    setSearchTerm(""); // Đặt lại từ khóa tìm kiếm
-    setCurrentPage(0);
-    getPGG(); // Lấy lại toàn bộ dữ liệu
-  }
 
   const handlePageClick = async (data) => {
     const currentPage = data.selected;
