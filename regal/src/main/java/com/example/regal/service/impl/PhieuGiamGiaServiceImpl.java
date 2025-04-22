@@ -33,7 +33,6 @@ public class PhieuGiamGiaServiceImpl implements PhieuGiamGiaService {
             }
         }
         return phieuGiamGias;
-//        return phieuGiamGiaRepository.findAll();
     }
 
     @Override
