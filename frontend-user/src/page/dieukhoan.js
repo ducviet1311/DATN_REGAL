@@ -52,6 +52,7 @@ const TermsPopup = (props) => {
               <p>
                 Kích thước sản phẩm được mô tả dựa trên bảng size chuẩn. Vui
                 lòng kiểm tra kỹ thông tin trước khi đặt hàng.
+                Vui lòng kiểm tra kích thước trước khi đặt hàng.
               </p>
 
               <h3>2. Chính sách thanh toán</h3>
@@ -62,6 +63,7 @@ const TermsPopup = (props) => {
               <p>
                 Giá sản phẩm tại thời điểm đặt hàng sẽ là giá cuối cùng, không
                 áp dụng bất kỳ thay đổi giá nào sau đó.
+
               </p>
 
               <h3>3. Chính sách vận chuyển</h3>
