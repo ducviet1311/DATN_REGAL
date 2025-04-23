@@ -55,11 +55,11 @@ public class DotGiamGiaController {
     }
 
     // Tạo mới một đợt giảm giá
-    @PostMapping
-    public ResponseEntity<DotGiamGiaResponse> createDotGiamGia(@RequestBody DotGiamGiaRequest requestDTO) {
-        DotGiamGiaResponse response = dotGiamGiaService.createDotGiamGia(requestDTO);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
-    }
+//    @PostMapping
+//    public ResponseEntity<DotGiamGiaResponse> createDotGiamGia(@RequestBody DotGiamGiaRequest requestDTO) {
+//        DotGiamGiaResponse response = dotGiamGiaService.createDotGiamGia(requestDTO);
+//        return new ResponseEntity<>(response, HttpStatus.CREATED);
+//    }
 
     // Cập nhật thông tin đợt giảm giá
     @PutMapping("/{id}")
