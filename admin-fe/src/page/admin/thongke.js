@@ -519,8 +519,6 @@ const AdminThongKe = () => {
               <h5>
                 Tổng doanh thu năm {selectedYear} là: <strong>{tongDoanhThuNam}</strong>
               </h5>
-              <h1>Tổng quan</h1>
-
             </div>
         )}
         <div className="cot-container">
