@@ -52,7 +52,6 @@ const TermsPopup = (props) => {
               <p>
                 Kích thước sản phẩm được mô tả dựa trên bảng size chuẩn. Vui
                 lòng kiểm tra kỹ thông tin trước khi đặt hàng.
-                Vui lòng kiểm tra kích thước trước khi đặt hàng.
               </p>
 
               <h3>2. Chính sách thanh toán</h3>
@@ -99,7 +98,7 @@ const TermsPopup = (props) => {
               </p>
               <h3>7. Điều kiện thanh toán VNPay</h3>
               <p>
-              Số tiền giao dịch không hợp lệ. Số tiền hợp lệ từ 5,000 đến dưới 1 tỷ đồng.
+              Số tiền giao dịch không hợp lệ. Số tiền hợp lệ từ 5.000 đến dưới 1 tỷ đồng.
               </p>
 
               <h3>Liên hệ hỗ trợ:</h3>
