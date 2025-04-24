@@ -21,26 +21,26 @@ function ThongTinTaiKhoan() {
     setUser(result);
   };
 
-  // async function handleChangeInfor(event) {
-  //   event.preventDefault();
-  //   const payload = {  // Tạo payload từ dữ liệu nhập trong form
-  //     hoVaTen: event.target.elements.hoten.value,
-  //     ngaySinh: event.target.elements.ngsinh.value,
-  //     gioiTinh: event.target.elements.gioitinh.value,
-  //     soDienThoai: event.target.elements.sdt.value,
-  //   };
-  //   console.log(payload);
-  //   const res = await postMethodPayload("/api/khachhang/update-infor", payload);
-  //   if (res.status < 300) {
-  //     toast.success("Success!");
-  //     await new Promise((resolve) => setTimeout(resolve, 1000));
-  //     window.location.reload();
-  //   }
-  //   if (res.status == 417) {
-  //     var result = await res.json();
-  //     toast.error(result.defaultMessage);
-  //   }
-  // }
+  async function handleChangeInfor(event) {
+    event.preventDefault();
+    const payload = {  // Tạo payload từ dữ liệu nhập trong form
+      hoVaTen: event.target.elements.hoten.value,
+      ngaySinh: event.target.elements.ngsinh.value,
+      gioiTinh: event.target.elements.gioitinh.value,
+      soDienThoai: event.target.elements.sdt.value,
+    };
+    console.log(payload);
+    const res = await postMethodPayload("/api/khachhang/update-infor", payload);
+    if (res.status < 300) {
+      toast.success("Success!");
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      window.location.reload();
+    }
+    if (res.status == 417) {
+      var result = await res.json();
+      toast.error(result.defaultMessage);
+    }
+  }
 
   return (
       <>
