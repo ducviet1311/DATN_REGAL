@@ -93,19 +93,20 @@ const AdminUser = () => {
         }
     };
 
-    // const handleSearchKeyPress = (event) => {
-    //     if (event.key === 'Enter') {
-    //         searchUsers();
-    //     }
-    // };
 
-    // const handlePageClick = async (data) => {
-    //     var currentPage = data.selected
-    //     var response = await getMethod(url + currentPage)
-    //     var result = await response.json();
-    //     setItems(result.content)
-    //     setPageCount(result.totalPages)
-    // }
+    const handleSearchKeyPress = (event) => {
+        if (event.key === 'Enter') {
+            searchUsers();
+        }
+    };
+
+    const handlePageClick = async (data) => {
+        var currentPage = data.selected
+        var response = await getMethod(url + currentPage)
+        var result = await response.json();
+        setItems(result.content)
+        setPageCount(result.totalPages)
+    }
 
     return (
         <>
@@ -133,9 +134,9 @@ const AdminUser = () => {
                     >
                         <i className="fa fa-list"></i> Làm mới
                     </button>
-                    {/*<a href="#" onClick={() => exportToExcel()} className="btn btn-success ms-2">*/}
-                    {/*    <i className="fa fa-excel-o"></i>Excel*/}
-                    {/*</a>*/}
+                    <a href="#" onClick={() => exportToExcel()} className="btn btn-success ms-2">
+                        <i className="fa fa-excel-o"></i>Excel
+                    </a>
                 </div>
             </div>
             <div className="tablediv">
