@@ -212,30 +212,30 @@ const AdminDonHang = () => {
 // Trong phần render của bảng, cập nhật nút "Chuyển"
 
 
-  // async function getChiTietDonHang(item) {
-  //   var response = await getMethod(
-  //       "/api/hoa-don-chi-tiet/find-by-hoa-don?hoaDonId=" + item.id
-  //   );
-  //   var result = await response.json();
-  //   setChiTietDonHang(result);
-  //   var response = await getMethod(
-  //       "/api/lich-su-hoa-don/find-by-hoa-don?hoaDonId=" + item.id
-  //   );
-  //   var result = await response.json();
-  //   setLichSuHoaDon(result);
-  // }
+  async function getChiTietDonHang(item) {
+    var response = await getMethod(
+        "/api/hoa-don-chi-tiet/find-by-hoa-don?hoaDonId=" + item.id
+    );
+    var result = await response.json();
+    setChiTietDonHang(result);
+    var response = await getMethod(
+        "/api/lich-su-hoa-don/find-by-hoa-don?hoaDonId=" + item.id
+    );
+    var result = await response.json();
+    setLichSuHoaDon(result);
+  }
 
-  // const exportToExcel = () => {
-  //   const worksheet = XLSX.utils.json_to_sheet(items);
-  //   const workbook = XLSX.utils.book_new();
-  //   XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-  //   const excelBuffer = XLSX.write(workbook, {
-  //     bookType: "xlsx",
-  //     type: "array",
-  //   });
-  //   const blob = new Blob([excelBuffer], {type: "application/octet-stream"});
-  //   saveAs(blob, `data.xlsx`);
-  // };
+  const exportToExcel = () => {
+    const worksheet = XLSX.utils.json_to_sheet(items);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+    const blob = new Blob([excelBuffer], {type: "application/octet-stream"});
+    saveAs(blob, `data.xlsx`);
+  };
 
   return (
       <>

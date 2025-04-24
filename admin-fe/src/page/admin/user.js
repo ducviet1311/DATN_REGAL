@@ -54,18 +54,18 @@ const AdminUser = () => {
         }
     };
 
-    // const getUser = async () => {
-    //     setLoading(true);
-    //     try {
-    //         const response = await getMethod('/api/nhan-vien');
-    //         const result = await response.json();
-    //         setItems(result);
-    //     } catch (error) {
-    //         toast.error('Lỗi khi tải dữ liệu!');
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
+    const getUser = async () => {
+        setLoading(true);
+        try {
+            const response = await getMethod('/api/nhan-vien');
+            const result = await response.json();
+            setItems(result);
+        } catch (error) {
+            toast.error('Lỗi khi tải dữ liệu!');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const getUser2 = async () => {
         var response = await getMethod('/api/nhan-vien/all?&size=' + size + '&sort=id,desc&page=' + 0)
