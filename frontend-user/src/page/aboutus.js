@@ -37,7 +37,7 @@ const AboutUs = () => {
       marginBottom: "5px",
     },
   };
-
+  //fix
   return (
     <div style={styles.container}>
         <br></br>
@@ -47,7 +47,7 @@ const AboutUs = () => {
       <h1 style={styles.title}>Về Chúng Tôi</h1>
       <p style={styles.description}>
         Chào mừng bạn đến với Regal – Thế giới của những đôi giày đá bóng
-        chất lượng dành cho mọi đam mê sân cỏ! sáng tạo và cam kết mang đến cho
+        chất lượng dành cho mọi đam mê sân cỏ. Với sự sáng tạo và cam kết mang đến cho
         khách hàng những giải pháp tốt nhất.
         Với sứ mệnh mang đến cho các cầu thủ từ bán chuyên đến chuyên nghiệp
         những sản phẩm tốt nhất, Regal tự hào là địa chỉ tin cậy chuyên cung cấp

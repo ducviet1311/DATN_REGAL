@@ -266,80 +266,80 @@ const AdminAddPhieuGiamGia = () => {
                 </a>
               </div>
             </form>
-            <style jsx>{`
-                    /* Card styling */
-.card {
-    border-radius: 10px;
-    overflow: hidden;
-}
+                <style jsx>{`
+                        /* Card styling */
+      .card {
+        border-radius: 10px;
+        overflow: hidden;
+      }
 
-.card-header {
-    padding: 1.25rem 1.5rem;
-}
+      .card-header {
+        padding: 1.25rem 1.5rem;
+      }
 
-.card-body {
-    padding: 2rem;
-}
+      .card-body {
+        padding: 2rem;
+      }
 
-/* Form styling */
-.form-label {
-    margin-bottom: 0.5rem;
-    color: #495057;
-}
-
-.form-control-lg, .form-select-lg {
-    padding: 0.75rem 1rem;
-    font-size: 1rem;
-    border-radius: 0.5rem;
-    border: 1px solid #ced4da;
-    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-}
-
-.form-control-lg:focus, .form-select-lg:focus {
-    border-color: #86b7fe;
-    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-}
-
-/* Button styling */
-.btn-lg {
-    padding: 0.5rem 1.5rem;
-    font-size: 1.1rem;
-    border-radius: 0.5rem;
-}
-
-.btn-primary {
-    background-color: #0d6efd;
-    border-color: #0d6efd;
-}
-
-.btn-primary:hover {
-    background-color: #0b5ed7;
-    border-color: #0a58ca;
-}
-
-/* Input group styling */
-.input-group-text {
-    background-color: #f8f9fa;
-    border: 1px solid #ced4da;
-    font-weight: 500;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .card-body {
-        padding: 1.5rem;
-    }
-    
-    .btn-lg {
-        width: 100%;
+      /* Form styling */
+      .form-label {
         margin-bottom: 0.5rem;
-    }
-    
-    .ms-2 {
-        margin-left: 0 !important;
-    }
-}
-`}</style>
+        color: #495057;
+      }
+
+      .form-control-lg, .form-select-lg {
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid #ced4da;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+      }
+
+      .form-control-lg:focus, .form-select-lg:focus {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+      }
+
+      /* Button styling */
+      .btn-lg {
+        padding: 0.5rem 1.5rem;
+        font-size: 1.1rem;
+        border-radius: 0.5rem;
+      }
+
+      .btn-primary {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+      }
+
+      .btn-primary:hover {
+        background-color: #0b5ed7;
+        border-color: #0a58ca;
+      }
+
+      /* Input group styling */
+      .input-group-text {
+        background-color: #f8f9fa;
+        border: 1px solid #ced4da;
+        font-weight: 500;
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 768px) {
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        .btn-lg {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+        
+        .ms-2 {
+            margin-left: 0 !important;
+        }
+      }
+      `}</style>
           </div>
         </div>
       </div>

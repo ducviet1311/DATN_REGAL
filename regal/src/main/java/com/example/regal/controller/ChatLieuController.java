@@ -45,28 +45,6 @@ public class ChatLieuController {
             throw new IllegalArgumentException("Tên chất liệu đã tồn tại");
         }
     }
-    // Lấy tất cả chất liệu
-//    @GetMapping
-//    public ResponseEntity<Page<ChatLieuResponse>> getAllChatLieu(
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "5") int size) {
-//
-//        Page<ChatLieu> chatLieuPage = chatLieuService.getAllChatLieuPaginated(page, size);
-//        Page<ChatLieuResponse> responsePage = chatLieuPage.map(chatLieu -> {
-//            ChatLieuResponse response = new ChatLieuResponse();
-//            response.setId(chatLieu.getId());
-//            response.setTenChatLieu(chatLieu.getTenChatLieu());
-//            response.setNgayTao(chatLieu.getNgayTao());
-//            response.setNguoiTao(chatLieu.getNguoiTao());
-//            response.setLanCapNhatCuoi(chatLieu.getLanCapNhatCuoi());
-//            response.setNguoiCapNhat(chatLieu.getNguoiCapNhat());
-//            response.setTrangThai(chatLieu.getTrangThai());
-//            return response;
-//        });
-//
-//        return ResponseEntity.ok(responsePage);
-//    }
-
     @GetMapping
     public ResponseEntity<?> getAllChatLieu() {
         List<ChatLieu> chatLieuPage = chatLieuRepository.findAll();
@@ -147,4 +125,5 @@ public class ChatLieuController {
         List<ChatLieu> result = chatLieuService.findByTenAndTrangThai(ten, trangThai);
         return ResponseEntity.ok(result);
     }
+
 }

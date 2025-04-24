@@ -396,13 +396,6 @@ const AdminSanPhamChiTiet = () => {
             >
               <i className="fa fa-plus"></i>
             </button>
-            {/*<a*/}
-            {/*    href="#"*/}
-            {/*    onClick={() => exportToExcel()}*/}
-            {/*    className="btn btn-success ms-2"*/}
-            {/*>*/}
-            {/*  <i className="fa fa-excel-o"></i>Excel*/}
-            {/*</a>*/}
           </div>
         </div>
         <div class="tablediv">
@@ -549,15 +542,6 @@ const AdminSanPhamChiTiet = () => {
                       />
                       Còn hàng
                     </label>
-                    {/*<label style={{ marginLeft: "10px" }}>*/}
-                    {/*  <input*/}
-                    {/*    type="radio"*/}
-                    {/*    name="trangThai"*/}
-                    {/*    value="2"*/}
-                    {/*    defaultChecked={item?.trangThai === 2}*/}
-                    {/*  />*/}
-                    {/*  Hết hàng*/}
-                    {/*</label>*/}
                   </div>
 
                   <label class="lb-form">Màu sắc</label>

@@ -5,7 +5,7 @@ import com.example.regal.dto.response.KhachHangResponse;
 import com.example.regal.entity.KhachHang;
 import com.example.regal.repository.KhachHangRepository;
 import com.example.regal.service.KhachHangService;
-//import com.example.regal.utils.UserUltis;
+import com.example.regal.utils.UserUltis;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,14 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
@@ -33,8 +26,8 @@ public class KhachHangController {
     private final KhachHangService khachHangService;
     private final KhachHangRepository khachHangRepository;
 
-//    @Autowired
-//    private UserUltis userUltis;
+    @Autowired
+    private UserUltis userUltis;
 
     // Lấy tất cả khách hàng
     @GetMapping
@@ -145,27 +138,27 @@ public class KhachHangController {
         }
         return new ResponseEntity<>(page, HttpStatus.OK);
     }
-//    @PostMapping("/dang-dang-nhap")
-//    public ResponseEntity<?> nhanVienDangDangNhap(HttpServletRequest request) {
-//        KhachHang khachHang = userUltis.getLoggedInKhachHang(request);
-//        KhachHangResponse khachHangResponse = new KhachHangResponse();
-//        khachHangResponse.setMaKhachHang(khachHang.getMaKhachHang());
-//        khachHangResponse.setEmail(khachHang.getEmail());
-//        khachHangResponse.setAnh(khachHang.getAnh());
-//        khachHangResponse.setHoVaTen(khachHang.getHoVaTen());
-//        khachHangResponse.setGioiTinh(khachHang.getGioiTinh());
-//        khachHangResponse.setSoDienThoai(khachHang.getSoDienThoai());
-//        khachHangResponse.setNgaySinh(khachHang.getNgaySinh());
-//        return new ResponseEntity<>(khachHangResponse, HttpStatus.OK);
-//    }
-//
-//    @PostMapping("/update-infor")
-//    public void updateInfor(@RequestBody KhachHangRequest requestDTO, HttpServletRequest request) {
-//        KhachHang khachHang = userUltis.getLoggedInKhachHang(request);
-//        khachHang.setHoVaTen(requestDTO.getHoVaTen());
-//        khachHang.setSoDienThoai(requestDTO.getSoDienThoai());
-//        khachHang.setNgaySinh(requestDTO.getNgaySinh());
-//        khachHang.setGioiTinh(requestDTO.getGioiTinh());
-//        khachHangRepository.save(khachHang);
-//    }
+    @PostMapping("/dang-dang-nhap")
+    public ResponseEntity<?> nhanVienDangDangNhap(HttpServletRequest request) {
+        KhachHang khachHang = userUltis.getLoggedInKhachHang(request);
+        KhachHangResponse khachHangResponse = new KhachHangResponse();
+        khachHangResponse.setMaKhachHang(khachHang.getMaKhachHang());
+        khachHangResponse.setEmail(khachHang.getEmail());
+        khachHangResponse.setAnh(khachHang.getAnh());
+        khachHangResponse.setHoVaTen(khachHang.getHoVaTen());
+        khachHangResponse.setGioiTinh(khachHang.getGioiTinh());
+        khachHangResponse.setSoDienThoai(khachHang.getSoDienThoai());
+        khachHangResponse.setNgaySinh(khachHang.getNgaySinh());
+        return new ResponseEntity<>(khachHangResponse, HttpStatus.OK);
+    }
+
+    @PostMapping("/update-infor")
+    public void updateInfor(@RequestBody KhachHangRequest requestDTO, HttpServletRequest request) {
+        KhachHang khachHang = userUltis.getLoggedInKhachHang(request);
+        khachHang.setHoVaTen(requestDTO.getHoVaTen());
+        khachHang.setSoDienThoai(requestDTO.getSoDienThoai());
+        khachHang.setNgaySinh(requestDTO.getNgaySinh());
+        khachHang.setGioiTinh(requestDTO.getGioiTinh());
+        khachHangRepository.save(khachHang);
+    }
 }

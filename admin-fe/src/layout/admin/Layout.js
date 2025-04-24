@@ -36,7 +36,7 @@ function Header({ children }) {
             <nav id="sidebar" className="bg-dark text-white">
                 <div className="sidebar-header p-3 text-white">
                     <i className="fa fa-bars pointer" id="iconbaradmin" onClick={openClose}></i>
-                    ADMIN
+                    REGAL ADMIN
                 </div>
                 <ul className="list-unstyled components">
                     <li className={isActive(["/admin/thong-ke"])}>
@@ -124,8 +124,8 @@ function Header({ children }) {
                         </a>
                         <ul className="collapse list-unstyled" id="colkhuyenmai">
                             <li>
-                                <Link to="/admin/khuyen-mais" className="text-white text-decoration-none ps-4">
-                                    <i clasName="fa fa-list me-2"></i> Danh sách phiếu giảm giá
+                                <Link to="/admin/khuyen-mai" className="text-white text-decoration-none ps-4">
+                                    <i className="fa fa-list me-2"></i> Danh sách phiếu giảm giá
                                 </Link>
                             </li>
                             <li>
@@ -134,20 +134,12 @@ function Header({ children }) {
                                 </Link>
                             </li>
                             <li>
-<<<<<<< HEAD
                                 <Link to="/admin/dot-giam-gia" className="text-white text-decoration-none ps-4">
-=======
-                                <Link  className="text-white text-decoration-none ps-4">
->>>>>>> 0bdc97a585d774e6b8c880246204683aaf037cab
                                     <i className="fa fa-list me-2"></i> Đợt giảm giá
                                 </Link>
                             </li>
                             <li>
-<<<<<<< HEAD
                                 <Link to="/admin/add-dot-giam-gia" className="text-white text-decoration-none ps-4">
-=======
-                                <Link  className="text-white text-decoration-none ps-4">
->>>>>>> 0bdc97a585d774e6b8c880246204683aaf037cab
                                     <i className="fa fa-plus me-2"></i> Thêm đợt giảm giá
                                 </Link>
                             </li>
@@ -179,33 +171,34 @@ function Header({ children }) {
                         <a href="#" onClick={logout} className="text-white text-decoration-none">
                             <i className="fa fa-sign-out me-2"></i> Logout
                         </a>
-                    
+
                     </li>
                 </ul>
             </nav>
             <div id="page-content-wrapper" class="w-100">
-            <nav id='navbarmain' class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
-                <div class="container-fluid">
-                    <button class="btn btn-link" id="menu-toggle"><i class="fas fa-bars" onClick={openClose}></i></button>
-                    <div class="dropdown ms-auto">
+                <nav id='navbarmain' class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+                    <div class="container-fluid">
+                        <button class="btn btn-link" id="menu-toggle"><i class="fas fa-bars" onClick={openClose}></i></button>
+                        <div class="dropdown ms-auto">
+                        </div>
+
+                        <div class="dropdown ms-3">
+                            <a class="dropdown-toggle d-flex align-items-center text-decoration-none" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span class="navbar-text me-2 fw-bold">Xin chào: Bạn</span>
+                                {/*{usera?.email}*/}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li onClick={logout}><a class="dropdown-item" href="#">Logout</a></li>
+
+                            </ul>
+                        </div>
                     </div>
-            
-                    <div class="dropdown ms-3">
-                        <a class="dropdown-toggle d-flex align-items-center text-decoration-none" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                         <span class="navbar-text me-2">Hello: {usera?.email}</span>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                            <li onClick={logout}><a class="dropdown-item" href="#">Logout</a></li>
-    
-                        </ul>
-                    </div>
+                </nav>
+                <div class="container-fluid py-4" id='mainpageadmin'>
+                    {children}
                 </div>
-            </nav>
-            <div class="container-fluid py-4" id='mainpageadmin'>
-                {children}
             </div>
         </div>
-    </div>
     );
 }
 

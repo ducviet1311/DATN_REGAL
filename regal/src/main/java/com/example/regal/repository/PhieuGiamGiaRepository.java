@@ -15,8 +15,6 @@ import java.util.List;
 public interface PhieuGiamGiaRepository extends JpaRepository<PhieuGiamGia, Integer> {
     PhieuGiamGia findFirstByOrderByNgayTaoDesc();
 
-//    List<PhieuGiamGia> findAllByHoaDon(HoaDon hd);
-
     @Query("SELECT p FROM PhieuGiamGia p where (:keySearch is null or p.tenPhieu like %:keySearch% or p.maCode like %:keySearch%)" +
             " and (:tungaySearch is null or p.ngayBatDau >= :tungaySearch)" +
             " and (:denngaySearch is null or p.ngayKetThuc <= :denngaySearch)" +

@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { toast } from "react-toastify";
-import { postMethodPayload, postMethod } from "../services/request";
-import Swal from "sweetalert2";
+import { toast } from "react-toastify"; // Dùng để hiển thị thông báo popup
+import { postMethodPayload, postMethod } from "../services/request"; // Hàm gọi API POST
+import Swal from "sweetalert2"; // Thư viện alert,
 
 function ThongTinTaiKhoan() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(null); // Lưu thông tin người dùng từ server
   const [gioitinh, setgioitinh] = useState(null);
+
+  // useEffect sẽ chạy một lần sau khi component mount để lấy dữ liệu người dùng
   useEffect(() => {
     getUser();
   }, []);
 
+  // Hàm xử lý khi người dùng nhấn nút "Cập nhật thông tin"
   const getUser = async () => {
     var response = await postMethod("/api/khachhang/dang-dang-nhap");
     var result = await response.json();
@@ -20,7 +23,7 @@ function ThongTinTaiKhoan() {
 
   async function handleChangeInfor(event) {
     event.preventDefault();
-    const payload = {
+    const payload = {  // Tạo payload từ dữ liệu nhập trong form
       hoVaTen: event.target.elements.hoten.value,
       ngaySinh: event.target.elements.ngsinh.value,
       gioiTinh: event.target.elements.gioitinh.value,

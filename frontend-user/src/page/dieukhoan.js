@@ -62,6 +62,7 @@ const TermsPopup = (props) => {
               <p>
                 Giá sản phẩm tại thời điểm đặt hàng sẽ là giá cuối cùng, không
                 áp dụng bất kỳ thay đổi giá nào sau đó.
+
               </p>
 
               <h3>3. Chính sách vận chuyển</h3>
@@ -97,7 +98,7 @@ const TermsPopup = (props) => {
               </p>
               <h3>7. Điều kiện thanh toán VNPay</h3>
               <p>
-              Số tiền giao dịch không hợp lệ. Số tiền hợp lệ từ 5,000 đến dưới 1 tỷ đồng.
+              Số tiền giao dịch không hợp lệ. Số tiền hợp lệ từ 5.000 đến dưới 1 tỷ đồng.
               </p>
 
               <h3>Liên hệ hỗ trợ:</h3>

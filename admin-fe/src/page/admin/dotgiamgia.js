@@ -165,7 +165,7 @@ const AdminDotGiamGia = () => {
             >
               <option value="">Tất cả trạng thái</option>
               <option value="0">Đã kết thúc</option>
-              <option value="1">Không hoạt động</option>
+              <option value="1">Đang hoạt động</option>
             </select>
           </div>
         </div>

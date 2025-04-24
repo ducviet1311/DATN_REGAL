@@ -93,19 +93,19 @@ const AdminUser = () => {
         }
     };
 
-    const handleSearchKeyPress = (event) => {
-        if (event.key === 'Enter') {
-            searchUsers();
-        }
-    };
+    // const handleSearchKeyPress = (event) => {
+    //     if (event.key === 'Enter') {
+    //         searchUsers();
+    //     }
+    // };
 
-    const handlePageClick = async (data) => {
-        var currentPage = data.selected
-        var response = await getMethod(url + currentPage)
-        var result = await response.json();
-        setItems(result.content)
-        setPageCount(result.totalPages)
-    }
+    // const handlePageClick = async (data) => {
+    //     var currentPage = data.selected
+    //     var response = await getMethod(url + currentPage)
+    //     var result = await response.json();
+    //     setItems(result.content)
+    //     setPageCount(result.totalPages)
+    // }
 
     return (
         <>
