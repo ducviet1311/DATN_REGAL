@@ -133,87 +133,158 @@ const AdminAddProduct = () => {
   }
 
   return (
-      <div>
-        <div class="col-sm-12 header-sps">
-          <div class="title-add-admin">
-            <h4>{label}</h4>
+      <div className="container-fluid py-4">
+        <div className="top-products-card shadow-lg">
+          <div className="card-header bg-primary text-white">
+            <h4 className="mb-0">{label}</h4>
           </div>
-        </div>
-        <div class="col-sm-12">
-          <div class="form-add">
-            <form class="row" onSubmit={handleAddSanPham} method="post">
-              <div class="col-md-5 col-sm-12 col-12">
-                <label class="lb-form">Mã sản phẩm</label>
-                <input
-                    name="masp"
-                    value={product?.maSanPham || ""}
-                    class="form-control"
-                    disabled
-                />
-                <label class="lb-form">Tên sản phẩm</label>
-                <input
-                    name="tensp"
-                    defaultValue={product?.tenSanPham || ""}
-                    class="form-control"
-                />
-                <label className="lb-form">Trạng thái</label>
-                <div>
-                  <label className="lb-form">
+          <div className="card-body">
+            <form onSubmit={handleAddSanPham}>
+              <div className="row">
+                <div className="col-md-6">
+                  <div className="mb-4">
+                    <label className="form-label fw-bold">Mã sản phẩm</label>
                     <input
-                        type="radio"
-                        name="trangThai"
-                        value="1"
-                        defaultChecked={!product?.trangThai || product?.trangThai === 1}
+                        name="masp"
+                        value={product?.maSanPham || ""}
+                        className="form-control p-3"
+                        disabled
+                        style={{ backgroundColor: "#f8f9fa" }}
                     />
-                    Còn hàng
-                  </label>
-                  <label className="lb-form">
+                  </div>
+
+                  <div className="mb-4">
+                    <label className="form-label fw-bold">Tên sản phẩm</label>
                     <input
-                        type="radio"
-                        name="trangThai"
-                        value="2"
-                        defaultChecked={product?.trangThai === 2}
+                        name="tensp"
+                        defaultValue={product?.tenSanPham || ""}
+                        className="form-control p-3"
+                        placeholder="Nhập tên sản phẩm"
                     />
-                    Hết hàng
-                  </label>
+                  </div>
+
+                  <div className="mb-4">
+                    <label className="form-label fw-bold">Trạng thái</label>
+                    <div className="d-flex gap-4 mt-2">
+                      <div className="form-check">
+                        <input
+                            className="form-check-input"
+                            type="radio"
+                            name="trangThai"
+                            value="1"
+                            id="status1"
+                            defaultChecked={!product?.trangThai || product?.trangThai === 1}
+                        />
+                        <label className="form-check-label" htmlFor="status1">
+                          Còn hàng
+                        </label>
+                      </div>
+                      <div className="form-check">
+                        <input
+                            className="form-check-input"
+                            type="radio"
+                            name="trangThai"
+                            value="2"
+                            id="status2"
+                            defaultChecked={product?.trangThai === 2}
+                        />
+                        <label className="form-check-label" htmlFor="status2">
+                          Hết hàng
+                        </label>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <label dangerouslySetInnerHTML={{ __html: "&ThinSpace;" }}></label>
-                <button class="btn btn-primary form-control">{label}</button>
+
+                <div className="col-md-6">
+                  <div className="mb-4">
+                    <label className="form-label fw-bold">Thương hiệu</label>
+                    <Select
+                        className="select-container"
+                        classNamePrefix="select"
+                        options={thuonghieu.filter((option) => option.trangThai === 1)}
+                        value={selectedThuongHieu || null}
+                        onChange={setSelectedThuongHieu}
+                        getOptionLabel={(option) => option.tenThuongHieu}
+                        getOptionValue={(option) => option.id}
+                        name="thuonghieu"
+                        placeholder="Chọn thương hiệu..."
+                        noOptionsMessage={() => "Không có thương hiệu nào"}
+                        styles={{
+                          control: (base) => ({
+                            ...base,
+                            minHeight: '50px',
+                            border: '2px solid #dee2e6',
+                            '&:hover': {
+                              borderColor: '#86b7fe'
+                            }
+                          })
+                        }}
+                    />
+                  </div>
+
+                  <div className="mb-4">
+                    <label className="form-label fw-bold">Chất liệu</label>
+                    <Select
+                        className="select-container"
+                        classNamePrefix="select"
+                        options={chatlieu.filter((option) => option.trangThai === 1)}
+                        value={selectedChatLieu || null}
+                        onChange={setSelectedChatLieu}
+                        getOptionLabel={(option) => option.tenChatLieu}
+                        getOptionValue={(option) => option.id}
+                        name="chatlieu"
+                        placeholder="Chọn chất liệu..."
+                        noOptionsMessage={() => "Không có chất liệu nào"}
+                        styles={{
+                          control: (base) => ({
+                            ...base,
+                            minHeight: '50px',
+                            border: '2px solid #dee2e6',
+                            '&:hover': {
+                              borderColor: '#86b7fe'
+                            }
+                          })
+                        }}
+                    />
+                  </div>
+
+                  <div className="mb-4">
+                    <label className="form-label fw-bold">Đế giày</label>
+                    <Select
+                        className="select-container"
+                        classNamePrefix="select"
+                        options={degiay.filter((option) => option.trangThai === 1)}
+                        value={selectedDeGiay || null}
+                        onChange={setSelectedDeGiay}
+                        getOptionLabel={(option) => option.tenDeGiay}
+                        getOptionValue={(option) => option.id}
+                        name="degiay"
+                        placeholder="Chọn đế giày..."
+                        noOptionsMessage={() => "Không có đế giày nào"}
+                        styles={{
+                          control: (base) => ({
+                            ...base,
+                            minHeight: '50px',
+                            border: '2px solid #dee2e6',
+                            '&:hover': {
+                              borderColor: '#86b7fe'
+                            }
+                          })
+                        }}
+                    />
+                  </div>
+                </div>
               </div>
-              <div class="col-md-5 col-sm-12 col-12">
-                <label class="lb-form">Thương hiệu</label>
-                <Select
-                    className="select-container"
-                    options={thuonghieu.filter((option) => option.trangThai === 1)}
-                    value={selectedThuongHieu || null}
-                    onChange={setSelectedThuongHieu}
-                    getOptionLabel={(option) => option.tenThuongHieu}
-                    getOptionValue={(option) => option.id}
-                    name="thuonghieu"
-                    placeholder="Chọn thương hiệu"
-                />
-                <label class="lb-form">Chất liệu</label>
-                <Select
-                    className="select-container"
-                    options={chatlieu.filter((option) => option.trangThai === 1)}
-                    value={selectedChatLieu || null}
-                    onChange={setSelectedChatLieu}
-                    getOptionLabel={(option) => option.tenChatLieu}
-                    getOptionValue={(option) => option.id}
-                    name="chatlieu"
-                    placeholder="Chọn chất liệu"
-                />
-                <label class="lb-form">Đế giày</label>
-                <Select
-                    className="select-container"
-                    options={degiay.filter((option) => option.trangThai === 1)}
-                    value={selectedDeGiay || null}
-                    onChange={setSelectedDeGiay}
-                    getOptionLabel={(option) => option.tenDeGiay}
-                    getOptionValue={(option) => option.id}
-                    name="degiay"
-                    placeholder="Chọn đế giày"
-                />
+
+              <div className="d-flex justify-content-end mt-4">
+                <button
+                    type="submit"
+                    className="btn btn-primary px-4 py-2 fw-bold"
+                    style={{ minWidth: '150px' }}
+                >
+                  {label}
+                </button>
               </div>
             </form>
           </div>
