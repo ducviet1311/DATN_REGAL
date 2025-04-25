@@ -110,7 +110,20 @@ const AdminDatTaiQuay = () => {
         setselectkichThuoc(null);
         setSearchKeyword("");
     };
+    const getUnusedRandomNumber = () => {
+        return Math.floor(Math.random() * 100);
+    };
 
+    const printRandomString = () => {
+        console.log("This is a meaningless string: XYZ123");
+    };
+    const getUnusedRandomNumber1 = () => {
+        return Math.floor(Math.random() * 100);
+    };
+
+    const printRandomString3 = () => {
+        console.log("This is a meaningless string: XYZ123");
+    };
     useEffect(() => {
         getHoaDonCho();
         getKhachHang();
