@@ -190,8 +190,8 @@ const AdminMauSac= ()=>{
                             className="btn btn-success ms-3">
                         <i className='fa fa-plus'></i> Thêm mới
                     </button>
-                    <a href='#' onClick={() => exportToExcel()} className="btn btn-success ms-2">
-                        <i className='fa fa-excel-o'></i>Excel</a>
+                    {/*<a href='#' onClick={() => exportToExcel()} className="btn btn-success ms-2">*/}
+                    {/*    <i className='fa fa-excel-o'></i>Excel</a>*/}
                 </div>
             </div>
             <div class="tablediv">
@@ -266,7 +266,9 @@ const AdminMauSac= ()=>{
                 <div className="modal-dialog modal-lg">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h5 className="modal-title" id="exampleModalLabel">Thêm hoặc cập nhật màu sắc</h5>
+                            <h5 className="modal-title">
+                                {item ? 'Cập nhật màu sắc' : 'Thêm mới màu sắc'}
+                            </h5>
                             <button type="button" className="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                         </div>
@@ -326,7 +328,9 @@ const AdminMauSac= ()=>{
                                     </label>
                                 </div>
                                 <br/><br/>
-                                <button className="btn btn-success form-control action-btn">Xác nhận</button>
+                                <button type="submit" className="btn btn-success form-control action-btn">
+                                    {item ? "Cập nhật" : "Thêm mới"}
+                                </button>
                             </form>
                         </div>
                     </div>

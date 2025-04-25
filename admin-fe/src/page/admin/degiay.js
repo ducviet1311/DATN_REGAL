@@ -47,37 +47,46 @@ const AdminDeGiay = ()=>{
             return;
         }
 
-        var user = JSON.parse(localStorage.getItem("user"));
+        // Kiểm tra trùng tên (chỉ khi thêm mới hoặc đổi tên khi cập nhật)
+        if (items.some(i =>
+            i.tenDeGiay.toLowerCase() === catename.toLowerCase() &&
+            (!item || i.id !== item.id))
+        ) {
+            toast.error("Tên đế giày đã tồn tại.");
+            return;
+        }
+
+        const user = JSON.parse(localStorage.getItem("user"));
         const payload = {
             tenDeGiay: catename,
             nguoiTao: user.maNhanVien,
             nguoiCapNhat: user.maNhanVien,
             trangThai: status,
         };
+
+        // Nếu là cập nhật, giữ nguyên người tạo
         if (item != null) {
             payload.nguoiTao = item.nguoiTao;
         }
 
-        var url = '/api/de-giay';
-        if (item != null) {
-            url += '/' + item.id;
-        }
-
+        const url = item ? `/api/de-giay/${item.id}` : '/api/de-giay';
         const res = await postMethodPayload(url, payload);
+
         if (res.status < 300) {
-            toast.success('Thêm Đế Giày Thành Công!');
+            // Sửa ở đây - phân biệt thông báo
+            toast.success(item ? 'Cập nhật Đế Giày Thành Công!' : 'Thêm Đế Giày Thành Công!');
             await new Promise(resolve => setTimeout(resolve, 1000));
             window.location.reload();
         }
-        if (res.status === 417) {
-            var result = await res.json();
+        else if (res.status === 417) {
+            const result = await res.json();
             toast.error(result.defaultMessage);
         }
-        if (res.status > 300) {
-            var result = await res.json();
+        else {
+            const result = await res.json();
             toast.error(result.message);
         }
-    };
+    }
 
 
     async function getData(searchTerm = '') {
@@ -179,8 +188,8 @@ const AdminDeGiay = ()=>{
                             className="btn btn-success ms-3">
                         <i className='fa fa-plus'></i> Thêm mới
                     </button>
-                    <a href='#' onClick={() => exportToExcel()} className="btn btn-success ms-2">
-                        <i className='fa fa-excel-o'></i>Excel</a>
+                    {/*<a href='#' onClick={() => exportToExcel()} className="btn btn-success ms-2">*/}
+                    {/*    <i className='fa fa-excel-o'></i>Excel</a>*/}
                 </div>
 
             </div>
@@ -254,13 +263,15 @@ const AdminDeGiay = ()=>{
             <div class="modal fade" id="addcate" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="false">
                 <div class="modal-dialog modal-lg">
                     <div className="modal-content">
-                        <div className="modal-header"><h5 class="modal-title" id="exampleModalLabel">Thêm hoặc cập nhật
-                            đế giày</h5>
+                        <div className="modal-header">
+                            <h5 className="modal-title">
+                                {item ? 'Cập nhật đế giày' : 'Thêm mới đế giày'}
+                            </h5>
                             <button type="button" className="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
-                        <form className="col-sm-5 marginauto" onSubmit={saveData} method='post'>
+                            <form className="col-sm-5 marginauto" onSubmit={saveData} method='post'>
                                 <label>Tên</label>
                                 <input
                                     defaultValue={item?.tenDeGiay || ""}
@@ -298,7 +309,9 @@ const AdminDeGiay = ()=>{
                                     </label>
                                 </div>
                                 <br/>
-                                <button className="btn btn-success form-control action-btn">Xác nhận</button>
+                                <button type="submit" className="btn btn-success form-control action-btn">
+                                    {item ? "Cập nhật" : "Thêm mới"}
+                                </button>
                             </form>
                         </div>
 

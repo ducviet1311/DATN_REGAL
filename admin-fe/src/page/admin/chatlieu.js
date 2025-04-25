@@ -36,13 +36,14 @@ const AdminDeGiay = () => {
     saveAs(blob, `DanhSachChatLieu.xlsx`);
   };
 
-  async function saveData(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
-    const catename = event.target.elements.catename.value;
-    const status = parseInt(event.target.elements.status.value);
+    const form = event.target;
+    const catename = form.catename.value.trim();
+    const status = parseInt(form.status.value);
 
-    // Kiểm tra tên Chất Liệu
-    if (!catename.trim()) {
+    // Validate chung
+    if (!catename) {
       toast.error("Tên Chất Liệu không được để trống.");
       return;
     }
@@ -51,82 +52,47 @@ const AdminDeGiay = () => {
       return;
     }
 
-    var user = JSON.parse(localStorage.getItem("user"));
-    const payload = {
-      tenChatLieu: catename,
-      nguoiTao: user.maNhanVien,
-      nguoiCapNhat: user.maNhanVien,
-      trangThai: status,
-    };
-    if (item != null) {
-      payload.nguoiTao = item.nguoiTao;
-    }
+    // Kiểm tra trùng tên
+    const isDuplicate = items.some(i =>
+        i.tenChatLieu.toLowerCase() === catename.toLowerCase() &&
+        (!item || i.id !== item.id)
+    );
 
-    var url = "/api/chat-lieu";
-    if (item != null) {
-      url += "/" + item.id;
-    }
-
-    const res = await postMethodPayload(url, payload);
-    if (res.status < 300) {
-      toast.success("Thêm Chất Liệu Thành Công!");
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      window.location.reload();
-    }
-    if (res.status === 417) {
-      var result = await res.json();
-      toast.error(result.defaultMessage);
-    }
-    if (res.status > 300) {
-      var result = await res.json();
-      toast.error(result.message);
-    }
-  }
-
-  async function updateData(event) {
-    event.preventDefault();
-    const catename = event.target.elements.catename.value;
-    const status = parseInt(event.target.elements.status.value);
-
-    // Kiểm tra tên Chất Liệu
-    if (!catename.trim()) {
-      toast.error("Tên Chất Liệu không được để trống.");
-      return;
-    }
-    if (catename.length > 255) {
-      toast.error("Tên Chất Liệu không được quá 255 ký tự.");
+    if (isDuplicate) {
+      toast.error("Tên Chất Liệu đã tồn tại");
       return;
     }
 
-    var user = JSON.parse(localStorage.getItem("user"));
+    const user = JSON.parse(localStorage.getItem("user"));
     const payload = {
       tenChatLieu: catename,
-      nguoiTao: user.maNhanVien,
-      nguoiCapNhat: user.maNhanVien,
       trangThai: status,
+      nguoiCapNhat: user.maNhanVien
     };
-    if (item != null) {
-      payload.nguoiTao = item.nguoiTao;
+
+    // Nếu là cập nhật (có item)
+    if (item) {
+      payload.nguoiTao = item.nguoiTao; // Giữ nguyên người tạo
+      var url = `/api/chat-lieu/${item.id}`;
+    } else {
+      payload.nguoiTao = user.maNhanVien; // Thêm người tạo mới
+      var url = '/api/chat-lieu';
     }
 
-    var url = "/api/chat-lieu";
-    if (item != null) {
-      url += "/" + item.id;
-    }
+    try {
+      const res = await postMethodPayload(url, payload);
 
-    const res = await postMethodPayload(url, payload);
-    if (res.status < 300) {
-      toast.success("Cập Nhật Chất Liệu Thành Công!");
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      window.location.reload();
-    }
-    if (res.status === 417) {
-      var result = await res.json();
-      toast.error(result.defaultMessage);
-    }
-    if (res.status > 300) {
-      var result = await res.json();
-      toast.error(result.message);
+      if (res.status < 300) {
+        toast.success(item ? "Cập nhật thành công!" : "Thêm mới thành công!");
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        window.location.reload();
+      } else {
+        const result = await res.json();
+        toast.error(result.message || result.defaultMessage || "Có lỗi xảy ra");
+      }
+    } catch (error) {
+      toast.error("Lỗi kết nối đến server");
+      console.error(error);
     }
   }
 
@@ -135,7 +101,7 @@ const AdminDeGiay = () => {
     let result = await response.json();
     if (searchTerm.trim() !== "") {
       result = result.filter((item) =>
-        item.tenChatLieu.toLowerCase().includes(searchTerm.toLowerCase())
+          item.tenChatLieu.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
     setItems(result);
@@ -143,7 +109,7 @@ const AdminDeGiay = () => {
 
   const getDeGiay = async () => {
     var response = await getMethod(
-      "/api/chat-lieu/all?&size=" + size + "&sort=id,desc&page=" + 0
+        "/api/chat-lieu/all?&size=" + size + "&sort=id,desc&page=" + 0
     );
     var result = await response.json();
     console.log(result);
@@ -205,58 +171,58 @@ const AdminDeGiay = () => {
   };
 
   return (
-    <>
-      <div className="headerpageadmin d-flex justify-content-between align-items-center p-3 bg-light border">
-        <strong class="text-left">
-          <i className="fa fa-list"></i> Quản lý Chất Liệu
-        </strong>
-        <div className="search-wrapper d-flex align-items-center justify-content-between">
-          <div className="search-container d-flex align-items-center bg-light p-2 rounded shadow-sm">
-            <input
-              type="text"
-              placeholder="Tìm kiếm theo tên"
-              className="form-control border-0 shadow-none"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              style={{ flex: 1 }}
-            />
+      <>
+        <div className="headerpageadmin d-flex justify-content-between align-items-center p-3 bg-light border">
+          <strong class="text-left">
+            <i className="fa fa-list"></i> Quản lý Chất Liệu
+          </strong>
+          <div className="search-wrapper d-flex align-items-center justify-content-between">
+            <div className="search-container d-flex align-items-center bg-light p-2 rounded shadow-sm">
+              <input
+                  type="text"
+                  placeholder="Tìm kiếm theo tên"
+                  className="form-control border-0 shadow-none"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  style={{ flex: 1 }}
+              />
+              <button
+                  className="btn btn-primary ms-2"
+                  onClick={handleSearchClick}
+              >
+                <i className="fa fa-search"></i> Tìm kiếm
+              </button>
+              <button
+                  className="btn btn-secondary ms-2"
+                  onClick={handleShowAllClick}
+              >
+                <i className="fa fa-list"></i> Làm mới
+              </button>
+            </div>
             <button
-              className="btn btn-primary ms-2"
-              onClick={handleSearchClick}
+                onClick={() => clearInput()}
+                data-bs-toggle="modal"
+                data-bs-target="#addcate"
+                className="btn btn-success ms-3"
             >
-              <i className="fa fa-search"></i> Tìm kiếm
+              <i className="fa fa-plus"></i> Thêm mới
             </button>
-            <button
-              className="btn btn-secondary ms-2"
-              onClick={handleShowAllClick}
-            >
-              <i className="fa fa-list"></i> Làm mới
-            </button>
+            {/*<a*/}
+            {/*  href="#"*/}
+            {/*  onClick={() => exportToExcel()}*/}
+            {/*  className="btn btn-success ms-2"*/}
+            {/*>*/}
+            {/*  <i className="fa fa-excel-o"></i>Excel*/}
+            {/*</a>*/}
           </div>
-          <button
-            onClick={() => clearInput()}
-            data-bs-toggle="modal"
-            data-bs-target="#addcate"
-            className="btn btn-success ms-3"
-          >
-            <i className="fa fa-plus"></i> Thêm mới
-          </button>
-          <a
-            href="#"
-            onClick={() => exportToExcel()}
-            className="btn btn-success ms-2"
-          >
-            <i className="fa fa-excel-o"></i>Excel
-          </a>
         </div>
-      </div>
-      <div class="tablediv">
-        <div class="headertable">
-          <span class="lbtable">Danh sách chất liệu</span>
-        </div>
-        <div class="divcontenttable">
-          <table id="example" class="table table-bordered">
-            <thead>
+        <div class="tablediv">
+          <div class="headertable">
+            <span class="lbtable">Danh sách chất liệu</span>
+          </div>
+          <div class="divcontenttable">
+            <table id="example" class="table table-bordered">
+              <thead>
               <tr>
                 <th>STT</th>
                 <th>Tên chất liệu</th>
@@ -265,150 +231,150 @@ const AdminDeGiay = () => {
                 <th>Trạng thái</th>
                 <th class="sticky-col">Hành động</th>
               </tr>
-            </thead>
-            <tbody>
+              </thead>
+              <tbody>
               {items.map((item, index) => {
                 const stt = currentPage * size + index + 1;
                 return (
-                  <tr>
-                    <td>{stt}</td>
-                    <td>{item.tenChatLieu}</td>
-                    <td>{item.nguoiTao}</td>
-                    <td>{item.nguoiCapNhat}</td>
-                    <td
-                      style={{
-                        textAlign: "center",
-                        color: item.trangThai === 0 ? "#6c757d" : "#155724", // Xám đậm hoặc Xanh đậm
-                      }}
-                    >
-                      {item.trangThai === 0 ? "Không sử dụng" : "Đang sử dụng"}
-                    </td>
-
-                    <td
-                      class="sticky-col"
-                      style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
-                    >
-                      <a
-                        onClick={() => setItem(item)}
-                        data-bs-toggle="modal"
-                        data-bs-target="#addcate"
-                        class="edit-btn"
+                    <tr>
+                      <td>{stt}</td>
+                      <td>{item.tenChatLieu}</td>
+                      <td>{item.nguoiTao}</td>
+                      <td>{item.nguoiCapNhat}</td>
+                      <td
+                          style={{
+                            textAlign: "center",
+                            color: item.trangThai === 0 ? "#6c757d" : "#155724", // Xám đậm hoặc Xanh đậm
+                          }}
                       >
-                        <i className="fa fa-edit"></i>
-                      </a>
-                      {/*<button onClick={() => deleteData(item.id)} class="delete-btn"><i*/}
-                      {/*    className='fa fa-trash'></i></button>*/}
-                    </td>
-                  </tr>
+                        {item.trangThai === 0 ? "Không sử dụng" : "Đang sử dụng"}
+                      </td>
+
+                      <td
+                          class="sticky-col"
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                      >
+                        <a
+                            onClick={() => setItem(item)}
+                            data-bs-toggle="modal"
+                            data-bs-target="#addcate"
+                            class="edit-btn"
+                        >
+                          <i className="fa fa-edit"></i>
+                        </a>
+                        {/*<button onClick={() => deleteData(item.id)} class="delete-btn"><i*/}
+                        {/*    className='fa fa-trash'></i></button>*/}
+                      </td>
+                    </tr>
                 );
               })}
-            </tbody>
-          </table>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <ReactPaginate
-              marginPagesDisplayed={2}
-              pageCount={pageCount}
-              onPageChange={handlePageClick}
-              containerClassName={"pagination"}
-              pageClassName={"page-item"}
-              pageLinkClassName={"page-link"}
-              previousClassName="page-item"
-              previousLinkClassName="page-link"
-              nextClassName="page-item"
-              nextLinkClassName="page-link"
-              breakClassName="page-item"
-              breakLinkClassName="page-link"
-              previousLabel="Trang trước"
-              nextLabel="Trang sau"
-              activeClassName="active"
-              forcePage={currentPage}
-            />
+              </tbody>
+            </table>
+            <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+            >
+              <ReactPaginate
+                  marginPagesDisplayed={2}
+                  pageCount={pageCount}
+                  onPageChange={handlePageClick}
+                  containerClassName={"pagination"}
+                  pageClassName={"page-item"}
+                  pageLinkClassName={"page-link"}
+                  previousClassName="page-item"
+                  previousLinkClassName="page-link"
+                  nextClassName="page-item"
+                  nextLinkClassName="page-link"
+                  breakClassName="page-item"
+                  breakLinkClassName="page-link"
+                  previousLabel="Trang trước"
+                  nextLabel="Trang sau"
+                  activeClassName="active"
+                  forcePage={currentPage}
+              />
+            </div>
           </div>
         </div>
-      </div>
 
-      <div
-        class="modal fade"
-        id="addcate"
-        tabindex="-1"
-        aria-labelledby="exampleModalLabel"
-        aria-hidden="false"
-      >
-        <div class="modal-dialog modal-lg">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">
-                Thêm hoặc cập nhật chất liệu
-              </h5>
-              <button
-                type="button"
-                className="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <div className="modal-body">
-              <form
-                className="col-sm-5 marginauto"
-                onSubmit={updateData}
-                method="post"
-              >
-                <label>Tên</label>
-                <input
-                  defaultValue={item?.tenChatLieu || ""}
-                  name="catename"
-                  id="catename"
-                  type="text"
-                  className="form-control"
-                />
-                <br />
-                <label>Trạng thái</label>
-                <div className="form-check">
+        <div
+            class="modal fade"
+            id="addcate"
+            tabindex="-1"
+            aria-labelledby="exampleModalLabel"
+            aria-hidden="false"
+        >
+          <div class="modal-dialog modal-lg">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">
+                  {item ? 'Cập nhật chất liệu' : 'Thêm mới chất liệu'}
+                </h5>
+                <button
+                    type="button"
+                    className="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                ></button>
+              </div>
+              <div className="modal-body">
+                <form
+                    className="col-sm-5 marginauto"
+                    onSubmit={handleSubmit}
+                    method="post"
+                >
+                  <label>Tên</label>
                   <input
-                    className="form-check-input"
-                    type="radio"
-                    name="status"
-                    id="status1"
-                    value="1"
-                    defaultChecked={item?.trangThai === 1 || !item}
+                      defaultValue={item?.tenChatLieu || ""}
+                      name="catename"
+                      id="catename"
+                      type="text"
+                      className="form-control"
                   />
-                  <label className="form-check-label" htmlFor="status1">
-                    Đang sử dụng
-                  </label>
-                </div>
-                <div className="form-check">
-                  <input
-                    className="form-check-input"
-                    type="radio"
-                    name="status"
-                    id="status0"
-                    value="0"
-                    defaultChecked={item?.trangThai === 0}
-                  />
-                  <label className="form-check-label" htmlFor="status0">
-                    Không sử dụng
-                  </label>
-                </div>
-                <br />
-                <button className="btn btn-success form-control action-btn">
-                  Xác nhận
-                </button>
-              </form>
+                  <br />
+                  <label>Trạng thái</label>
+                  <div className="form-check">
+                    <input
+                        className="form-check-input"
+                        type="radio"
+                        name="status"
+                        id="status1"
+                        value="1"
+                        defaultChecked={item?.trangThai === 1 || !item}
+                    />
+                    <label className="form-check-label" htmlFor="status1">
+                      Đang sử dụng
+                    </label>
+                  </div>
+                  <div className="form-check">
+                    <input
+                        className="form-check-input"
+                        type="radio"
+                        name="status"
+                        id="status0"
+                        value="0"
+                        defaultChecked={item?.trangThai === 0}
+                    />
+                    <label className="form-check-label" htmlFor="status0">
+                      Không sử dụng
+                    </label>
+                  </div>
+                  <br />
+                  <button type="submit" className="btn btn-success form-control action-btn">
+                    {item ? "Cập nhật" : "Thêm mới"}
+                  </button>
+                </form>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </>
+      </>
   );
 };
 

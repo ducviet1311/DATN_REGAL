@@ -502,8 +502,8 @@ const AdminSanPhamChiTiet = () => {
           <div class="modal-dialog modal-lg">
             <div class="modal-content">
               <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">
-                  Thêm hoặc cập nhật sản phẩm chi tiết
+                <h5 className="modal-title">
+                  {item ? 'Cập nhật sản phẩm chi tiết' : 'Thêm mới sản phẩm chi tiết'}
                 </h5>{" "}
                 <button
                     type="button"

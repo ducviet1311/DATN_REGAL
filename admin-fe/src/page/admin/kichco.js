@@ -180,9 +180,6 @@ const AdminKichCo = () => {
                     >
                         <i className="fa fa-plus"></i> Thêm mới
                     </button>
-                    <a href="#" onClick={exportToExcel} className="btn btn-success ms-2">
-                        <i className="fa fa-excel-o"></i> Excel
-                    </a>
                 </div>
             </div>
             <div className="tablediv">
@@ -230,9 +227,9 @@ const AdminKichCo = () => {
                                         >
                                             <i className="fa fa-edit"></i>
                                         </a>
-                                        <button onClick={() => deleteData(item.id)} className="delete-btn">
-                                            <i className="fa fa-trash"></i>
-                                        </button>
+                                        {/*<button onClick={() => deleteData(item.id)} className="delete-btn">*/}
+                                        {/*    <i className="fa fa-trash"></i>*/}
+                                        {/*</button>*/}
                                     </td>
                                 </tr>
                             );
@@ -266,8 +263,8 @@ const AdminKichCo = () => {
                 <div className="modal-dialog modal-lg">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h5 className="modal-title" id="exampleModalLabel">
-                                Thêm hoặc cập nhật kích cỡ
+                            <h5 className="modal-title">
+                                {item ? 'Cập nhật kích cỡ' : 'Thêm mới kích cỡ'}
                             </h5>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
@@ -310,7 +307,9 @@ const AdminKichCo = () => {
                                     </label>
                                 </div>
                                 <br />
-                                <button className="btn btn-success form-control action-btn">Xác nhận</button>
+                                <button type="submit" className="btn btn-success form-control action-btn">
+                                    {item ? "Cập nhật" : "Thêm mới"}
+                                </button>
                             </form>
                         </div>
                     </div>
