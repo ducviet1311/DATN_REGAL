@@ -587,8 +587,8 @@ const AdminSanPhamChiTiet = () => {
                   />
                   <br />
                   <br />
-                  <button class="btn btn-success form-control action-btn">
-                    Xác nhận
+                  <button className="btn btn-success form-control action-btn">
+                    {isUpdate ? "Cập nhật" : "Thêm mới"}
                   </button>
                 </form>
               </div>
