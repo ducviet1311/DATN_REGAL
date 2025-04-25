@@ -42,6 +42,14 @@ const AdminProduct = () => {
         saveAs(blob, `DanhSachSanPham.xlsx`);
     };
 
+    const getUnusedRandomNumber = () => {
+        return Math.floor(Math.random() * 100);
+    };
+
+    const printRandomString = () => {
+        console.log("This is a meaningless string: XYZ123");
+    };
+
     async function deleteProduct(id) {
         Swal.fire({
             title: "Xác nhận xóa",
