@@ -183,7 +183,9 @@ const AdminSanPhamChiTiet = () => {
       errors.push("Vui lòng chọn trạng thái hợp lệ");
     }
     if (!selectedMauSac?.id) errors.push("Vui lòng chọn màu sắc");
-    if (!selectedKichCo?.id) errors.push("Vui lòng chọn kích cỡ");
+    if (!selectIdKichCo || selectIdKichCo.length === 0) {
+      errors.push("Vui lòng chọn kích cỡ.");
+    }
     if (errors.length > 0) {
       errors.forEach(err => toast.error(err));
       return;
@@ -287,7 +289,7 @@ const AdminSanPhamChiTiet = () => {
       );
       return;
     }
-    if (!selectIdKichCo) {
+    if (!updateKichCo?.id) {
       toast.error("Vui lòng chọn kích cỡ.");
       return;
     }
@@ -396,6 +398,13 @@ const AdminSanPhamChiTiet = () => {
             >
               <i className="fa fa-plus"></i>
             </button>
+            {/*<a*/}
+            {/*    href="#"*/}
+            {/*    onClick={() => exportToExcel()}*/}
+            {/*    className="btn btn-success ms-2"*/}
+            {/*>*/}
+            {/*  <i className="fa fa-excel-o"></i>Excel*/}
+            {/*</a>*/}
           </div>
         </div>
         <div class="tablediv">
@@ -494,7 +503,7 @@ const AdminSanPhamChiTiet = () => {
             <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">
-                  Thêm hoặc cập nhật màu sắc
+                  Thêm hoặc cập nhật sản phẩm chi tiết
                 </h5>{" "}
                 <button
                     type="button"
@@ -542,6 +551,15 @@ const AdminSanPhamChiTiet = () => {
                       />
                       Còn hàng
                     </label>
+                    {/*<label style={{ marginLeft: "10px" }}>*/}
+                    {/*  <input*/}
+                    {/*    type="radio"*/}
+                    {/*    name="trangThai"*/}
+                    {/*    value="2"*/}
+                    {/*    defaultChecked={item?.trangThai === 2}*/}
+                    {/*  />*/}
+                    {/*  Hết hàng*/}
+                    {/*</label>*/}
                   </div>
 
                   <label class="lb-form">Màu sắc</label>
