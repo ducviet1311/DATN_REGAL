@@ -106,32 +106,54 @@ function Home() {
 
       return (
           <div className="col-lg-20p col-md-3 col-sm-6 col-6 d-flex" key={item.id}>
-            <div className="singleproduct w-100" onClick={() => handleProductClick(item.id)} style={{ cursor: 'pointer' }}>
-              <div className="productimg-container">
-                <img src={linkanh || 'default-image.jpg'} className="productimg" alt={item.tenSanPham} />
+            <div
+                className="singleproduct w-100"
+                onClick={() => handleProductClick(item.id)}
+                style={{ cursor: 'pointer' }}
+            >
+              <div className="productimg-container position-relative">
+                <img
+                    src={linkanh || 'default-image.jpg'}
+                    className="productimg"
+                    alt={item.tenSanPham}
+                />
                 {item.soLuongDaBan > 0 && (
                     <div className="sold-badge">Đã bán: {item.soLuongDaBan}</div>
                 )}
+
+                {item.trangThai === 2 && (
+                    <div
+                        className="position-absolute top-0 start-0"
+                        style={{
+                          backgroundColor: 'red',
+                          color: 'white',
+                          fontSize: '12px',
+                          padding: '2px 5px',
+                          borderRadius: '0 0 5px 0',
+                          fontStyle: 'italic',
+                          transform: 'translateY(0)',
+                        }}
+                    >
+                      Hết hàng
+                    </div>
+                )}
               </div>
+
               <div className="contentsinglepro">
                 <p className="productname">
-                <span className="productname">
-                  {item.tenSanPham}
-                </span>
+                  <span className="productname">{item.tenSanPham}</span>
                 </p>
                 <div className="price-view">
                   <div
                       style={{
-                        display: "flex",
-                        gap: "30px",
-                        justifyContent: "center",
-                        alignItems: "center",
+                        display: 'flex',
+                        gap: '30px',
+                        justifyContent: 'center',
+                        alignItems: 'center',
                       }}
                       className="priceproduct"
                   >
-                    <strong className="newprice">
-                      {formatMoney(giaban)}
-                    </strong>
+                    <strong className="newprice">{formatMoney(giaban)}</strong>
                     {dotGiamGia ? (
                         <strong className="oldprice">
                           {formatMoney(giaban + dotGiamGia.giaTriGiam)}
@@ -148,7 +170,7 @@ function Home() {
 
   const renderProductCardsBanChay = (products) => {
     return products.map((product) => {
-      const { idSanPham, tenSanPham, tenAnh, giaBan } = product;
+      const { idSanPham, tenSanPham, tenAnh, giaBan, trangThai } = product; // Thêm trường trangThai
 
       return (
           <div className="col-lg-20p col-md-3 col-sm-6 col-6 d-flex" key={idSanPham}>
@@ -157,30 +179,40 @@ function Home() {
                 onClick={() => handleProductClick(idSanPham)}
                 style={{ cursor: "pointer" }}
             >
-              <div className="productimg-container">
+              <div className="productimg-container" style={{ position: 'relative' }}> {/* Thêm position: relative */}
                 <img
                     src={tenAnh || 'default-image.jpg'}
                     className="productimg"
                     alt={tenSanPham}
                 />
-                {/* Nếu bạn muốn hiển thị số lượng đã bán, bạn cần thêm trường này vào DTO */}
-                {/* {soLuongDaBan > 0 && (
-              <div className="sold-badge">Đã bán: {soLuongDaBan}</div>
-            )} */}
+
+                {/* Thêm phần hiển thị "Hết hàng" */}
+                {trangThai === 2 && (
+                    <div style={{
+                      position: 'absolute',
+                      top: '5px',
+                      left: '5px',
+                      backgroundColor: 'red',
+                      color: 'white',
+                      fontSize: '12px',
+                      padding: '2px 8px',
+                      borderRadius: '3px',
+                      fontStyle: 'italic'
+                    }}>
+                      Hết hàng
+                    </div>
+                )}
               </div>
+
               <div className="contentsinglepro">
                 <p className="productname">
-                <span className="productname">
-                  {tenSanPham}
-                </span>
+              <span className="productname">
+                {tenSanPham}
+              </span>
                 </p>
                 <div className="price-view">
                   <div className="priceproduct" style={{ display: "flex", gap: "30px", justifyContent: "center" }}>
                     <strong className="newprice">{formatMoney(giaBan)}</strong>
-                    {/* Nếu muốn hiển thị giá gốc khi có giảm giá, bạn cần thêm trường này vào DTO */}
-                    {/* {dotGiamGia && (
-                  <strong className="oldprice">{formatMoney(giaBan + dotGiamGia.giaTriGiam)}</strong>
-                )} */}
                   </div>
                 </div>
               </div>

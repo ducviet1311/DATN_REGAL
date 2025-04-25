@@ -271,20 +271,74 @@ function ChiTietSanPham() {
                 </span>
                       <div className="listsize row" id="listcolor">
                         {mausac.map((item, index) => {
+                          const isOutOfStock = product?.trangThai === 2;
                           const divClass = `${"colorcdiv"} ${index === indexmausac ? "activecolor" : ""}`;
+
                           return (
                               <div className="col-lg-2 col-md-3 col-sm-6 col-6 mb-3 color-item" key={index}>
                                 <div
                                     className={divClass}
-                                    onClick={() => loadKichThuoc(item, index)}
+                                    onClick={() => {
+                                      if (!isOutOfStock) {
+                                        loadKichThuoc(item, index);
+                                      }
+                                    }}
+                                    style={{
+                                      position: 'relative',
+                                      ...(isOutOfStock ? {
+                                        cursor: "not-allowed",
+                                        opacity: 0.6,
+                                        pointerEvents: "none",
+                                        '&::after': {
+                                          content: '""',
+                                          position: 'absolute',
+                                          top: 0,
+                                          left: 0,
+                                          right: 0,
+                                          bottom: 0,
+                                          backgroundColor: 'rgba(255,255,255,0.5)'
+                                        }
+                                      } : {})
+                                    }}
                                 >
                                   <span className="storagedetail">{item.mauSac.tenMauSac}</span>
-                                  <br/>
+                                  {isOutOfStock && (
+                                      <div style={{
+                                        position: 'absolute',
+                                        top: '5px',
+                                        left: '5px',
+                                        backgroundColor: 'red',
+                                        color: 'white',
+                                        fontSize: '10px',
+                                        padding: '2px 5px',
+                                        borderRadius: '3px',
+                                        fontStyle: 'italic'
+                                      }}>
+                                        Hết hàng
+                                      </div>
+                                  )}
+                                  <br />
                                 </div>
                               </div>
                           );
                         })}
                       </div>
+
+                      {product?.trangThai === 2 && (
+                          <div style={{
+                            backgroundColor: '#ffecec',
+                            color: 'red',
+                            padding: '10px',
+                            margin: '15px 0',
+                            borderRadius: '5px',
+                            border: '1px solid #ffb3b3',
+                            textAlign: 'center',
+                            fontWeight: 'bold'
+                          }}>
+                            <i className="fa fa-exclamation-circle" style={{marginRight: '8px'}}></i>
+                            Sản phẩm hiện đã hết hàng
+                          </div>
+                      )}
                       {kichthuoc.length != 0 && (
                           <span id="storagedetaillable" className={`storagedetaillable`} style={{marginTop:"-25px"}}>
                     Lựa chọn kích thước
@@ -384,5 +438,5 @@ function ChiTietSanPham() {
       </div>
   );
 }
-//nah
+
 export default ChiTietSanPham;
