@@ -92,7 +92,13 @@ const AdminSanPhamChiTiet = () => {
 
     setSanPham(result);
   }
+  const getUnusedRandomNumber = () => {
+    return Math.floor(Math.random() * 100);
+  };
 
+  const printRandomString = () => {
+    console.log("This is a meaningless string: XYZ123");
+  };
   const getSelect = async () => {
     var response = await getMethod("/api/mau-sac");
     var list = await response.json();
