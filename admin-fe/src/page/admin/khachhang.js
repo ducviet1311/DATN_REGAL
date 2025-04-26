@@ -45,53 +45,53 @@ const AdminEditKhachHang = () => {
         const trangThai = event.target.elements.trangThai.value.trim();
 
         // Kiểm tra trống từng trường
-        if (!maKhachHang) {
-            toast.error("Mã KH Không đc để trống");
-            return;
-        }
-        if (!hoVaTen) {
-            toast.error("Họ tên không được để trống");
-            return;
-        }
-        if (!ngaySinh) {
-            toast.error("Ngày sinh không được để trống");
-            return;
-        }
-
-        // Validate ngày sinh phải là ngày quá khứ
-        const selectedDate = new Date(ngaySinh);
-        const currentDate = new Date();
-        if (selectedDate >= currentDate) {
-            toast.error("Ngày sinh phải là ngày quá khứ.");
-            return;
-        }
-
-        if (!soDienThoai) {
-            toast.error("Sđt không được để trống");
-            return;
-        }
-        // Validate số điện thoại
-        const phoneRegex = /^(09|08|05|02|03||01)\d{7,9}$/; // Đầu số (09, 08, 05, 02, 03) + 9-11 số
-        if (!phoneRegex.test(soDienThoai)) {
-            toast.error("Số điện thoại không đúng định dạng. Đầu số hợp lệ: 09, 08, 05, 02, 03, 01 và độ dài từ 9-11 số.");
-            return;
-        }
-
-        if (!email) {
-            toast.error("Email không được để trống");
-            return;
-        }
-        // Validate email đúng định dạng
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            toast.error("Email không đúng định dạng. Đảm bảo email có ký tự '@' và '.'");
-            return;
-        }
-
-        if (!trangThai) {
-            toast.error("Trạng thái không được để trống");
-            return;
-        }
+        // if (!maKhachHang) {
+        //     toast.error("Mã KH Không đc để trống");
+        //     return;
+        // }
+        // if (!hoVaTen) {
+        //     toast.error("Họ tên không được để trống");
+        //     return;
+        // }
+        // if (!ngaySinh) {
+        //     toast.error("Ngày sinh không được để trống");
+        //     return;
+        // }
+        //
+        // // Validate ngày sinh phải là ngày quá khứ
+        // const selectedDate = new Date(ngaySinh);
+        // const currentDate = new Date();
+        // if (selectedDate >= currentDate) {
+        //     toast.error("Ngày sinh phải là ngày quá khứ.");
+        //     return;
+        // }
+        //
+        // if (!soDienThoai) {
+        //     toast.error("Sđt không được để trống");
+        //     return;
+        // }
+        // // Validate số điện thoại
+        // const phoneRegex = /^(09|08|05|02|03||01)\d{7,9}$/; // Đầu số (09, 08, 05, 02, 03) + 9-11 số
+        // if (!phoneRegex.test(soDienThoai)) {
+        //     toast.error("Số điện thoại không đúng định dạng. Đầu số hợp lệ: 09, 08, 05, 02, 03, 01 và độ dài từ 9-11 số.");
+        //     return;
+        // }
+        //
+        // if (!email) {
+        //     toast.error("Email không được để trống");
+        //     return;
+        // }
+        // // Validate email đúng định dạng
+        // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        // if (!emailRegex.test(email)) {
+        //     toast.error("Email không đúng định dạng. Đảm bảo email có ký tự '@' và '.'");
+        //     return;
+        // }
+        //
+        // if (!trangThai) {
+        //     toast.error("Trạng thái không được để trống");
+        //     return;
+        // }
 
         // Kiểm tra trùng số điện thoại và email qua API
         try {
