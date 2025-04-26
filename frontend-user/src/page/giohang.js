@@ -106,71 +106,71 @@ function GioHang() {
     }
   }
 
-  // async function kiemTraThanhToan() {
-  //   if (selectDiaChi == null) {
-  //     toast.error("Hãy chọn địa chỉ nhận hàng");
-  //     return;
-  //   }
-  //   var selectedCheckboxes = document.querySelectorAll(
-  //     'input[name="sanphamchitiet"]:checked'
-  //   );
-  //   const selectedValues = Array.from(selectedCheckboxes).map(
-  //     (checkbox) => checkbox.value
-  //   );
-  //   if (selectedValues.length == 0) {
-  //     toast.error("Hãy chọn ít nhất 1 sản phẩm");
-  //     return;
-  //   }
-  //   if (phuongthuctt == null) {
-  //     toast.error("Hãy chọn phương thức thanh toán");
-  //     return;
-  //   }
-  //   if (!isTerm) {
-  //     toast.error("Vui lòng đồng ý với điều khoản và chính sách của chúng tôi");
-  //     return;
-  //   }
-  //   var res = await postMethodPayload(
-  //     "/api/gio-hang/tinh-tong",
-  //     selectedValues
-  //   );
-  //   var tong = await res.text();
-  //   setTongTam(tong);
-  //   if (voucherSelect != null) {
-  //     console.log("voucher", voucherSelect);
-  //     var strgiam = "";
-  //     if (voucherSelect.loaiPhieu == true) {
-  //       strgiam = "- " + formatMoney(voucherSelect.giaTriGiam);
-  //       settienGiam(voucherSelect.giaTriGiam);
-  //     } else {
-  //       var giamtien = Number((tong * voucherSelect.giaTriGiam) / 100);
-  //       if (giamtien > voucherSelect.giaTriGiamToiDa) {
-  //         giamtien = voucherSelect.giaTriGiamToiDa;
-  //       }
-  //       strgiam =
-  //         "- " +
-  //         voucherSelect.giaTriGiam +
-  //         " % ( tối đa " +
-  //         formatMoney(giamtien) +
-  //         ")";
-  //       settienGiam(giamtien);
-  //     }
-  //     settextGiamGia(strgiam);
-  //   }
-  //   var toDistrictId = selectDiaChi.quanHuyen.split("?")[0];
-  //   var toWardCode = selectDiaChi.xaPhuong.split("?")[0];
-  //   console.log(selectDiaChi);
-  //
-  //   var res = await postMethodPayload(
-  //     "/api/shipping/public/calculate-shipping-fee?toDistrictId=" +
-  //       toDistrictId +
-  //       "&toWardCode=" +
-  //       toWardCode,
-  //     selectedValues
-  //   );
-  //   var result = await res.json();
-  //   console.log(result);
-  //   setPhiShip(result.data.service_fee);
-  // }
+  async function kiemTraThanhToan() {
+    if (selectDiaChi == null) {
+      toast.error("Hãy chọn địa chỉ nhận hàng");
+      return;
+    }
+    var selectedCheckboxes = document.querySelectorAll(
+      'input[name="sanphamchitiet"]:checked'
+    );
+    const selectedValues = Array.from(selectedCheckboxes).map(
+      (checkbox) => checkbox.value
+    );
+    if (selectedValues.length == 0) {
+      toast.error("Hãy chọn ít nhất 1 sản phẩm");
+      return;
+    }
+    if (phuongthuctt == null) {
+      toast.error("Hãy chọn phương thức thanh toán");
+      return;
+    }
+    if (!isTerm) {
+      toast.error("Vui lòng đồng ý với điều khoản và chính sách của chúng tôi");
+      return;
+    }
+    var res = await postMethodPayload(
+      "/api/gio-hang/tinh-tong",
+      selectedValues
+    );
+    var tong = await res.text();
+    setTongTam(tong);
+    if (voucherSelect != null) {
+      console.log("voucher", voucherSelect);
+      var strgiam = "";
+      if (voucherSelect.loaiPhieu == true) {
+        strgiam = "- " + formatMoney(voucherSelect.giaTriGiam);
+        settienGiam(voucherSelect.giaTriGiam);
+      } else {
+        var giamtien = Number((tong * voucherSelect.giaTriGiam) / 100);
+        if (giamtien > voucherSelect.giaTriGiamToiDa) {
+          giamtien = voucherSelect.giaTriGiamToiDa;
+        }
+        strgiam =
+          "- " +
+          voucherSelect.giaTriGiam +
+          " % ( tối đa " +
+          formatMoney(giamtien) +
+          ")";
+        settienGiam(giamtien);
+      }
+      settextGiamGia(strgiam);
+    }
+    var toDistrictId = selectDiaChi.quanHuyen.split("?")[0];
+    var toWardCode = selectDiaChi.xaPhuong.split("?")[0];
+    console.log(selectDiaChi);
+
+    var res = await postMethodPayload(
+      "/api/shipping/public/calculate-shipping-fee?toDistrictId=" +
+        toDistrictId +
+        "&toWardCode=" +
+        toWardCode,
+      selectedValues
+    );
+    var result = await res.json();
+    console.log(result);
+    setPhiShip(result.data.service_fee);
+  }
 
   async function xacNhanDatHang() {
     var selectedCheckboxes = document.querySelectorAll(
