@@ -18,6 +18,7 @@ const AdminAddProduct = () => {
   const [selectedDeGiay, setSelectedDeGiay] = useState(null);
   const [label, setLabel] = useState("Thêm sản phẩm");
   const [isUpdate, setIsUpdate] = useState(false); // Thêm state để xác định cập nhật hay thêm mới
+  const [status, setStatus] = useState(1);
 
   useEffect(() => {
     const fetchProductData = async () => {
@@ -30,6 +31,7 @@ const AdminAddProduct = () => {
         const response = await getMethod("/api/san-pham/" + id);
         const result = await response.json();
         setProduct(result);
+        setStatus(result.trangThai);
         setSelectedThuongHieu(result.thuongHieu);
         setSelectedChatLieu(result.chatLieu);
         setSelectedDeGiay(result.deGiay);
@@ -70,7 +72,7 @@ const AdminAddProduct = () => {
 
     const masp = event.target.elements.masp.value;
     const tensp = event.target.elements.tensp.value.trim();
-    const trangThai = event.target.elements.trangThai.value;
+    const trangThai = status;
 
     // Kiểm tra hợp lệ
     if (!masp) {
@@ -81,10 +83,10 @@ const AdminAddProduct = () => {
       toast.error("Tên sản phẩm không được để trống.");
       return;
     }
-    if (!trangThai || (trangThai !== "1" && trangThai !== "2")) {
-      toast.error("Trạng thái không hợp lệ. Vui lòng chọn Còn hàng hoặc Hết hàng.");
-      return;
-    }
+    // if (!trangThai || (trangThai !== "1" && trangThai !== "2")) {
+    //   toast.error("Trạng thái không hợp lệ. Vui lòng chọn Còn hàng hoặc Hết hàng.");
+    //   return;
+    // }
 
     // Tạo payload
     const payload = {
@@ -173,11 +175,10 @@ const AdminAddProduct = () => {
                             name="trangThai"
                             value="1"
                             id="status1"
-                            defaultChecked={!product?.trangThai || product?.trangThai === 1}
+                            checked={status === 1}
+                            onChange={() => setStatus(1)}
                         />
-                        <label className="form-check-label" htmlFor="status1">
-                          Còn hàng
-                        </label>
+                        <label className="form-check-label" htmlFor="status1">Còn hàng</label>
                       </div>
                       <div className="form-check">
                         <input
@@ -186,11 +187,10 @@ const AdminAddProduct = () => {
                             name="trangThai"
                             value="2"
                             id="status2"
-                            defaultChecked={product?.trangThai === 2}
+                            checked={status === 2}
+                            onChange={() => setStatus(2)}
                         />
-                        <label className="form-check-label" htmlFor="status2">
-                          Hết hàng
-                        </label>
+                        <label className="form-check-label" htmlFor="status2">Hết hàng</label>
                       </div>
                     </div>
                   </div>

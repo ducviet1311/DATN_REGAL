@@ -107,9 +107,9 @@ const AdminProduct = () => {
                     <a href="add-product" className="btn btn-primary ms-2">
                         <i className="fa fa-plus"></i>
                     </a>
-                    <a href="#" onClick={exportToExcel} className="btn btn-success ms-2">
-                        <i className="fa fa-excel-o"></i> Excel
-                    </a>
+                    {/*<a href="#" onClick={exportToExcel} className="btn btn-success ms-2">*/}
+                    {/*    <i className="fa fa-excel-o"></i> Excel*/}
+                    {/*</a>*/}
                 </div>
             </div>
             <div className="tablediv">
@@ -129,6 +129,7 @@ const AdminProduct = () => {
                             <th>Ngày tạo</th>
                             <th>Người tạo</th>
                             <th>Người cập nhật</th>
+                            <th>Trạng thái</th>
                             <th className="sticky-col">Hành động</th>
                         </tr>
                         </thead>
@@ -146,6 +147,7 @@ const AdminProduct = () => {
                                     <td>{item.ngayTao}</td>
                                     <td>{item.nguoiTao}</td>
                                     <td>{item.nguoiCapNhat}</td>
+                                    <td>{item.trangThai==1?"Còn hàng":"Hết hàng"}</td>
                                     <td className="sticky-col">
                                         <a href={"add-product?id=" + item.id} className="edit-btn">
                                             <i className="fa fa-edit"></i>
