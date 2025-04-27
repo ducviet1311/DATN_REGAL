@@ -15,7 +15,7 @@ import java.util.Optional;
 
 @Repository
 public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
-    @Query("select h from HoaDon h where h.loaiHoaDon = true or (h.loaiHoaDon = false and h.trangThai = 8)")
+    @Query("select h from HoaDon h")
     Page<HoaDon> findAllHd(Pageable pageable);
 
     @Query("SELECT h FROM HoaDon h WHERE h.maHoaDon =?1 OR h.email =?1 OR h.soDienThoai =?1 ORDER BY h.ngayTao DESC")
@@ -128,20 +128,18 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
             nativeQuery = true)
     Double tinhDoanhThuTheoNam(Integer nam);
 
-    // Phương thức tìm kiếm mới
-    @Query("SELECT h FROM HoaDon h WHERE " +
+    @Query("SELECT h FROM HoaDon h LEFT JOIN h.khachHang kh WHERE " +
             "(:trangthai IS NULL OR h.trangThai = :trangthai) AND " +
             "(:loaiHoaDon IS NULL OR h.loaiHoaDon = :loaiHoaDon) AND " +
             "(h.maHoaDon LIKE %:keyword% OR " +
-            "h.khachHang.hoVaTen LIKE %:keyword% OR " +
-            "h.khachHang.soDienThoai LIKE %:keyword%)")
+            "(kh IS NULL AND :keyword = 'Khách lẻ') OR " +
+            "(kh IS NOT NULL AND (kh.hoVaTen LIKE %:keyword% OR kh.soDienThoai LIKE %:keyword%)))")
     Page<HoaDon> searchHoaDon(@Param("keyword") String keyword,
                               @Param("trangthai") Integer trangthai,
-                              @Param("loaiHoaDon") Boolean loaiHoaDon,
+                              @Param("loaiHoaDon") Boolean loaiHoaDon, // Sửa từ loaiHoaNhap thành loaiHoaDon
                               Pageable pageable);
 
-    Page<HoaDon> findByTrangThaiAndLoaiHoaDon(Integer trangThai, Boolean loaiHoaDon, Pageable pageable);
     Page<HoaDon> findByLoaiHoaDon(Boolean loaiHoaDon, Pageable pageable);
-    // Các phương thức hiện có khác...
+    Page<HoaDon> findByTrangThaiAndLoaiHoaDon(Integer trangThai, Boolean loaiHoaDon, Pageable pageable);
 
 }
