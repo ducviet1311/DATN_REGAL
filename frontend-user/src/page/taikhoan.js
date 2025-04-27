@@ -18,56 +18,56 @@ import DonHang from './donhang'
 import DoiMatKhau from './doimatkhau'
 import ThongTinTaiKhoan from './thongtintaikhoan'
 
-// function TaiKhoan(){
-//     const [value, setValue] = React.useState(0);
-//     useEffect(()=>{
-//     }, []);
-//
-//     const handleChange = (event, newValue) => {
-//         setValue(newValue);
-//     };
-//
-//     useEffect(()=>{
-//     }, []);
-//
-//     return(
-//     <div class="maincontentweb">
-//     <div class="containercustom container">
-//     <div className='container-fluid'>
-//         <div className='container-web acctaikhoan'>
-//             <Box sx={{ flexGrow: 1, bgcolor: 'background.paper', display: 'flex', minHeight:500 }} >
-//                 <Tabs
-//                     orientation="vertical"
-//                     variant="scrollable"
-//                     value={value}
-//                     onChange={handleChange}
-//                     aria-label="Vertical tabs example"
-//                     sx={{ borderRight: 1, borderColor: 'divider' }}>
-//
-//                     <Tab label="Thông tin tài khoản" {...a11yProps(0)} />
-//                     <Tab label="Đơn hàng" {...a11yProps(1)} />
-//                     <Tab label="Địa chỉ" {...a11yProps(2)} />
-//                     <Tab label="Đổi mật khẩu" {...a11yProps(3)} />
-//                 </Tabs>
-//                 <TabPanel value={value} index={0} style={{width:"100%"}}>
-//                   <ThongTinTaiKhoan/>
-//                 </TabPanel>
-//                 <TabPanel value={value} index={1} style={{width:"100%"}}>
-//                   <DonHang/>
-//                 </TabPanel>
-//                 <TabPanel value={value} index={2} style={{width:"100%"}}>
-//                   <DiaChi/>
-//                 </TabPanel>
-//                 <TabPanel value={value} index={3} style={{width:"100%"}}>
-//                   <DoiMatKhau/>
-//                 </TabPanel>
-//             </Box>
-//         </div>
-//      </div>
-//      </div>
-//      </div>
-//     );
-// }
+function TaiKhoan(){
+    const [value, setValue] = React.useState(0);
+    useEffect(()=>{
+    }, []);
+
+    const handleChange = (event, newValue) => {
+        setValue(newValue);
+    };
+
+    useEffect(()=>{
+    }, []);
+
+    return(
+    <div class="maincontentweb">
+    <div class="containercustom container">
+    <div className='container-fluid'>
+        <div className='container-web acctaikhoan'>
+            <Box sx={{ flexGrow: 1, bgcolor: 'background.paper', display: 'flex', minHeight:500 }} >
+                <Tabs
+                    orientation="vertical"
+                    variant="scrollable"
+                    value={value}
+                    onChange={handleChange}
+                    aria-label="Vertical tabs example"
+                    sx={{ borderRight: 1, borderColor: 'divider' }}>
+
+                    <Tab label="Thông tin tài khoản" {...a11yProps(0)} />
+                    <Tab label="Đơn hàng" {...a11yProps(1)} />
+                    <Tab label="Địa chỉ" {...a11yProps(2)} />
+                    <Tab label="Đổi mật khẩu" {...a11yProps(3)} />
+                </Tabs>
+                <TabPanel value={value} index={0} style={{width:"100%"}}>
+                  <ThongTinTaiKhoan/>
+                </TabPanel>
+                <TabPanel value={value} index={1} style={{width:"100%"}}>
+                  <DonHang/>
+                </TabPanel>
+                <TabPanel value={value} index={2} style={{width:"100%"}}>
+                  <DiaChi/>
+                </TabPanel>
+                <TabPanel value={value} index={3} style={{width:"100%"}}>
+                  <DoiMatKhau/>
+                </TabPanel>
+            </Box>
+        </div>
+     </div>
+     </div>
+     </div>
+    );
+}
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
   
