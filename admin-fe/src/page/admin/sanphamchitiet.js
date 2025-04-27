@@ -28,6 +28,13 @@ const AdminSanPhamChiTiet = () => {
   const [item, setItem] = useState(null);
   const [maSptc, setMaSptc] = useState("");
   const [isUpdate, setIsUpdate] = useState(false);
+
+  const imageMagicNumbers = {
+    jpeg: [0xFF, 0xD8, 0xFF], // JPEG/JPG
+    png: [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A], // PNG
+    gif: [0x47, 0x49, 0x46, 0x38], // GIF (GIF87a/GIF89a)
+    webp: [0x52, 0x49, 0x46, 0x46], // WEBP (RIFF)
+  };
   useEffect(() => {
     getChiTietSanPham();
     getSanPham();
@@ -57,6 +64,26 @@ const AdminSanPhamChiTiet = () => {
       toast.error("Không thể tạo mã sản phẩm mới.");
     }
   };
+  async function checkMagicNumber(file) {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const buffer = new Uint8Array(e.target.result);
+        let isImage = false;
+
+        // Kiểm tra từng loại ảnh
+        for (const [format, magic] of Object.entries(imageMagicNumbers)) {
+          const match = magic.every((byte, i) => buffer[i] === byte);
+          if (match) {
+            isImage = true;
+            break;
+          }
+        }
+        resolve(isImage);
+      };
+      reader.readAsArrayBuffer(file.slice(0, 16)); // Đọc 16 byte đầu
+    });
+  }
   const exportToExcel = () => {
     const worksheet = XLSX.utils.json_to_sheet(items);
     const workbook = XLSX.utils.book_new();
@@ -340,29 +367,48 @@ const AdminSanPhamChiTiet = () => {
   }
 
   async function uploadAnh(item) {
-    var listFile = [];
-    var files = document.getElementById("choosefile" + item.id).files;
-    for (var i = 0; i < files.length; i++) {
-      listFile.push(files[i]);
-    }
-    console.log(listFile);
+    const files = document.getElementById("choosefile" + item.id).files;
 
-    var listLink = await uploadMultipleFile(listFile);
-    const res = await postMethodPayload(
-        "/api/anh?chiTietSanPhamId=" + item.id,
-        listLink
-    );
-    if (res.status < 300) {
-      toast.success("upload ảnh thành công");
-      getChiTietSanPham();
+    // Kiểm tra không có file nào được chọn
+    if (files.length === 0) {
+      toast.error("Vui lòng chọn ít nhất một file ảnh");
+      return;
     }
-    if (res.status == 417) {
-      var result = await res.json();
-      toast.error(result.defaultMessage);
+
+    // Kiểm tra từng file
+    for (const file of files) {
+      // Nếu file.type không bắt đầu bằng "image/" => Kiểm tra Magic Number
+      if (!file.type.startsWith("image/")) {
+        const isImage = await checkMagicNumber(file);
+        if (!isImage) {
+          toast.error(`File "${file.name}" không phải là ảnh hợp lệ!`);
+          return;
+        }
+      }
     }
-    if (res.status > 300) {
-      var result = await res.json();
-      toast.error(result.message);
+
+    // Nếu tất cả file hợp lệ => Upload
+    try {
+      const listFile = Array.from(files);
+      const listLink = await uploadMultipleFile(listFile);
+      const res = await postMethodPayload(
+          "/api/anh?chiTietSanPhamId=" + item.id,
+          listLink
+      );
+
+      if (res.status < 300) {
+        toast.success("Upload ảnh thành công!");
+        getChiTietSanPham();
+      } else if (res.status === 417) {
+        const result = await res.json();
+        toast.error(result.defaultMessage);
+      } else {
+        const result = await res.json();
+        toast.error(result.message);
+      }
+    } catch (error) {
+      console.error("Lỗi khi upload ảnh:", error);
+      toast.error("Đã xảy ra lỗi khi upload ảnh");
     }
   }
   function trangThai(tt) {
