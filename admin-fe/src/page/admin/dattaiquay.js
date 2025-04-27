@@ -16,12 +16,13 @@ import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { formatMoney } from "../../services/money";
 import { Modal, Button } from "react-bootstrap";
-import { Nav } from "react-bootstrap"; // Import Nav
+import { Nav } from "react-bootstrap";
 import { FaTimesCircle, FaCreditCard } from "react-icons/fa";
 import { InputGroup, Form } from "react-bootstrap";
 import Invoice from "./invoice";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
+
 const AdminDatTaiQuay = () => {
     const [hoaDonCho, sethoaDonCho] = useState([]);
     const [khachHang, setKhachHang] = useState([]);
@@ -33,11 +34,36 @@ const AdminDatTaiQuay = () => {
         soDienThoai: "",
     });
     const [isChonPGG, setIsChonPGG] = useState(false);
-    const [soTienThanhToan, setSoTienThanhToan] = useState(0); // Khởi tạo số tiền thanh toán mặc định là 0
-    const [tienThua, setTienThua] = useState(0); // Khởi tạo tiền thừa mặc định là 0
-    const [showModal, setShowModal] = useState(false); // Hiển thị modal
+    const [soTienThanhToan, setSoTienThanhToan] = useState(0);
+    const [tienThua, setTienThua] = useState(0);
+    const [showModal, setShowModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [hoaDonToDelete, setHoaDonToDelete] = useState(null);
+    const [selectSoluong, setselectSoluong] = useState(0);
+    const [selectDotGiamGia, setSelecDotGiamGia] = useState({});
+    const [dotGiamGia, setdotGiamGia] = useState({});
+    const [thuongHieu, setThuongHieu] = useState([]);
+    const [deGiay, setDeGiay] = useState([]);
+    const [chatlieu, setChatLieu] = useState([]);
+    const [kichThuoc, setKichThuoc] = useState([]);
+    const [mauSac, setMauSac] = useState([]);
+    const [selectThuongHieu, setselectThuongHieu] = useState(null);
+    const [selectDeGiay, setselectDeGiay] = useState(null);
+    const [selectChatlieu, setselectChatlieu] = useState(null);
+    const [selectkichThuoc, setselectkichThuoc] = useState(null);
+    const [selectmauSac, setselectmauSac] = useState(null);
+    const [tongTien, setTongTien] = useState(0);
+    const [tongTienNew, setTongTienNew] = useState(0);
+    const [searchKeyword, setSearchKeyword] = useState("");
+    const [filteredSanPham, setFilteredSanPham] = useState([]);
+    const [dataInvoice, setDataInvoice] = useState();
+    const [orders, setOrders] = useState([]);
+    const [activeOrder, setActiveOrder] = useState(null);
+    const [paymentMethod, setPaymentMethod] = useState("");
+    const [soTienKhachDua, setSoTienKhachDua] = useState(0);
+    const invoiceRef = useRef(null);
+
+    const tienThieu = tongTien - (soTienKhachDua ? parseInt(soTienKhachDua, 10) : 0);
 
     const handleShowDeleteModal = (hoaDonId) => {
         setHoaDonToDelete(hoaDonId);
@@ -49,33 +75,17 @@ const AdminDatTaiQuay = () => {
         setHoaDonToDelete(null);
     };
 
-    const [selectSoluong, setselectSoluong] = useState(0);
-    const [selectDotGiamGia, setSelecDotGiamGia] = useState({});
-    const [dotGiamGia, setdotGiamGia] = useState({});
-    const [thuongHieu, setThuongHieu] = useState([]);
-    const [deGiay, setDeGiay] = useState([]);
-    const [chatlieu, setChatLieu] = useState([]);
-    const [kichThuoc, setKichThuoc] = useState([]);
-    const [mauSac, setMauSac] = useState([]);
-
-    const [selectThuongHieu, setselectThuongHieu] = useState(null);
-    const [selectDeGiay, setselectDeGiay] = useState(null);
-    const [selectChatlieu, setselectChatlieu] = useState(null);
-    const [selectkichThuoc, setselectkichThuoc] = useState(null);
-    const [selectmauSac, setselectmauSac] = useState(null);
-    const [tongTien, setTongTien] = useState(0);
-    const [tongTienNew, setTongTienNew] = useState(0);
-    // Khai báo state cho searchKeyword
-    const [searchKeyword, setSearchKeyword] = useState("");
-    const [filteredSanPham, setFilteredSanPham] = useState([]); // Sản phẩm đã lọc
-    const [dataInvoice, setDataInvoice] = useState();
-    const invoiceRef = useRef(null);
+    const resetPaymentInfo = () => {
+        setPaymentMethod("");
+        setSoTienKhachDua(0);
+        setSoTienThanhToan(0);
+        setTienThua(0);
+    };
 
     const handlePDF = async () => {
         const element = invoiceRef.current;
         if (!element) return;
 
-        // Tạo PDF từ nội dung hóa đơn
         const canvas = await html2canvas(element, { scale: 3 });
         const imgData = canvas.toDataURL("image/png");
         const pdf = new jsPDF("p", "mm", "a4");
@@ -83,23 +93,21 @@ const AdminDatTaiQuay = () => {
         const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
 
         pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-
-        // Tạo tên file động theo mã hóa đơn và ngày
         const fileName = `hoa_don_${new Date()
             .toLocaleDateString("vi-VN")
             .replace(/\//g, "-")}.pdf`;
         pdf.save(fileName);
     };
-    // useEffect để lọc sản phẩm khi searchKeyword thay đổi
+
     useEffect(() => {
         const filtered = chiTietSanPham.filter(
             (item) =>
                 item.soLuong > 0 &&
                 item.sanPham?.tenSanPham
                     ?.toLowerCase()
-                    .includes(searchKeyword.toLowerCase()) // So khớp từ khóa tìm kiếm
+                    .includes(searchKeyword.toLowerCase())
         );
-        setFilteredSanPham(filtered); // Cập nhật danh sách đã lọc
+        setFilteredSanPham(filtered);
     }, [searchKeyword, chiTietSanPham]);
 
     const resetFilters = () => {
@@ -154,43 +162,35 @@ const AdminDatTaiQuay = () => {
         }
     }
 
-    const [orders, setOrders] = useState([]); // Lưu danh sách hóa đơn
-    const [activeOrder, setActiveOrder] = useState(null); // Hóa đơn hiện tại
-
     async function taoHoaDonCho() {
         var res = await postMethod("/api/v1/hoa-don/tao-hoa-don-cho");
 
         if (res.status < 300) {
-            // Thêm hóa đơn vào danh sách sau khi tạo thành công
             if (orders.length < 5) {
                 const newOrder = {
                     id: `order${orders.length + 1}`,
                     name: `Đơn hàng ${orders.length + 1}`,
                 };
 
-                // Cập nhật state orders bằng cách sử dụng callback để đảm bảo trạng thái đúng
                 setOrders((prevOrders) => {
-                    const updatedOrders = [...prevOrders, newOrder]; // Tạo danh sách mới với đơn hàng mới
-                    setActiveOrder(newOrder.id); // Đặt hóa đơn hiện tại
+                    const updatedOrders = [...prevOrders, newOrder];
+                    setActiveOrder(newOrder.id);
                     return updatedOrders;
                 });
 
-                // Hiển thị thông báo thành công và reload lại trang
                 Swal.fire({
                     title: "Thông báo",
                     text: "Tạo hóa đơn chờ thành công!",
                     icon: "success",
                 }).then(() => {
-                    // Tải lại trang sau khi tạo hóa đơn
                     window.location.reload();
                 });
             } else {
                 toast.warn("Tối đa 5 hoá đơn");
             }
         } else if (res.status === 417) {
-            // Xử lý lỗi khi tạo hóa đơn
             const result = await res.json();
-            toast.warning(result.defaultMessage); // Hiển thị thông báo lỗi
+            toast.warning(result.defaultMessage);
         }
     }
 
@@ -218,7 +218,6 @@ const AdminDatTaiQuay = () => {
         var responseHoaDon = await getMethod("/api/v1/hoa-don/hoa-don-cho");
         var list = await responseHoaDon.json();
 
-        // Thêm giá trị mặc định vào đầu danh sách phiếu giảm giá
         const defaultDiscount = {
             tenPhieu: "Chọn phiếu giảm giá",
             id: 0,
@@ -226,30 +225,27 @@ const AdminDatTaiQuay = () => {
             giaTriGiam: 0,
         };
 
-        // Cập nhật danh sách phiếu giảm giá với giá trị mặc định
         const discountList = [
             defaultDiscount,
             ...result.filter((x) => x.trangThai === 1),
         ];
         setdotGiamGia(discountList);
 
-        // Kiểm tra và chọn giá trị mặc định nếu không có phiếu giảm giá trong hóa đơn
         if (selectHoaDonCho == null) {
             if (list.length > 0) {
                 if (list[0].phieuGiamGia != null) {
                     setSelecDotGiamGia(list[0].phieuGiamGia);
                 } else {
-                    setSelecDotGiamGia(defaultDiscount); // Chọn giá trị mặc định nếu không có phiếu giảm giá
+                    setSelecDotGiamGia(defaultDiscount);
                 }
             }
         }
 
-        // Xử lý khi có `hoadoncho` được truyền vào
         if (hoadoncho != null) {
             if (hoadoncho.phieuGiamGia != null) {
                 setSelecDotGiamGia(hoadoncho.phieuGiamGia);
             } else {
-                setSelecDotGiamGia(defaultDiscount); // Chọn giá trị mặc định nếu không có phiếu giảm giá
+                setSelecDotGiamGia(defaultDiscount);
             }
         }
     }
@@ -259,6 +255,8 @@ const AdminDatTaiQuay = () => {
             const response = await getMethod("/api/v1/hoa-don/find-by-id?id=" + item.id);
             const result = await response.json();
             setSelectHoaDonCho(result);
+
+            resetPaymentInfo();
 
             const invoiceData = {
                 maHoaDon: result.maHoaDon,
@@ -282,14 +280,12 @@ const AdminDatTaiQuay = () => {
             console.log("Invoice Data:", invoiceData);
             setDataInvoice(invoiceData);
 
-            // Cập nhật trạng thái khách hàng
             if (result.khachHang) {
                 setselectKhachHang(result.khachHang);
             } else {
                 setselectKhachHang({ id: -1, hoVaTen: "Khách lẻ", soDienThoai: "" });
             }
 
-            // Tính tổng tiền
             const tong = result.hoaDonChiTiets.reduce((total, item) => {
                 return total + Number(item.soLuong) * Number(item.giaSanPham);
             }, 0);
@@ -304,6 +300,7 @@ const AdminDatTaiQuay = () => {
             toast.error("Không thể tải chi tiết hóa đơn");
         }
     }
+
     async function getKhachHang() {
         try {
             const response = await getMethod("/api/khachhang");
@@ -346,7 +343,6 @@ const AdminDatTaiQuay = () => {
         }
     }
 
-
     async function getChiTietSanPham() {
         var payload = {
             thuongHieuId: selectThuongHieu == null ? null : selectThuongHieu.id,
@@ -365,7 +361,6 @@ const AdminDatTaiQuay = () => {
     async function handleAddChiTietHoaDon(event) {
         event.preventDefault();
         var soluong = event.target.elements.soluong.value;
-        console.log(soluong);
         var chitietsp = event.target.elements.chitietsp.value;
         const res = await postMethod(
             "/api/hoa-don-chi-tiet/them-vao-hoa-don?hoaDonId=" +
@@ -382,12 +377,11 @@ const AdminDatTaiQuay = () => {
                 "/api/v1/hoa-don/find-by-id?id=" + selectHoaDonCho.id
             );
             var result = await response.json();
-            console.log(result);
             setSelectHoaDonCho(result);
         }
         if (res.status == 417) {
             var result = await res.json();
-            toast.error(result.defaultMessage + "hai quan dui");
+            toast.error(result.defaultMessage);
         }
     }
 
@@ -396,8 +390,7 @@ const AdminDatTaiQuay = () => {
             "/api/hoa-don-chi-tiet/xoa-chi-tiet-don-cho?id=" + id
         );
         if (response.status < 300) {
-            setSoTienThanhToan(0);
-            setTienThua(0);
+            resetPaymentInfo();
             toast.success("Xóa thành công!");
             loadChiTietHdCho(selectHoaDonCho);
         }
@@ -410,70 +403,86 @@ const AdminDatTaiQuay = () => {
     const [showConfirmModal, setShowConfirmModal] = useState(false);
 
     const handleXacNhanDatHang = () => {
-        setShowConfirmModal(true); // Hiển thị modal xác nhận
+        setShowConfirmModal(true);
     };
 
     const handleCloseConfirmModal = () => {
-        setShowConfirmModal(false); // Đóng modal
+        setShowConfirmModal(false);
+    };
+
+    const handleConfirmPayment = () => {
+        if (paymentMethod === "tienMat") {
+            if (!soTienKhachDua || soTienKhachDua <= 0) {
+                toast.error("Vui lòng nhập số tiền khách đưa!");
+                return;
+            }
+            if (soTienKhachDua < tongTien) {
+                toast.error("Số tiền khách đưa không đủ để thanh toán!");
+                return;
+            }
+            setSoTienThanhToan(soTienKhachDua);
+            const tienThuaTinh = soTienKhachDua - tongTien;
+            setTienThua(tienThuaTinh > 0 ? tienThuaTinh : 0);
+        } else if (paymentMethod === "timo") {
+            setSoTienThanhToan(tongTien);
+            setTienThua(0);
+        } else {
+            toast.error("Vui lòng chọn phương thức thanh toán!");
+            return;
+        }
+
+        setShowModal(false);
     };
 
     const handleFinalConfirm = async () => {
-        // Tiến hành xử lý xác nhận đặt hàng (có thể gọi API hoặc thực hiện thao tác khác)
         try {
-            // Giả sử bạn có logic xử lý đặt hàng tại đây
-            console.log("Đặt hàng đã được xác nhận");
+            const response2 = await postMethod(
+                "/api/v1/hoa-don/cap-nhat-phieu-giam-gia?idPGG=" +
+                selectDotGiamGia.id +
+                "&idHoaDon=" +
+                selectHoaDonCho.id
+            );
+            if (response2.status < 300) {
+                Swal.fire({
+                    title: "Thông báo",
+                    text: "Thành công!",
+                    icon: "success",
+                    preConfirm: () => {
+                        resetPaymentInfo();
+                        window.location.reload();
+                    },
+                });
+                toast.success("Đã xuất hóa đơn");
+            } else if (response2.status === 417) {
+                toast.error("Phiếu giảm giá đã hết hiệu lực, vui lòng chọn phiếu khác!");
+                return;
+            }
 
-            // Sau khi xác nhận, đóng modal
-            setShowConfirmModal(false);
+            const response = await postMethod(
+                "/api/v1/hoa-don/xac-nhan-dat-tai-quay?idHoaDon=" + selectHoaDonCho.id
+            );
+            if (response.status < 300) {
+                Swal.fire({
+                    title: "Thông báo",
+                    text: "Thành công!",
+                    icon: "success",
+                    preConfirm: () => {
+                        resetPaymentInfo();
+                        window.location.reload();
+                    },
+                });
+            } else if (response.status === 417) {
+                const result = await response.json();
+                toast.warning(result.defaultMessage);
+            }
+
+            handlePDF();
         } catch (error) {
             console.error("Lỗi khi xác nhận đặt hàng", error);
+            toast.error("Có lỗi xảy ra khi xác nhận đặt hàng");
         }
 
-        const response = await postMethod(
-            "/api/v1/hoa-don/xac-nhan-dat-tai-quay?idHoaDon=" + selectHoaDonCho.id
-        );
-        const response2 = await postMethod(
-            "/api/v1/hoa-don/cap-nhat-phieu-giam-gia?idPGG=" +
-            selectDotGiamGia.id +
-            "&idHoaDon=" +
-            selectHoaDonCho.id
-        );
-        if (response2.status < 300) {
-            Swal.fire({
-                title: "Thông báo",
-                text: "Thành công!",
-                preConfirm: () => {
-                    window.location.reload();
-                },
-            });
-
-            toast.success("Đã xuất hóa đơn")
-        }
-        if (response2.status == 417) {
-            toast.error(
-                "Phiếu giảm giá đã hết hiệu lực vui lòng chọn phiếu giảm giá khác"
-            );
-            return;
-            // var result = await response.json()
-            // toast.warning(result.defaultMessage);
-        }
-
-        if (response.status < 300) {
-            Swal.fire({
-                title: "Thông báo",
-                text: "Thành công!",
-                preConfirm: () => {
-                    window.location.reload();
-                },
-            });
-        }
-        if (response.status == 417) {
-            var result = await response.json();
-            toast.warning(result.defaultMessage);
-        }
-        console.log("cho", selectHoaDonCho);
-
-        handlePDF();
+        setShowConfirmModal(false);
     };
 
     async function change_value(quality, hdct) {
@@ -481,13 +490,6 @@ const AdminDatTaiQuay = () => {
             "/api/hoa-don-chi-tiet/updateSoLuong?id=" + hdct + "&soLuong=" + quality
         );
         if (response.status < 300) {
-            // Swal.fire({
-            //   title: "Thông báo",
-            //   text: "Thành công!",
-            //   preConfirm: () => {
-            //     getHoaDonCho();
-            //   },
-            // });
             getHoaDonCho();
         }
         if (response.status == 417) {
@@ -498,14 +500,13 @@ const AdminDatTaiQuay = () => {
 
     async function change_value_enter(quality, hdct, sl_old, sl, idsp) {
         let quality_sp = document.getElementById(idsp).value;
-        console.log(quality, sl, sl_old);
 
         if (quality == "") {
             deleteChiTiet(hdct);
             return;
         }
         if (quality > sl) {
-            toast.warning("số lượng không đủ");
+            toast.warning("Số lượng không đủ");
             return;
         }
         const response = await postMethod(
@@ -526,9 +527,7 @@ const AdminDatTaiQuay = () => {
     }
 
     function handleIncrease(idsp, quality, hdct) {
-        console.log(quality);
         let quality_sp = document.getElementById(idsp).value;
-        console.log(quality_sp);
         if (Number(quality_sp) + Number(quality) === 0) {
             deleteChiTiet(hdct);
             return;
@@ -541,8 +540,6 @@ const AdminDatTaiQuay = () => {
 
     function handleDecrease(idsp, quality, hdct, sl) {
         let quality_sp = document.getElementById(idsp).value;
-        console.log(quality, sl, quality_sp);
-
         if (Number(quality_sp) >= sl) {
             toast.warning("Số lượng không đủ");
             return;
@@ -565,17 +562,12 @@ const AdminDatTaiQuay = () => {
                 0
             );
 
-            console.log('há', selectHoaDonCho);
             let pgg = phigg;
             if (selectHoaDonCho.hoaDonChiTiets != null) {
                 if (tongt >= pgg.donToiThieu) {
                     if (pgg.loaiPhieu) {
-                        console.log("if");
-
                         setTongTien(tongt - Number(pgg.giaTriGiam));
                     } else {
-                        console.log("else");
-
                         let tong_tien_toi_da = tongt * (pgg.giaTriGiam / 100);
                         let tong_tien =
                             tong_tien_toi_da > pgg.giaTriGiamToiDa
@@ -596,41 +588,8 @@ const AdminDatTaiQuay = () => {
         }
     }
 
-    const [paymentMethod, setPaymentMethod] = useState(""); // Phương thức thanh toán
-    const [soTienKhachDua, setSoTienKhachDua] = useState(0); // Tiền khách đưa
-    // Tính tiền thiếu
-    const tienThieu =
-        tongTien - (soTienKhachDua ? parseInt(soTienKhachDua, 10) : 0);
-
-    const handleConfirmPayment = () => {
-        if (paymentMethod === "tienMat") {
-            // Kiểm tra nếu có tiền khách đưa
-            if (soTienKhachDua > 0) {
-                // Cập nhật số tiền thanh toán
-                setSoTienThanhToan(soTienKhachDua);
-
-                // Tính toán tiền thừa
-                const tienThuaTinh = soTienKhachDua - tongTien;
-                setTienThua(tienThuaTinh > 0 ? tienThuaTinh : 0); // Nếu tiền thừa > 0 thì cập nhật, nếu không thì không có tiền thừa
-            }
-        } else if (paymentMethod === "timo") {
-            // Thanh toán bằng Timo (QR) không cần logic tiền mặt
-            setSoTienThanhToan(tongTien);
-            setTienThua(0); // Không có khái niệm tiền thừa
-        }
-
-        // Đóng modal sau khi xác nhận
-        setShowModal(false);
-    };
-
-    async function reset() {
-        tienThua = "0";
-        soTienThanhToan = "0";
-    }
-    console.log("self", selectDotGiamGia);
     return (
         <div style={{ marginBottom: "150px", boxSizing: "border-box" }}>
-            {/* Header */}
             <div
                 className="headerpageadmin d-flex justify-content-between align-items-center p-3 bg-light border"
                 style={{ boxSizing: "border-box" }}
@@ -640,16 +599,12 @@ const AdminDatTaiQuay = () => {
                 </strong>
                 <div className="search-wrapper d-flex align-items-center">
                     <div className="search-container"></div>
-                    <Button
-                        className="btn btn-primary"
-                        onClick={taoHoaDonCho} // Tạo hóa đơn mới
-                    >
+                    <Button className="btn btn-primary" onClick={taoHoaDonCho}>
                         + Tạo hoá đơn
                     </Button>
                 </div>
             </div>
 
-            {/* Tabs */}
             <Nav variant="tabs">
                 {hoaDonCho.map((item, index) => (
                     <Nav.Item key={item.id}>
@@ -657,9 +612,9 @@ const AdminDatTaiQuay = () => {
                             eventKey={item.id}
                             active={activeOrder === item.id}
                             onClick={(e) => {
-                                if (e.target !== e.currentTarget) return; // Ngăn chặn click vào biểu tượng xóa
-                                setActiveOrder(item.id); // Chuyển tab đang chọn
-                                loadChiTietHdCho(item); // Gọi hàm loadChiTietHdCho với item của tab đang chọn
+                                if (e.target !== e.currentTarget) return;
+                                setActiveOrder(item.id);
+                                loadChiTietHdCho(item);
                             }}
                             style={{
                                 fontWeight: activeOrder === item.id ? "bold" : "normal",
@@ -668,14 +623,12 @@ const AdminDatTaiQuay = () => {
                                 alignItems: "center",
                             }}
                         >
-                            {/* Custom tên tab hiển thị */}
                             {`Đơn hàng ${index + 1} + HĐ ${item.id}`}
-                            {/* Icon xóa - Giống phần xóa trong bảng */}
                             <FaTimesCircle
                                 style={{ marginLeft: "10px", color: "red", cursor: "pointer" }}
                                 onClick={(e) => {
-                                    e.stopPropagation(); // Ngăn chặn click ngoài ý muốn
-                                    handleShowDeleteModal(item.id); // Gọi hàm xóa và hiển thị modal xác nhận
+                                    e.stopPropagation();
+                                    handleShowDeleteModal(item.id);
                                 }}
                             />
                         </Nav.Link>
@@ -688,8 +641,7 @@ const AdminDatTaiQuay = () => {
                 id="anh"
                 style={{
                     margin: "12.5rem",
-                    marginLeft:"30rem"
-
+                    marginLeft: "30rem",
                 }}
             >
                 <img className="divrong" src={nodata} />
@@ -722,7 +674,7 @@ const AdminDatTaiQuay = () => {
                                     <th>STT</th>
                                     <th>Ảnh</th>
                                     <th>Sản phẩm</th>
-                                    <th>So luong</th>
+                                    <th>Số lượng</th>
                                     <th>Đơn giá</th>
                                     <th>Tổng tiền</th>
                                     <th>Thao tác</th>
@@ -784,10 +736,10 @@ const AdminDatTaiQuay = () => {
                                                         }
                                                         style={{
                                                             padding: "5px 10px",
-                                                            backgroundColor: "#f0f0f0", // Màu xám nhạt
-                                                            border: "1px solid #ccc", // Viền nhẹ
+                                                            backgroundColor: "#f0f0f0",
+                                                            border: "1px solid #ccc",
                                                             borderRadius: "4px",
-                                                            color: "#333", // Màu chữ xám đậm
+                                                            color: "#333",
                                                             cursor: "pointer",
                                                             fontSize: "14px",
                                                         }}
@@ -829,10 +781,10 @@ const AdminDatTaiQuay = () => {
                                                         }
                                                         style={{
                                                             padding: "5px 10px",
-                                                            backgroundColor: "#f0f0f0", // Màu xám nhạt
-                                                            border: "1px solid #ccc", // Viền nhẹ
+                                                            backgroundColor: "#f0f0f0",
+                                                            border: "1px solid #ccc",
                                                             borderRadius: "4px",
-                                                            color: "#333", // Màu chữ xám đậm
+                                                            color: "#333",
                                                             cursor: "pointer",
                                                             fontSize: "14px",
                                                         }}
@@ -841,7 +793,6 @@ const AdminDatTaiQuay = () => {
                                                     </button>
                                                 </div>
                                             </td>
-
                                             <td>{formatMoney(item.sanPhamChiTiet.giaTien)}</td>
                                             <td>
                                                 {formatMoney(
@@ -852,23 +803,23 @@ const AdminDatTaiQuay = () => {
                                                 <button
                                                     onClick={() => deleteChiTiet(item.id)}
                                                     style={{
-                                                        backgroundColor: "#dc3545", // Màu đỏ nhạt
-                                                        color: "#fff", // Màu chữ trắng
-                                                        border: "none", // Loại bỏ viền
-                                                        borderRadius: "4px", // Bo góc
-                                                        padding: "6px 10px", // Khoảng cách nội dung
-                                                        display: "flex", // Sử dụng flexbox
-                                                        alignItems: "center", // Căn giữa theo chiều dọc
-                                                        justifyContent: "center", // Căn giữa theo chiều ngang
-                                                        cursor: "pointer", // Hiển thị con trỏ khi hover
-                                                        transition: "background-color 0.3s ease", // Hiệu ứng chuyển màu
+                                                        backgroundColor: "#dc3545",
+                                                        color: "#fff",
+                                                        border: "none",
+                                                        borderRadius: "4px",
+                                                        padding: "6px 10px",
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        justifyContent: "center",
+                                                        cursor: "pointer",
+                                                        transition: "background-color 0.3s ease",
                                                     }}
                                                     onMouseEnter={(e) =>
                                                         (e.target.style.backgroundColor = "#c82333")
-                                                    } // Màu khi hover
+                                                    }
                                                     onMouseLeave={(e) =>
                                                         (e.target.style.backgroundColor = "#dc3545")
-                                                    } // Màu khi không hover
+                                                    }
                                                 >
                                                     <i
                                                         className="fa fa-trash"
@@ -901,7 +852,6 @@ const AdminDatTaiQuay = () => {
                             justifyContent: "flex-start",
                         }}
                     >
-                        {/* Thông tin khách hàng */}
                         <div className="dssanphamhoadon" style={{ padding: "10px" }}>
                             <div
                                 className="d-flex"
@@ -956,7 +906,6 @@ const AdminDatTaiQuay = () => {
                             justifyContent: "flex-start",
                         }}
                     >
-                        {/* Thông tin hóa đơn */}
                         <div className="dssanphamhoadon" style={{ padding: "10px" }}>
                             <div
                                 className="d-flex"
@@ -973,50 +922,8 @@ const AdminDatTaiQuay = () => {
                                 style={{ marginTop: "10px", width: "100%" }}
                             >
                                 <tbody>
-                                {/* Thông tin giảm giá */}
                                 <tr>
-                                    {/*<th style={{verticalAlign: "middle", width: "30%"}}>*/}
-                                    {/*  Phiếu giảm giá*/}
-                                    {/*</th>*/}
-                                    {/*<td style={{width: "70%"}}>*/}
-                                    {/*  <Select*/}
-                                    {/*      className="select-container selectheader"*/}
-                                    {/*      options={dotGiamGia}*/}
-                                    {/*      value={selectDotGiamGia}*/}
-                                    {/*      onChange={(e) => {*/}
-                                    {/*        change_dotGiamGia(e);*/}
-                                    {/*      }}*/}
-                                    {/*      getOptionLabel={(option) =>*/}
-                                    {/*          option.id + " - " + option.tenPhieu*/}
-                                    {/*      }*/}
-                                    {/*      getOptionValue={(option) => option.id}*/}
-                                    {/*      placeholder="Chọn phiếu giảm giá"*/}
-                                    {/*      styles={{*/}
-                                    {/*        container: (provided) => ({*/}
-                                    {/*          ...provided,*/}
-                                    {/*          width: "100%",*/}
-                                    {/*          margin: 0,*/}
-                                    {/*        }),*/}
-                                    {/*        control: (provided) => ({*/}
-                                    {/*          ...provided,*/}
-                                    {/*          border: "none",*/}
-                                    {/*          boxShadow: "none",*/}
-                                    {/*          minHeight: "36px",*/}
-                                    {/*        }),*/}
-                                    {/*        dropdownIndicator: (provided) => ({*/}
-                                    {/*          ...provided,*/}
-                                    {/*          padding: "4px",*/}
-                                    {/*        }),*/}
-                                    {/*        indicatorSeparator: () => ({*/}
-                                    {/*          display: "none",*/}
-                                    {/*        }),*/}
-                                    {/*      }}*/}
-                                    {/*  />*/}
-                                    {/*</td>*/}
-                                </tr>
-                                {/* Tiền hàng */}
-                                <tr>
-                                    <th style={{width: "30%"}}>Tiền hàng</th>
+                                    <th style={{ width: "30%" }}>Tiền hàng</th>
                                     <td>
                                         {formatMoney(
                                             selectHoaDonCho != null
@@ -1029,19 +936,8 @@ const AdminDatTaiQuay = () => {
                                         )}
                                     </td>
                                 </tr>
-                                {/* Giảm giá */}
-                                {/*<tr>*/}
-                                {/*  <th style={{width: "30%"}}>Giảm giá</th>*/}
-                                {/*  <td>*/}
-                                {/*    {selectDotGiamGia.loaiPhieu*/}
-                                {/*        ? formatMoney(selectDotGiamGia.giaTriGiam)*/}
-                                {/*        : `${selectDotGiamGia.giaTriGiam} %` ||*/}
-                                {/*        "________________"}*/}
-                                {/*  </td>*/}
-                                {/*</tr>*/}
-                                {/* Tổng tiền (sau khi áp dụng giảm giá) */}
                                 <tr>
-                                    <th style={{width: "30%"}}>Tổng tiền</th>
+                                    <th style={{ width: "30%" }}>Tổng tiền</th>
                                     <td>
                                         {formatMoney(
                                             Math.max(
@@ -1054,10 +950,8 @@ const AdminDatTaiQuay = () => {
                                         )}
                                     </td>
                                 </tr>
-
-
                                 <tr>
-                                    <th style={{width: "30%"}}>
+                                    <th style={{ width: "30%" }}>
                                         Thanh toán
                                         <FaCreditCard
                                             style={{
@@ -1065,16 +959,13 @@ const AdminDatTaiQuay = () => {
                                                 cursor: "pointer",
                                                 marginLeft: "10px",
                                             }}
-                                            onClick={() => setShowModal(true)} // Hiển thị modal khi nhấn vào biểu tượng
+                                            onClick={() => setShowModal(true)}
                                         />
                                     </th>
                                     <td>{formatMoney(soTienThanhToan)}</td>
-                                    {" "}
-                                    {/* Hiển thị số tiền thanh toán */}
                                 </tr>
-
                                 <tr>
-                                    <th style={{width: "30%"}}>Tiền thừa</th>
+                                    <th style={{ width: "30%" }}>Tiền thừa</th>
                                     <td>
                                         {tienThua > 0 ? (
                                             <span>{formatMoney(tienThua)}</span>
@@ -1086,13 +977,13 @@ const AdminDatTaiQuay = () => {
                                 </tbody>
                             </table>
                             <button
-                                onClick={handleXacNhanDatHang} // Hiển thị modal xác nhận
-                                disabled={soTienThanhToan <= 0} // Vô hiệu hóa nút nếu số tiền thanh toán chưa được cập nhật
+                                onClick={handleXacNhanDatHang}
+                                disabled={soTienThanhToan <= 0}
                                 className="btn btn-primary w-20"
                                 style={{
                                     marginTop: "10px",
-                                    opacity: soTienThanhToan > 0 ? 1 : 0.5, // Làm mờ nút khi bị vô hiệu hóa
-                                    cursor: soTienThanhToan > 0 ? "pointer" : "not-allowed", // Thay đổi con trỏ khi nút bị vô hiệu hóa
+                                    opacity: soTienThanhToan > 0 ? 1 : 0.5,
+                                    cursor: soTienThanhToan > 0 ? "pointer" : "not-allowed",
                                 }}
                             >
                                 Xác nhận đặt hàng
@@ -1114,12 +1005,7 @@ const AdminDatTaiQuay = () => {
                     </div>
                 </div>
 
-                {/* Modal Xác nhận */}
-                <Modal
-                    show={showConfirmModal}
-                    onHide={handleCloseConfirmModal}
-                    centered
-                >
+                <Modal show={showConfirmModal} onHide={handleCloseConfirmModal} centered>
                     <Modal.Header closeButton>
                         <Modal.Title>Xác nhận đặt hàng</Modal.Title>
                     </Modal.Header>
@@ -1155,7 +1041,7 @@ const AdminDatTaiQuay = () => {
                                     <strong className="mahdcho">
                                         {selectHoaDonCho?.ngayTao}
                                     </strong>
-                                </h5>{" "}
+                                </h5>
                                 <button
                                     type="button"
                                     class="btn-close"
@@ -1225,11 +1111,9 @@ const AdminDatTaiQuay = () => {
                                     </div>
                                     <div style={{ flex: "1 1 20%", maxWidth: "500px" }}>
                                         <label className="lb-form">Tìm kiếm sản phẩm</label>
-                                        <InputGroup
-                                            style={{ display: "flex", alignItems: "center" }}
-                                        >
+                                        <InputGroup style={{ display: "flex", alignItems: "center" }}>
                                             <Form.Control
-                                                style={{ flex: "1", padding: "0.375rem 0.75rem" }} // Giảm kích thước và sát nút
+                                                style={{ flex: "1", padding: "0.375rem 0.75rem" }}
                                                 placeholder="Nhập từ khóa tìm kiếm"
                                                 value={searchKeyword}
                                                 onChange={(e) => setSearchKeyword(e.target.value)}
@@ -1320,7 +1204,7 @@ const AdminDatTaiQuay = () => {
                                                                 defaultValue={1}
                                                                 min={1}
                                                                 max={item.soLuong}
-                                                                type="number" // Thêm type="number" tại đây
+                                                                type="number"
                                                                 className="inputtaiquay"
                                                             />
                                                             <button className="btn btn-primary btnthemhdct">
@@ -1342,231 +1226,212 @@ const AdminDatTaiQuay = () => {
                                 </div>
                             </div>
                         </div>
-                        <Modal
-                            show={showDeleteModal}
-                            onHide={handleCloseDeleteModal}
-                            centered
+                    </div>
+                </div>
+
+                <Modal show={showDeleteModal} onHide={handleCloseDeleteModal} centered>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Xác nhận xóa</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>Bạn có chắc chắn muốn xóa hóa đơn này không?</Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={handleCloseDeleteModal}>
+                            Hủy
+                        </Button>
+                        <Button variant="danger" onClick={deleteHoaDon}>
+                            Xóa
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+
+                <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+                    <Modal.Header closeButton>
+                        <Modal.Title style={{ textAlign: "center", width: "100%" }}>
+                            Thanh toán hóa đơn
+                        </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <div
+                            style={{
+                                textAlign: "center",
+                                marginBottom: "20px",
+                                fontSize: "18px",
+                                fontWeight: "bold",
+                            }}
                         >
-                            <Modal.Header closeButton>
-                                <Modal.Title>Xác nhận xóa</Modal.Title>
-                            </Modal.Header>
-                            <Modal.Body>
-                                Bạn có chắc chắn muốn xóa hóa đơn này không?
-                            </Modal.Body>
-                            <Modal.Footer>
-                                <Button variant="secondary" onClick={handleCloseDeleteModal}>
-                                    Hủy
-                                </Button>
-                                <Button variant="danger" onClick={deleteHoaDon}>
-                                    Xóa
-                                </Button>
-                            </Modal.Footer>
-                        </Modal>
+                            Tổng tiền:{" "}
+                            <span style={{ color: "red" }}>
+                                {Math.max(tongTien, 0).toLocaleString()} VNĐ
+                            </span>
+                        </div>
 
-                        <Modal show={showModal} onHide={() => setShowModal(false)} centered>
-                            <Modal.Header closeButton>
-                                <Modal.Title style={{ textAlign: "center", width: "100%" }}>
-                                    Thanh toán hóa đơn
-                                </Modal.Title>
-                            </Modal.Header>
-
-                            <Modal.Body>
-                                {/* Tổng tiền */}
-                                <div
+                        <p
+                            style={{
+                                textAlign: "center",
+                                fontSize: "16px",
+                                fontWeight: "500",
+                            }}
+                        >
+                            Vui lòng chọn phương thức thanh toán:
+                        </p>
+                        <div
+                            style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                marginBottom: "20px",
+                            }}
+                        >
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    alignItems: "center",
+                                    cursor: "pointer",
+                                    width: "45%",
+                                    padding: "10px",
+                                    border: "1px solid #ccc",
+                                    borderRadius: "8px",
+                                    backgroundColor: paymentMethod === "tienMat" ? "#d4edda" : "#f8f9fa",
+                                }}
+                                onClick={() => setPaymentMethod("tienMat")}
+                            >
+                                <img
+                                    src="https://cdn-icons-png.flaticon.com/512/2382/2382461.png"
+                                    alt="Tiền mặt"
                                     style={{
-                                        textAlign: "center",
-                                        marginBottom: "20px",
-                                        fontSize: "18px",
-                                        fontWeight: "bold",
+                                        width: "50px",
+                                        height: "50px",
+                                        marginBottom: "10px",
                                     }}
-                                >
-                                    Tổng tiền:{" "}
-                                    <span style={{ color: "red" }}>
-    {Math.max(tongTien, 0).toLocaleString()} VNĐ
-  </span>
-                                </div>
+                                />
+                                <span>Tiền mặt</span>
+                            </div>
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    alignItems: "center",
+                                    cursor: "pointer",
+                                    width: "45%",
+                                    padding: "10px",
+                                    border: "1px solid #ccc",
+                                    borderRadius: "8px",
+                                    backgroundColor: paymentMethod === "timo" ? "#d4edda" : "#f8f9fa",
+                                }}
+                                onClick={() => setPaymentMethod("timo")}
+                            >
+                                <img
+                                    src={timo}
+                                    alt="MB Bank"
+                                    style={{
+                                        width: "50px",
+                                        height: "50px",
+                                        marginBottom: "10px",
+                                    }}
+                                />
+                                <span>MB Bank</span>
+                            </div>
+                        </div>
 
-                                {/* Chọn phương thức thanh toán */}
+                        {paymentMethod === "timo" && (
+                            <div style={{ textAlign: "center", marginBottom: "20px" }}>
+                                <img
+                                    src={qrthanhtoan}
+                                    alt="QR Code"
+                                    style={{
+                                        width: "150px",
+                                        height: "150px",
+                                        marginBottom: "10px",
+                                    }}
+                                />
+                                <p>Quét mã QR để thanh toán</p>
+                            </div>
+                        )}
+
+                        {paymentMethod === "tienMat" && (
+                            <div style={{ marginBottom: "20px" }}>
                                 <p
                                     style={{
-                                        textAlign: "center",
                                         fontSize: "16px",
                                         fontWeight: "500",
+                                        marginBottom: "10px",
                                     }}
                                 >
-                                    Vui lòng chọn phương thức thanh toán:
+                                    Tiền khách đưa:
                                 </p>
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        justifyContent: "space-between",
-                                        marginBottom: "20px",
+                                <input
+                                    type="text"
+                                    placeholder="Nhập số tiền khách đưa"
+                                    value={soTienKhachDua ? soTienKhachDua.toLocaleString() : ""}
+                                    onChange={(e) => {
+                                        const value = e.target.value.replace(/\D/g, "");
+                                        setSoTienKhachDua(value ? parseInt(value, 10) : "");
                                     }}
-                                >
-                                    {/* Nút Thanh toán tiền mặt */}
-                                    <div
-                                        style={{
-                                            display: "flex",
-                                            flexDirection: "column",
-                                            alignItems: "center",
-                                            cursor: "pointer",
-                                            width: "45%",
-                                            padding: "10px",
-                                            border: "1px solid #ccc",
-                                            borderRadius: "8px",
-                                            backgroundColor:
-                                                paymentMethod === "tienMat" ? "#d4edda" : "#f8f9fa",
-                                        }}
-                                        onClick={() => setPaymentMethod("tienMat")}
-                                    >
-                                        <img
-                                            src="https://cdn-icons-png.flaticon.com/512/2382/2382461.png"
-                                            alt="Tiền mặt"
-                                            style={{
-                                                width: "50px",
-                                                height: "50px",
-                                                marginBottom: "10px",
-                                            }}
-                                        />
-                                        <span>Tiền mặt</span>
-                                    </div>
-
-                                    {/* Nút Thanh toán timo */}
-                                    <div
-                                        style={{
-                                            display: "flex",
-                                            flexDirection: "column",
-                                            alignItems: "center",
-                                            cursor: "pointer",
-                                            width: "45%",
-                                            padding: "10px",
-                                            border: "1px solid #ccc",
-                                            borderRadius: "8px",
-                                            backgroundColor:
-                                                paymentMethod === "timo" ? "#d4edda" : "#f8f9fa",
-                                        }}
-                                        onClick={() => setPaymentMethod("timo")}
-                                    >
-                                        <img
-                                            src={timo}
-                                            alt="timo"
-                                            style={{
-                                                width: "50px",
-                                                height: "50px",
-                                                marginBottom: "10px",
-                                            }}
-                                        />
-                                        <span>MB Bank</span>
-                                    </div>
-                                </div>
-
-                                {/* Hiển thị mã QR khi chọn timo */}
-                                {paymentMethod === "timo" && (
-                                    <div style={{ textAlign: "center", marginBottom: "20px" }}>
-                                        <img
-                                            src={qrthanhtoan}
-                                            alt="QR Code"
-                                            style={{
-                                                width: "150px",
-                                                height: "150px",
-                                                marginBottom: "10px",
-                                            }}
-                                        />
-                                        <p>Quét mã QR để thanh toán</p>
-                                    </div>
-                                )}
-
-                                {/* Input tiền khách đưa (chỉ hiện nếu chọn tiền mặt) */}
-                                {paymentMethod === "tienMat" && (
-                                    <div style={{ marginBottom: "20px" }}>
-                                        <p
-                                            style={{
-                                                fontSize: "16px",
-                                                fontWeight: "500",
-                                                marginBottom: "10px",
-                                            }}
-                                        >
-                                            Tiền khách đưa:
-                                        </p>
-                                        <input
-                                            type="text"
-                                            placeholder="Nhập số tiền khách đưa"
-                                            value={
-                                                soTienKhachDua ? soTienKhachDua.toLocaleString() : ""
-                                            }
-                                            onChange={(e) => {
-                                                const value = e.target.value.replace(/\D/g, ""); // Chỉ cho phép nhập số
-                                                setSoTienKhachDua(value ? parseInt(value, 10) : ""); // Chuyển đổi về dạng số
-                                            }}
-                                            style={{
-                                                width: "100%",
-                                                padding: "10px",
-                                                fontSize: "16px",
-                                                borderRadius: "8px",
-                                                border: "1px solid #ccc",
-                                            }}
-                                        />
-                                    </div>
-                                )}
-
-                                {/* Hiển thị tiền thiếu hoặc thừa */}
-                                {/*{paymentMethod === "tienMat" && (*/}
-                                {/*    <div*/}
-                                {/*        style={{*/}
-                                {/*          textAlign: "center",*/}
-                                {/*          marginBottom: "20px",*/}
-                                {/*          fontSize: "16px",*/}
-                                {/*          fontWeight: "500",*/}
-                                {/*        }}*/}
-                                {/*    >*/}
-                                {/*      {tienThieu > 0 ? (*/}
-                                {/*          <>*/}
-                                {/*            Tiền thiếu:{" "}*/}
-                                {/*            <span style={{ color: "red" }}>*/}
-                                {/*        {Math.max(tienThieu, 0).toLocaleString()} VNĐ*/}
-                                {/*      </span>*/}
-                                {/*          </>*/}
-                                {/*      ) : tienThieu === 0 ? (*/}
-                                {/*          <>Đủ tiền</>*/}
-                                {/*      ) : (*/}
-                                {/*          <>*/}
-                                {/*            Tiền thừa:{" "}*/}
-                                {/*            <span style={{ color: "green" }}>*/}
-                                {/*        {Math.abs(tienThieu).toLocaleString()} VNĐ*/}
-                                {/*      </span>*/}
-                                {/*          </>*/}
-                                {/*      )}*/}
-                                {/*    </div>*/}
-                                {/*)}*/}
-
-                                {/* Nút Xác nhận */}
-                                <button
                                     style={{
                                         width: "100%",
                                         padding: "10px",
                                         fontSize: "16px",
-                                        fontWeight: "bold",
                                         borderRadius: "8px",
-                                        border: "none",
-                                        backgroundColor:
-                                            paymentMethod === "timo" || tienThieu <= 0
-                                                ? "#28a745"
-                                                : "#ccc",
-                                        color: "#fff",
-                                        cursor:
-                                            paymentMethod === "timo" || tienThieu <= 0
-                                                ? "pointer"
-                                                : "not-allowed",
+                                        border: "1px solid #ccc",
                                     }}
-                                    disabled={paymentMethod !== "timo" && tienThieu > 0}
-                                    onClick={handleConfirmPayment}
-                                >
-                                    XÁC NHẬN
-                                </button>
-                            </Modal.Body>
-                        </Modal>
-                    </div>
-                </div>
+                                />
+                            </div>
+                        )}
+
+                        {paymentMethod === "tienMat" && soTienKhachDua > 0 && (
+                            <div
+                                style={{
+                                    textAlign: "center",
+                                    marginBottom: "20px",
+                                    fontSize: "16px",
+                                    fontWeight: "500",
+                                }}
+                            >
+                                {tienThieu > 0 ? (
+                                    <>
+                                        Tiền thiếu:{" "}
+                                        <span style={{ color: "red" }}>
+                                            {tienThieu.toLocaleString()} VNĐ
+                                        </span>
+                                    </>
+                                ) : tienThieu === 0 ? (
+                                    <>Đủ tiền</>
+                                ) : (
+                                    <>
+                                        Tiền thừa:{" "}
+                                        <span style={{ color: "green" }}>
+                                            {Math.abs(tienThieu).toLocaleString()} VNĐ
+                                        </span>
+                                    </>
+                                )}
+                            </div>
+                        )}
+
+                        <button
+                            style={{
+                                width: "100%",
+                                padding: "10px",
+                                fontSize: "16px",
+                                fontWeight: "bold",
+                                borderRadius: "8px",
+                                border: "none",
+                                backgroundColor:
+                                    paymentMethod === "timo" || (paymentMethod === "tienMat" && tienThieu <= 0)
+                                        ? "#28a745"
+                                        : "#ccc",
+                                color: "#fff",
+                                cursor:
+                                    paymentMethod === "timo" || (paymentMethod === "tienMat" && tienThieu <= 0)
+                                        ? "pointer"
+                                        : "not-allowed",
+                            }}
+                            disabled={paymentMethod !== "timo" && tienThieu > 0}
+                            onClick={handleConfirmPayment}
+                        >
+                            XÁC NHẬN
+                        </button>
+                    </Modal.Body>
+                </Modal>
             </div>
         </div>
     );

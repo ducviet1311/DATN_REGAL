@@ -54,138 +54,119 @@ public class BanHangController {
 
     @Value("${khoiluong.default}")
     private Float khoiLuongDf;
+
     @Autowired
     private HoaDonRepository hoaDonRepository;
+
     @Autowired
     private HoaDonChiTietRepository hoaDonChiTietRepository;
+
     @Autowired
     private SanPhamRepository sanPhamRepository;
 
-    /*
-     * api sẽ bổ sung tính phí ship sau rồi lấy tổng tiền + phí ship nữa
-     * */
     @PostMapping("/create-url-vnpay")
-    public ResponseEntity<?> createUrlVnpay(@RequestBody PaymentDto paymentDto, HttpServletRequest request){
+    public ResponseEntity<?> createUrlVnpay(@RequestBody PaymentDto paymentDto, HttpServletRequest request) {
         Double tongTien = 0D;
         float khoiluong = 0F;
-        for(SanPhamChiTietPayment payment : paymentDto.getSanPhamChiTietPayment()){
+        for (SanPhamChiTietPayment payment : paymentDto.getSanPhamChiTietPayment()) {
             SanPhamChiTiet spct = sanPhamChiTietRepository.findByIdSPCT(payment.getIdSpct());
-            if(spct.getSoLuong() < payment.getSoLuong()){
-                throw new MessageException("Số lượng sản phẩm: "+spct.getSanPham().getTenSanPham()+" chỉ còn: "+spct.getSoLuong());
+            if (spct.getSoLuong() < payment.getSoLuong()) {
+                throw new MessageException("Số lượng sản phẩm: " + spct.getSanPham().getTenSanPham() + " chỉ còn: " + spct.getSoLuong());
             }
             tongTien += spct.getGiaTien() * payment.getSoLuong();
             khoiluong += khoiLuongDf * payment.getSoLuong();
         }
-        if(paymentDto.getMaGiamGia() != null){
+        if (paymentDto.getMaGiamGia() != null) {
             PhieuGiamGia phieuGiamGia = phieuGiamGiaRepository.findPhieuGiamGiaByMaCode(paymentDto.getMaGiamGia());
-            if(phieuGiamGia.getNgayKetThuc().before(new Timestamp(System.currentTimeMillis()))){
+            if (phieuGiamGia.getNgayKetThuc().before(new Timestamp(System.currentTimeMillis()))) {
                 throw new MessageException("Đợt giảm giá đã kết thúc");
             }
             KhachHang khachHang = userUltis.getLoggedInKhachHang(request);
             Optional<KhachHangPhieuGiam> khachHangPhieuGiam = khachHangPhieuGiamRepository.findByMaGGAndKhId(paymentDto.getMaGiamGia(), khachHang.getId());
-            if(khachHangPhieuGiam.isEmpty()){
+            if (khachHangPhieuGiam.isEmpty()) {
                 throw new MessageException("Bạn không được áp dụng mã giảm giá này");
             }
-            if(tongTien < phieuGiamGia.getDonToiThieu()){
-                throw new MessageException("Bạn phải mua thêm: "+ (phieuGiamGia.getDonToiThieu() - tongTien)+" để được áp dụng mã giảm giá này");
+            if (tongTien < phieuGiamGia.getDonToiThieu()) {
+                throw new MessageException("Bạn phải mua thêm: " + (phieuGiamGia.getDonToiThieu() - tongTien) + " để được áp dụng mã giảm giá này");
             }
             // giảm theo %
-            if(phieuGiamGia.getLoaiPhieu() == false){
+            if (!phieuGiamGia.getLoaiPhieu()) {
                 tongTien = tongTien - (tongTien * phieuGiamGia.getGiaTriGiam() / 100);
             }
             // giảm giá cứng cố định
-            else{
+            else {
                 tongTien = tongTien - phieuGiamGia.getGiaTriGiam();
             }
         }
-        int canNang = 0;
-        if(khoiluong != (int) khoiluong ){
-            canNang =  (int) khoiluong + 1;
-        }
-        else{
-            canNang = (int) khoiluong;
-        }
+        int canNang = (int) (khoiluong != (int) khoiluong ? khoiluong + 1 : khoiluong);
         Map<String, Object> response = ghnClient.calculateShippingFee(paymentDto.getToDistrictId(), paymentDto.getToWardCode(), canNang);
         Map<String, Object> data = (Map<String, Object>) response.get("data");
         int totalShip = (int) data.get("total");
 
-        System.out.println("Khoi luong: "+canNang);
-        System.out.println("tien ship: "+totalShip);
+        System.out.println("Khoi luong: " + canNang);
+        System.out.println("tien ship: " + totalShip);
         tongTien += totalShip;
-        System.out.println("tong tien: "+tongTien.intValue());
+        System.out.println("tong tien: " + tongTien.intValue());
         String vnpOrderInfo = String.valueOf(System.currentTimeMillis());
         String vnpayUrl = vnPayService.createOrder(tongTien.intValue(), vnpOrderInfo, paymentDto.getReturnUrl());
-        ResponsePayment responsePayment = new ResponsePayment(vnpayUrl,vnpOrderInfo);
+        ResponsePayment responsePayment = new ResponsePayment(vnpayUrl, vnpOrderInfo);
         return new ResponseEntity<>(responsePayment, HttpStatus.CREATED);
     }
 
-
-    /*
-     *  api tạo đơn hàng khi người dùng về trang thanh cong
-     * */
-
-
     @PostMapping("/tao-don-hang")
-    public ResponseEntity<?> taoDonHang(@RequestBody DonHangRequest request, HttpServletRequest httpServletRequest){
+    public ResponseEntity<?> taoDonHang(@RequestBody DonHangRequest request, HttpServletRequest httpServletRequest) {
         Double tongTien = 0D;
         float khoiluong = 0F;
         KhachHang khachHang = userUltis.getLoggedInKhachHang(httpServletRequest);
-        for(SanPhamChiTietPayment payment : request.getSanPhamChiTietPayment()){
+        for (SanPhamChiTietPayment payment : request.getSanPhamChiTietPayment()) {
             SanPhamChiTiet spct = sanPhamChiTietRepository.findByIdSPCT(payment.getIdSpct());
-            if(spct.getSoLuong() < payment.getSoLuong()){
-                throw new MessageException("Số lượng sản phẩm: "+spct.getSanPham().getTenSanPham()+" chỉ còn: "+spct.getSoLuong());
+            if (spct.getSoLuong() < payment.getSoLuong()) {
+                throw new MessageException("Số lượng sản phẩm: " + spct.getSanPham().getTenSanPham() + " chỉ còn: " + spct.getSoLuong());
             }
             tongTien += spct.getGiaTien() * payment.getSoLuong();
             khoiluong += khoiLuongDf * payment.getSoLuong();
         }
         PhieuGiamGia pgg = null;
-        if(request.getMaGiamGia() != null){
+        if (request.getMaGiamGia() != null) {
             PhieuGiamGia phieuGiamGia = phieuGiamGiaRepository.findPhieuGiamGiaByMaCode(request.getMaGiamGia());
-            if(phieuGiamGia.getNgayKetThuc().before(new Timestamp(System.currentTimeMillis()))){
+            if (phieuGiamGia.getNgayKetThuc().before(new Timestamp(System.currentTimeMillis()))) {
                 throw new MessageException("Đợt giảm giá đã kết thúc");
             }
             Optional<KhachHangPhieuGiam> khachHangPhieuGiam = khachHangPhieuGiamRepository.findByMaGGAndKhId(request.getMaGiamGia(), khachHang.getId());
-            if(khachHangPhieuGiam.isEmpty()){
+            if (khachHangPhieuGiam.isEmpty()) {
                 throw new MessageException("Bạn không được áp dụng mã giảm giá này");
             }
-            if(tongTien < phieuGiamGia.getDonToiThieu()){
-                throw new MessageException("Bạn phải mua thêm: "+ (phieuGiamGia.getDonToiThieu() - tongTien)+" để được áp dụng mã giảm giá này");
+            if (tongTien < phieuGiamGia.getDonToiThieu()) {
+                throw new MessageException("Bạn phải mua thêm: " + (phieuGiamGia.getDonToiThieu() - tongTien) + " để được áp dụng mã giảm giá này");
             }
             // giảm theo %
-            if(phieuGiamGia.getLoaiPhieu() == false){
+            if (!phieuGiamGia.getLoaiPhieu()) {
                 tongTien = tongTien - (tongTien * phieuGiamGia.getGiaTriGiam() / 100);
             }
             // giảm giá cứng cố định
-            else{
+            else {
                 tongTien = tongTien - phieuGiamGia.getGiaTriGiam();
             }
             pgg = phieuGiamGia;
         }
-        if(phuongThucThanhToanRepository.findBymaGiaoDichVnPay(request.getVnpOrderInfo()) > 0){
+        if (phuongThucThanhToanRepository.findBymaGiaoDichVnPay(request.getVnpOrderInfo()) > 0) {
             throw new MessageException("Mã thanh toán đã được sử dụng");
         }
         int paymentStatus = vnPayService.orderReturnByUrl(request.getUrlVnpay());
-        System.out.println("status check: "+paymentStatus );
-        if(paymentStatus != 1){
+        System.out.println("status check: " + paymentStatus);
+        if (paymentStatus != 1) {
             throw new MessageException("Thanh toán thất bại");
         }
-        int canNang = 0;
-        if(khoiluong != (int) khoiluong ){
-            canNang =  (int) khoiluong + 1;
-        }
-        else{
-            canNang = (int) khoiluong;
-        }
+        int canNang = (int) (khoiluong != (int) khoiluong ? khoiluong + 1 : khoiluong);
         Map<String, Object> response = ghnClient.calculateShippingFee(request.getToDistrictId(), request.getToWardCode(), canNang);
         Map<String, Object> data = (Map<String, Object>) response.get("data");
         int totalShip = (int) data.get("total");
 
-        System.out.println("Khoi luong: "+canNang);
-        System.out.println("tien ship: "+totalShip);
+        System.out.println("Khoi luong: " + canNang);
+        System.out.println("tien ship: " + totalShip);
         tongTien += totalShip;
-        /*
-         * tạo đơn hàng sau khi đã check thanh toán thành công
-         * */
+
+        // Tạo đơn hàng
         HoaDon hoaDon = new HoaDon();
         hoaDon.setKhachHang(khachHang);
         hoaDon.setTongTien(new BigDecimal(tongTien));
@@ -198,9 +179,10 @@ public class BanHangController {
         hoaDon.setPhiVanChuyen(new BigDecimal(totalShip));
         hoaDon.setTenKhachHang(khachHang.getHoVaTen());
         hoaDon.setGhiChu(request.getGhiChu());
-        hoaDon.setMaHoaDon("HD"+System.currentTimeMillis());
+        hoaDon.setMaHoaDon("HD" + System.currentTimeMillis());
         hoaDonRepository.save(hoaDon);
-        for(SanPhamChiTietPayment payment : request.getSanPhamChiTietPayment()){
+
+        for (SanPhamChiTietPayment payment : request.getSanPhamChiTietPayment()) {
             SanPhamChiTiet spct = sanPhamChiTietRepository.findByIdSPCT(payment.getIdSpct());
             HoaDonChiTiet hdct = new HoaDonChiTiet();
             hdct.setTrangThai(1);
@@ -211,11 +193,16 @@ public class BanHangController {
             hdct.setSoLuong(payment.getSoLuong().shortValue());
             hoaDonChiTietRepository.save(hdct);
 
-            spct.setSoLuong(spct.getSoLuong() - payment.getSoLuong().shortValue());
-            sanPhamRepository.save(spct.getSanPham());
+            // Cập nhật số lượng và trạng thái sản phẩm
+            int newSoLuong = spct.getSoLuong() - payment.getSoLuong().shortValue();
+            spct.setSoLuong(newSoLuong);
+            if (newSoLuong <= 0) {
+                spct.setTrangThai(2); // Chuyển trạng thái thành "hết hàng"
+            }
+            sanPhamChiTietRepository.save(spct); // Lưu SanPhamChiTiet thay vì SanPham
         }
 
-        // lưu lại lịch sử thanh toán tránh việc người dùng f5 lại web sẽ ghi lại đơn hàng 1 lần nữa
+        // Lưu lịch sử thanh toán
         PhuongThucThanhToan phuongThucThanhToan = new PhuongThucThanhToan();
         phuongThucThanhToan.setHoaDon(hoaDon);
         phuongThucThanhToan.setNgayTao(new Timestamp(System.currentTimeMillis()));
@@ -224,17 +211,17 @@ public class BanHangController {
         phuongThucThanhToan.setTenPhuongThuc("VNPAY");
         phuongThucThanhToan.setTongTien(new BigDecimal(tongTien));
         phuongThucThanhToanRepository.save(phuongThucThanhToan);
-        return new ResponseEntity<>(hoaDon,HttpStatus.CREATED);
+        return new ResponseEntity<>(hoaDon, HttpStatus.CREATED);
     }
 
     @PostMapping("/ban-tai-quay")
-    public ResponseEntity<?> banTaiQuay(@RequestBody BanTaiQuayRequest banTaiQuayRequest, HttpServletRequest request){
+    public ResponseEntity<?> banTaiQuay(@RequestBody BanTaiQuayRequest banTaiQuayRequest, HttpServletRequest request) {
         Double tongTien = 0D;
         NhanVien nhanVien = userUltis.getLoggedInNhanVien(request);
-        for(SanPhamChiTietPayment payment : banTaiQuayRequest.getSanPhamChiTietPayment()){
+        for (SanPhamChiTietPayment payment : banTaiQuayRequest.getSanPhamChiTietPayment()) {
             SanPhamChiTiet spct = sanPhamChiTietRepository.findByIdSPCT(payment.getIdSpct());
-            if(spct.getSoLuong() < payment.getSoLuong()){
-                throw new MessageException("Số lượng sản phẩm: "+spct.getSanPham().getTenSanPham()+" chỉ còn: "+spct.getSoLuong());
+            if (spct.getSoLuong() < payment.getSoLuong()) {
+                throw new MessageException("Số lượng sản phẩm: " + spct.getSanPham().getTenSanPham() + " chỉ còn: " + spct.getSoLuong());
             }
             tongTien += spct.getGiaTien() * payment.getSoLuong();
         }
@@ -243,11 +230,11 @@ public class BanHangController {
         hoaDon.setLoaiHoaDon(false);
         hoaDon.setNgayTao(new Timestamp(System.currentTimeMillis()));
         hoaDon.setTrangThai(8);
-        hoaDon.setMaHoaDon("HD"+System.currentTimeMillis());
+        hoaDon.setMaHoaDon("HD" + System.currentTimeMillis());
         hoaDon.setNhanVien(nhanVien);
 
         hoaDonRepository.save(hoaDon);
-        for(SanPhamChiTietPayment payment : banTaiQuayRequest.getSanPhamChiTietPayment()){
+        for (SanPhamChiTietPayment payment : banTaiQuayRequest.getSanPhamChiTietPayment()) {
             SanPhamChiTiet spct = sanPhamChiTietRepository.findByIdSPCT(payment.getIdSpct());
             HoaDonChiTiet hdct = new HoaDonChiTiet();
             hdct.setTrangThai(1);
@@ -256,18 +243,23 @@ public class BanHangController {
             hdct.setSanPhamChiTiet(spct);
             hdct.setSoLuong(payment.getSoLuong().shortValue());
             hoaDonChiTietRepository.save(hdct);
-            spct.setSoLuong(spct.getSoLuong() - payment.getSoLuong().shortValue());
-            sanPhamRepository.save(spct.getSanPham());
+
+            // Cập nhật số lượng và trạng thái sản phẩm
+            int newSoLuong = spct.getSoLuong() - payment.getSoLuong().shortValue();
+            spct.setSoLuong(newSoLuong);
+            if (newSoLuong <= 0) {
+                spct.setTrangThai(2); // Chuyển trạng thái thành "hết hàng"
+            }
+            sanPhamChiTietRepository.save(spct); // Lưu SanPhamChiTiet
         }
         return new ResponseEntity<>(hoaDon, HttpStatus.CREATED);
     }
-    //
+
     @PostMapping("/tao-hoa-don-cho")
     public ResponseEntity<?> taoHoaDonCho(HttpServletRequest request, @RequestParam(required = false) Integer khachHangId) {
         NhanVien nhanVien = userUltis.getLoggedInNhanVien(request);
         KhachHang khachHang = null;
 
-        // Nếu không cung cấp thông tin khách hàng, mặc định là khách lẻ
         if (khachHangId != null) {
             khachHang = khachHangRepository.findById(khachHangId)
                     .orElseThrow(() -> new MessageException("Không tìm thấy khách hàng."));
@@ -276,8 +268,8 @@ public class BanHangController {
         HoaDon hoaDon = new HoaDon();
         hoaDon.setNhanVien(nhanVien);
         hoaDon.setKhachHang(khachHang);
-        hoaDon.setLoaiHoaDon(false); // Bán tại quầy
-        hoaDon.setTrangThai(0); // Trạng thái "chờ"
+        hoaDon.setLoaiHoaDon(false);
+        hoaDon.setTrangThai(0);
         hoaDon.setNgayTao(new Timestamp(System.currentTimeMillis()));
         hoaDon.setMaHoaDon("HD" + System.currentTimeMillis());
 
@@ -285,6 +277,7 @@ public class BanHangController {
 
         return new ResponseEntity<>(hoaDon, HttpStatus.CREATED);
     }
+
     @PostMapping("/them-san-pham-vao-hoa-don")
     public ResponseEntity<?> themSanPhamVaoHoaDon(@RequestParam Integer hoaDonId, @RequestBody List<SanPhamChiTietPayment> sanPhamChiTietPayments) {
         HoaDon hoaDon = hoaDonRepository.findById(hoaDonId)
@@ -303,14 +296,17 @@ public class BanHangController {
             hdct.setSanPhamChiTiet(spct);
             hdct.setSoLuong(payment.getSoLuong().shortValue());
             hdct.setGiaSanPham(new BigDecimal(spct.getGiaTien()));
-            hdct.setTrangThai(0); // Trạng thái chưa thanh toán
+            hdct.setTrangThai(0);
             hoaDonChiTietRepository.save(hdct);
 
-            // Cập nhật tồn kho
-            spct.setSoLuong(spct.getSoLuong() - payment.getSoLuong().shortValue());
-            sanPhamRepository.save(spct.getSanPham());
+            // Cập nhật số lượng và trạng thái sản phẩm
+            int newSoLuong = spct.getSoLuong() - payment.getSoLuong().shortValue();
+            spct.setSoLuong(newSoLuong);
+            if (newSoLuong <= 0) {
+                spct.setTrangThai(2); // Chuyển trạng thái thành "hết hàng"
+            }
+            sanPhamChiTietRepository.save(spct); // Lưu SanPhamChiTiet
 
-            // Tính tổng tiền
             tongTien += spct.getGiaTien() * payment.getSoLuong();
         }
 
@@ -320,6 +316,7 @@ public class BanHangController {
 
         return new ResponseEntity<>(hoaDon, HttpStatus.OK);
     }
+
     @PostMapping("/thanh-toan-hoa-don")
     public ResponseEntity<?> thanhToanHoaDon(@RequestParam Integer hoaDonId, HttpServletRequest request) {
         HoaDon hoaDon = hoaDonRepository.findById(hoaDonId)
@@ -345,6 +342,4 @@ public class BanHangController {
 
         return new ResponseEntity<>(hoaDon, HttpStatus.OK);
     }
-
-
 }
