@@ -51,31 +51,22 @@ const AdminDonHang = () => {
 
   const searchDonHang = async (page, trangThaiFilter = selectTrangThai, loaiHoaDonFilter = selectedLoaiHoaDon?.value) => {
     let searchUrl = `/api/v1/hoa-don/search?size=${size}&sort=id,desc&page=${page}`;
-    if (keyword) {
-      searchUrl += `&keyword=${encodeURIComponent(keyword)}`;
-    }
+    if (keyword) searchUrl += `&keyword=${encodeURIComponent(keyword)}`;
     if (trangThaiFilter !== null) searchUrl += `&trangthai=${trangThaiFilter}`;
-    if (loaiHoaDonFilter !== null && loaiHoaDonFilter !== undefined) {
-      searchUrl += `&loaiHoaDon=${loaiHoaDonFilter}`;
-    }
+    if (loaiHoaDonFilter !== null && loaiHoaDonFilter !== undefined) searchUrl += `&loaiHoaDon=${loaiHoaDonFilter}`;
 
-    console.log("searchUrl:", searchUrl);
-    try {
-      var response = await getMethod(searchUrl);
-      if (response.status >= 200 && response.status < 300) {
-        var result = await response.json();
-        setItems(result.content);
-        setPageCount(result.totalPages);
-        url = searchUrl.split('&page=')[0] + "&page=";
-      } else {
-        var error = await response.json();
-        toast.error("Lỗi tìm kiếm: " + (error.message || "Không tìm thấy hóa đơn"));
-      }
-    } catch (error) {
-      toast.error("Lỗi kết nối tới server");
-    }
+    var response = await getMethod(searchUrl);
+    var result = await response.json();
+
+    // Lọc bỏ các hóa đơn "Chờ" tại quầy
+    const filteredItems = result.content.filter(
+        item => !(item.trangThai === 1 && item.loaiHoaDon === false)
+    );
+
+    setItems(filteredItems);
+    setPageCount(result.totalPages);
+    url = searchUrl.split('&page=')[0] + "&page=";
   };
-
   const handleSearch = () => {
     searchDonHang(0);
   };
