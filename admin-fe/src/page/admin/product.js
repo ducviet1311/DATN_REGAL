@@ -147,7 +147,21 @@ const AdminProduct = () => {
                                     <td>{item.ngayTao}</td>
                                     <td>{item.nguoiTao}</td>
                                     <td>{item.nguoiCapNhat}</td>
-                                    <td>{item.trangThai==1?"Còn hàng":"Hết hàng"}</td>
+                                    <td style={{ textAlign: 'center' }}>
+                                      <span style={{
+                                          color: item.trangThai == 1 ? '#ffffff' : '#ffffff', // Chữ màu trắng cho cả 2 trạng thái
+                                          fontWeight: '600',
+                                          backgroundColor: item.trangThai == 1 ? '#228B22' : '#e74c3c', // Màu nền đậm
+                                          padding: '4px 12px',
+                                          borderRadius: '12px',
+                                          display: 'inline-block',
+                                          fontSize: '12px',
+                                          lineHeight: '1.5',
+                                          textTransform: 'uppercase' // Chữ in hoa như hình
+                                      }}>
+                                        {item.trangThai == 1 ? "Còn hàng" : "Hết hàng"}
+                                      </span>
+                                    </td>
                                     <td className="sticky-col">
                                         <a href={"add-product?id=" + item.id} className="edit-btn">
                                             <i className="fa fa-edit"></i>
