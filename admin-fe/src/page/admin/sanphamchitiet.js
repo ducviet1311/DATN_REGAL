@@ -471,7 +471,6 @@ const AdminSanPhamChiTiet = () => {
                 <th>Ngày tạo</th>
                 <th>Người tạo</th>
                 <th>Người cập nhật</th>
-                <th>Trạng thái</th>
                 <th class="sticky-col">Hành động</th>
               </tr>
               </thead>
@@ -496,7 +495,6 @@ const AdminSanPhamChiTiet = () => {
                       <td>{item.ngayTao}</td>
                       <td>{item.nguoiTao}</td>
                       <td>{item.nguoiCapNhat}</td>
-                      <td>{trangThaiHienTai}</td>
                       <td class="sticky-col">
                         <button
                             onClick={() => setItemSelect(item)}

@@ -57,6 +57,41 @@ function GioHang() {
     setTongTien(tong);
   };
 
+  async function validateCartBeforeCheckout() {
+    const selectedCheckboxes = document.querySelectorAll(
+        'input[name="sanphamchitiet"]:checked'
+    );
+    const selectedValues = Array.from(selectedCheckboxes).map(
+        (checkbox) => checkbox.value
+    );
+
+    const selectedItems = giohang.filter(item =>
+        selectedValues.includes(item.id.toString())
+    );
+
+    // Kiểm tra trạng thái từ SanPham
+    const outOfStockItems = selectedItems.filter(
+        item => item.sanPhamChiTiet.sanPham.trangThai === 2
+    );
+
+    if (outOfStockItems.length > 0) {
+      const productNames = outOfStockItems.map(
+          item => item.sanPhamChiTiet.sanPham.tenSanPham
+      ).join(", ");
+
+      toast.error(
+          <div>
+            <p>Các sản phẩm sau đã hết hàng:</p>
+            <p><strong>{productNames}</strong></p>
+            <p>Vui lòng xóa khỏi giỏ hàng để tiếp tục</p>
+          </div>,
+          { autoClose: 5000 }
+      );
+      return false;
+    }
+
+    return true;
+  }
   async function capNhatSl(id, soluong) {
     
     var res = await postMethod(
@@ -283,68 +318,84 @@ function GioHang() {
                     <th>Xóa</th>
                   </tr>
                   <tbody id="listcartDes">
-                    {giohang.map((item, index) => {
-                      return (
-                        <tr>
+                  {giohang.map((item, index) => {
+                    // Lấy trạng thái từ SanPham thay vì SanPhamChiTiet
+                    const isOutOfStock = item.sanPhamChiTiet.sanPham.trangThai === 2;
+
+                    return (
+                        <tr key={index} className={isOutOfStock ? "out-of-stock-row" : ""}>
                           <td>
-                            <label class="checkbox-custom">
+                            <label className="checkbox-custom">
                               <input
-                                name="sanphamchitiet"
-                                value={item.id}
-                                type="checkbox"
+                                  name="sanphamchitiet"
+                                  value={item.id}
+                                  type="checkbox"
+                                  disabled={isOutOfStock}
                               />
-                              <span class="checkmark-checkbox"></span>
+                              <span className="checkmark-checkbox"></span>
                             </label>
                           </td>
                           <td>
                             <img
-                                src={item.sanPhamChiTiet.anhs[0].tenAnh}
+                                src={item.sanPhamChiTiet.anhs[0]?.tenAnh || 'default-image.jpg'}
                                 className="imgtable"
+                                alt={item.sanPhamChiTiet.sanPham.tenSanPham}
                             />
                           </td>
                           <td>
-                            <strong>
-                              {item.sanPhamChiTiet.sanPham.tenSanPham}
-                            </strong>
+                            <strong>{item.sanPhamChiTiet.sanPham.tenSanPham}</strong>
+                            {isOutOfStock && (
+                                <div className="text-danger small">
+                                  <i className="fa fa-exclamation-circle me-1"></i>
+                                  Sản phẩm tạm thời hết hàng
+                                </div>
+                            )}
                             <br />
-                            Kích thước: {item.sanPhamChiTiet.kichCo.tenKichCo}
+                            Kích thước: {item.sanPhamChiTiet.kichCo?.tenKichCo || 'N/A'}
                             <br />
-                            Màu sắc: {item.sanPhamChiTiet.mauSac.tenMauSac}
+                            Màu sắc: {item.sanPhamChiTiet.mauSac?.tenMauSac || 'N/A'}
                           </td>
-                          <td>{formatMoney(item.sanPhamChiTiet.giaTien)}</td>
                           <td>
-                            <div class="clusinp sl-container ms-4">
+                            {formatMoney(item.sanPhamChiTiet.giaTien)}
+                            {isOutOfStock && <div className="text-danger small"></div>}
+                          </td>
+                          <td>
+                            <div className="clusinp sl-container ms-4">
                               <button
-                                onClick={() => capNhatSl(item.id, -1)}
-                                class="cartbtn"
+                                  onClick={() => !isOutOfStock && capNhatSl(item.id, -1)}
+                                  className="cartbtn"
+                                  disabled={isOutOfStock}
                               >
-                                {" "}
-                                -{" "}
+                                -
                               </button>
-                              <input value={item.soLuong} class="inputslcart"/>
+                              <input
+                                  value={item.soLuong}
+                                  className="inputslcart"
+                                  readOnly
+                              />
                               <button
-                                onClick={() => capNhatSl(item.id, 1)}
-                                class="cartbtn"
+                                  onClick={() => !isOutOfStock && capNhatSl(item.id, 1)}
+                                  className="cartbtn"
+                                  disabled={isOutOfStock}
                               >
-                                {" "}
-                                +{" "}
+                                +
                               </button>
                             </div>
                           </td>
                           <td>
-                            {formatMoney(
-                              item.soLuong * item.sanPhamChiTiet.giaTien
-                            )}
+                            {formatMoney(item.soLuong * item.sanPhamChiTiet.giaTien)}
+                            {isOutOfStock && <div className="text-danger small"></div>}
                           </td>
                           <td>
                             <i
-                              onClick={() => deleteCart(item.id)}
-                              className="fa fa-remove pointer"
+                                onClick={() => deleteCart(item.id)}
+                                className="fa fa-remove pointer"
+                                title="Xóa khỏi giỏ hàng"
                             ></i>
                           </td>
                         </tr>
-                      );
-                    })}
+                    );
+                  })}
                   </tbody>
                 </table>
               </div>
