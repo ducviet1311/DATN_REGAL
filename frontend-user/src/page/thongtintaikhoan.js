@@ -13,13 +13,13 @@ function ThongTinTaiKhoan() {
   }, []);
 
   // Hàm xử lý khi người dùng nhấn nút "Cập nhật thông tin"
-  const getUser = async () => {
-    var response = await postMethod("/api/khachhang/dang-dang-nhap");
-    var result = await response.json();
-    console.log(result);
-
-    setUser(result);
-  };
+  // const getUser = async () => {
+  //   var response = await postMethod("/api/khachhang/dang-dang-nhap");
+  //   var result = await response.json();
+  //   console.log(result);
+  //
+  //   setUser(result);
+  // };
 
   async function handleChangeInfor(event) {
     event.preventDefault();
