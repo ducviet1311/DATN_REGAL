@@ -29,79 +29,79 @@ const Invoice2 = forwardRef(({ invoiceData, giamgia }, ref) => {
                 width: "80mm",
                 margin: "0 auto",
                 fontSize: "8px",
-                lineHeight: "1.2",
-                padding: "5px",
+                lineHeight: "1.4",
+                padding: "8px",
             }}
         >
             {/* Tiêu đề */}
-            <div style={{ fontWeight: "bold", fontSize: "10px", textAlign: "center", marginBottom: "4px" }}>
+            <div style={{ fontWeight: "bold", fontSize: "14px", textAlign: "center", marginBottom: "8px" }}>
                 PHIẾU GỬI HÀNG
             </div>
 
             {/* Mã đơn */}
-            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "4px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
                 <div style={{ display: "flex", alignItems: "center" }}>
                     <img
                         src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Shopee_logo.svg/1200px-Shopee_logo.svg.png"
                         alt="Shopee Logo"
-                        style={{ height: "10px", marginRight: "3px" }}
+                        style={{ height: "12px", marginRight: "5px" }}
                     />
                     <img
                         src="https://upload.wikimedia.org/wikipedia/commons/1/14/Ninja_van_logo.png"
                         alt="Ninja Van Logo"
-                        style={{ height: "9px" }}
+                        style={{ height: "10px" }}
                     />
                 </div>
-                <div style={{ textAlign: "right", fontSize: "7px" }}>
-                    <div><b>Mã vận đơn:</b><br />{invoiceData.maVanDon || "SPEVN202511993"}</div>
-                    <div style={{ marginTop: "2px" }}><b>Mã đơn hàng:</b><br />{invoiceData.maDonHang || "2008318CTVTDA0"}</div>
+                <div style={{ textAlign: "right", fontSize: "8px" }}>
+                    <div><b style={{ fontSize: "8px" }}>Mã vận đơn:</b> {invoiceData.maVanDon || "SPEVN202511993"}</div>
+                    <div><b style={{ fontSize: "8px" }}>Mã đơn hàng:</b> {invoiceData.maDonHang || "2008318CTVTDA0"}</div>
                 </div>
             </div>
-
-            <div style={{ borderTop: "1px dashed black", margin: "3px 0" }}></div>
-
+            <div style={{ borderTop: "1px dashed black", margin: "6px 0" }}></div>
             {/* Từ - Đến */}
-            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "4px" }}>
-                <div style={{ width: "48%", fontSize: "7px" }}>
-                    <b>Từ:</b><br />
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+                <div style={{ width: "48%", fontSize: "8px" }}>
+                    <b style={{ fontSize: "8px" }}>TỪ</b><br />
                     REGAL STORE<br />
-                    386 TVB, Nam Từ Liêm, HN<br />
+                    Số 386, TVB, Nam Từ Liêm, Hà nội<br />
                     0854759387
                 </div>
-                <div style={{ width: "48%", textAlign: "right", fontSize: "7px" }}>
-                    <b>Đến:</b><br />
+                <div style={{ width: "48%", textAlign: "right", fontSize: "8px" }}>
+                    <b style={{ fontSize: "8px" }}>ĐẾN</b><br />
                     {invoiceData.nguoiNhan || "Khách lẻ"}<br />
-                    {invoiceData.diaChi || "Mua hàng tại quầy"}<br />
-                    {invoiceData.soDienThoai || "Không có SĐT"}
+                    {invoiceData.diaChi || " "}<br />
+                    {invoiceData.soDienThoai || " "}
                 </div>
             </div>
-
-            <div style={{ borderTop: "1px dashed black", margin: "3px 0" }}></div>
-
+            <div style={{ borderTop: "1px dashed black", margin: "6px 0" }}></div>
             {/* Nội dung hàng */}
-            <div style={{ fontSize: "7px", marginBottom: "3px" }}>
-                <b>Nội dung hàng:</b> (Tổng SL: {invoiceData.items?.length || 0})<br />
+            <div style={{ fontSize: "8px", marginBottom: "6px" }}>
+                <b style={{ fontSize: "8px" }}>Nội dung hàng (Tổng SL: {invoiceData.items?.length || 0})</b><br />
                 {invoiceData.items?.map((item, idx) => (
                     <div key={idx}>{idx + 1}. {item.name} - SL: {item.quantity}</div>
                 ))}
             </div>
-
-            <div style={{ fontStyle: "italic", fontSize: "6px", marginBottom: "3px" }}>
-                * Một số sản phẩm có thể bị ẩn hư đơn hàng.
-            </div>
-
-            <div style={{ textAlign: "right", fontSize: "6px", marginBottom: "3px" }}>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <div style={{ textAlign: "right", fontSize: "8px", marginBottom: "6px" }}>
                 Khối lượng tối đa: {invoiceData.khoiLuongToiDa || "300g"}
             </div>
 
-            <div style={{ borderTop: "1px dashed black", margin: "3px 0" }}></div>
+            <div style={{ borderTop: "1px dashed black", margin: "6px 0" }}></div>
 
             {/* Tiền + chỉ dẫn */}
-            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "3px", fontSize: "7px" }}>
-                <div>
-                    <b>Tiền thu Người nhận:</b><br />
-                    <span style={{ fontSize: "9px", fontWeight: "bold" }}>{formatMoney(tongTienSauGiam)} VND</span><br />
-                    <b>Chỉ dẫn giao hàng:</b><br />
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "8px" }}>
+                <div style={{ width: "55%" }}>
+                    <b style={{ fontSize: "8px" }}>TIỀN THU NGƯỜI NHẬN:</b><br />
+                    <span style={{ fontSize: "12px", fontWeight: "bold" }}>{formatMoney(tongTienSauGiam)} VND</span><br />
+                    <b style={{ fontSize: "8px" }}>Chỉ dẫn giao hàng</b><br />
                     {invoiceData.ghiChuGiaoHang || (
                         <>
                             - Không đóng lót<br />
@@ -110,15 +110,19 @@ const Invoice2 = forwardRef(({ invoiceData, giamgia }, ref) => {
                         </>
                     )}
                 </div>
-                <div style={{ textAlign: "right" }}>
-                    <b>Chữ ký người nhận</b><br />
-                    Xác nhận nguyên vẹn,<br />
-                    {invoiceData.xacNhanNguonVan || "không móp/méo, bể vỡ"}
+                <div style={{ width: "35%", textAlign: "right", whiteSpace: "normal" }}>
+                    <b style={{ fontSize: "8px" }}>Chữ ký người nhận</b><br />
+                    <span style={{ display: "inline-block", marginTop: "2px", marginBottom: "2px", width: "50px", height: "15px", border: "1px solid black" }}></span><br />
+                    Xác nhận nguyên vẹn.<br />
                 </div>
             </div>
 
-            <div style={{ textAlign: "center", marginTop: "4px", fontSize: "7px", fontStyle: "italic", color: "#999" }}>
-                Regal Store
+            <div style={{ textAlign: "right", marginTop: "8px" }}>
+                <img
+                    src="https://i.ibb.co/5xX2kKk/duynguyen-logo.png"
+                    alt="Duy Nguyen Logo"
+                    style={{ height: "12px" }}
+                />
             </div>
         </div>
     );
