@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { getMethod, postMethodPayload } from "../../services/request";
+
 const AdminAddPhieuGiamGia = () => {
   const [item, setItem] = useState(null);
   const [label, setLabel] = useState("Thêm phiếu giảm giá");
@@ -8,7 +9,9 @@ const AdminAddPhieuGiamGia = () => {
     loaiPhieu: true,
     giaTriGiamToiDa: "",
     giaTriGiam: "",
-    trangThai: 1
+    trangThai: 1,
+    ngayBatDau: "",
+    ngayKetThuc: ""
   });
 
   useEffect(() => {
@@ -20,11 +23,19 @@ const AdminAddPhieuGiamGia = () => {
         const response = await getMethod("/api/phieu-giam-gia/" + id);
         const result = await response.json();
         setItem(result);
+        // Format dates to YYYY-MM-DDTHH:mm
+        const formatDate = (dateStr) => {
+          if (!dateStr) return "";
+          const date = new Date(dateStr);
+          return date.toISOString().slice(0, 16);
+        };
         setFormData({
           loaiPhieu: result.loaiPhieu,
           giaTriGiamToiDa: result.giaTriGiamToiDa,
           giaTriGiam: result.giaTriGiam,
-          trangThai: result.trangThai
+          trangThai: result.trangThai,
+          ngayBatDau: formatDate(result.ngayBatDau),
+          ngayKetThuc: formatDate(result.ngayKetThuc)
         });
       }
     };
@@ -45,7 +56,6 @@ const AdminAddPhieuGiamGia = () => {
       ...formData,
       [name]: value === "true"
     });
-    // Ẩn/hiện trường giá trị giảm tối đa
     document.getElementById("gia_tri_giam_toi_da").style.display =
         value === "true" ? "none" : "block";
   };
@@ -70,14 +80,13 @@ const AdminAddPhieuGiamGia = () => {
       trangThai: formData.trangThai
     };
 
-    // Validate các trường
     if (!payload.maCode) {
       toast.error("Mã code không được để trống.");
       return;
     }
-// validate
-    var ngayBatDau = event.target.elements.ngaybatdau.value;
-    var ngayKetThuc = event.target.elements.ngayketthuc.value;
+
+    var ngayBatDau = event.target.elements.ngayBatDau.value;
+    var ngayKetThuc = event.target.elements.ngayKetThuc.value;
 
     if (!ngayBatDau || !ngayKetThuc) {
       toast.error("Vui lòng nhập đầy đủ ngày bắt đầu và ngày kết thúc");
@@ -93,17 +102,15 @@ const AdminAddPhieuGiamGia = () => {
       return;
     }
 
-    if(d1>d){
+    if (d1 > d) {
       toast.error("Ngày bắt đầu phải nhỏ hơn hoặc bằng ngày hiện tại");
       return;
     }
-    // Chỉ so sánh ngày, bỏ qua thời gian
+
     if (d1.setHours(0, 0, 0, 0) > d2.setHours(0, 0, 0, 0)) {
       toast.error("Ngày bắt đầu phải trước ngày kết thúc");
       return;
     }
-
-    // ... (các validate khác giữ nguyên)
 
     const url = item ? `/api/phieu-giam-gia/${item.id}` : "/api/phieu-giam-gia";
     const res = await postMethodPayload(url, payload);
@@ -131,7 +138,6 @@ const AdminAddPhieuGiamGia = () => {
 
           <div className="card-body">
             <form onSubmit={handleAddPhieuGG} className="row g-3">
-              {/* Cột trái */}
               <div className="col-md-6">
                 <div className="mb-3">
                   <label className="form-label fw-bold">Mã code <span className="text-danger">*</span></label>
@@ -206,13 +212,12 @@ const AdminAddPhieuGiamGia = () => {
                         required
                     />
                     <span className="input-group-text">
-                                        {formData.loaiPhieu ? "VNĐ" : "%"}
-                                    </span>
+                      {formData.loaiPhieu ? "VNĐ" : "%"}
+                    </span>
                   </div>
                 </div>
               </div>
 
-              {/* Cột phải */}
               <div className="col-md-6">
                 <div className="mb-3">
                   <label className="form-label fw-bold">Đơn tối thiểu <span className="text-danger">*</span></label>
@@ -247,8 +252,9 @@ const AdminAddPhieuGiamGia = () => {
                   <label className="form-label fw-bold">Ngày bắt đầu</label>
                   <input
                       type="datetime-local"
-                      name="ngaybatdau"
-                      defaultValue={item?.tenPhieu}
+                      name="ngayBatDau"
+                      value={formData.ngayBatDau}
+                      onChange={handleInputChange}
                       className="form-control p-2 border-2"
                   />
                 </div>
@@ -257,8 +263,9 @@ const AdminAddPhieuGiamGia = () => {
                   <label className="form-label fw-bold">Ngày kết thúc</label>
                   <input
                       type="datetime-local"
-                      name="ngayketthuc"
-                      defaultValue={item?.tenPhieu}
+                      name="ngayKetThuc"
+                      value={formData.ngayKetThuc}
+                      onChange={handleInputChange}
                       className="form-control p-2 border-2"
                   />
                 </div>
@@ -291,83 +298,67 @@ const AdminAddPhieuGiamGia = () => {
                 </a>
               </div>
             </form>
-                <style jsx>{`
-                        /* Card styling */
-      .card {
-        border-radius: 10px;
-        overflow: hidden;
-      }
-
-      .card-header {
-        padding: 1.25rem 1.5rem;
-      }
-
-      .card-body {
-        padding: 2rem;
-      }
-
-      /* Form styling */
-      .form-label {
-        margin-bottom: 0.5rem;
-        color: #495057;
-      }
-
-      .form-control-lg, .form-select-lg {
-        padding: 0.75rem 1rem;
-        font-size: 1rem;
-        border-radius: 0.5rem;
-        border: 1px solid #ced4da;
-        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-      }
-
-      .form-control-lg:focus, .form-select-lg:focus {
-        border-color: #86b7fe;
-        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-      }
-
-      /* Button styling */
-      .btn-lg {
-        padding: 0.5rem 1.5rem;
-        font-size: 1.1rem;
-        border-radius: 0.5rem;
-      }
-
-      .btn-primary {
-        background-color: #0d6efd;
-        border-color: #0d6efd;
-      }
-
-      .btn-primary:hover {
-        background-color: #0b5ed7;
-        border-color: #0a58ca;
-      }
-
-      /* Input group styling */
-      .input-group-text {
-        background-color: #f8f9fa;
-        border: 1px solid #ced4da;
-        font-weight: 500;
-      }
-
-      /* Responsive adjustments */
-      @media (max-width: 768px) {
-        .card-body {
-            padding: 1.5rem;
-        }
-        
-        .btn-lg {
-            width: 100%;
-            margin-bottom: 0.5rem;
-        }
-        
-        .ms-2 {
-            margin-left: 0 !important;
-        }
-      }
-      `}</style>
+            <style jsx>{`
+              .card {
+                border-radius: 10px;
+                overflow: hidden;
+              }
+              .card-header {
+                padding: 1.25rem 1.5rem;
+              }
+              .card-body {
+                padding: 2rem;
+              }
+              .form-label {
+                margin-bottom: 0.5rem;
+                color: #495057;
+              }
+              .form-control-lg, .form-select-lg {
+                padding: 0.75rem 1rem;
+                font-size: 1rem;
+                border-radius: 0.5rem;
+                border: 1px solid #ced4da;
+                transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+              }
+              .form-control-lg:focus, .form-select-lg:focus {
+                border-color: #86b7fe;
+                box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+              }
+              .btn-lg {
+                padding: 0.5rem 1.5rem;
+                font-size: 1.1rem;
+                border-radius: 0.5rem;
+              }
+              .btn-primary {
+                background-color: #0d6efd;
+                border-color: #0d6efd;
+              }
+              .btn-primary:hover {
+                background-color: #0b5ed7;
+                border-color: #0a58ca;
+              }
+              .input-group-text {
+                background-color: #f8f9fa;
+                border: 1px solid #ced4da;
+                font-weight: 500;
+              }
+              @media (max-width: 768px) {
+                .card-body {
+                  padding: 1.5rem;
+                }
+                .btn-lg {
+                  width: 100%;
+                  margin-bottom: 0.5rem;
+                }
+                .ms-2 {
+                  margin-left: 0 !important;
+                }
+              }
+            `}</style>
           </div>
         </div>
       </div>
   );
 };
+
 export default AdminAddPhieuGiamGia;
