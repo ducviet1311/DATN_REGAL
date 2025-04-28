@@ -59,7 +59,7 @@ public class HoaDonServiceImpl implements HoaDonService {
 
     @Override
     public Page<HoaDon> findAllByTrangThai(Integer trangThai, Pageable pageable) {
-        return hoaDonRepository.findAllByTrangthai(trangThai, pageable);
+        return hoaDonRepository.findByTrangThai(trangThai, pageable);
     }
 
     @Override
@@ -79,7 +79,7 @@ public class HoaDonServiceImpl implements HoaDonService {
 
     @Override
     public Page<HoaDon> findAllByTrangThaiAndLoaiHoaDon(Integer trangThai, Boolean loaihd, Pageable pageable) {
-        return hoaDonRepository.findAllByTrangThaiAndLoaiHoaDon(trangThai, loaihd, pageable);
+        return hoaDonRepository.findByTrangThaiAndLoaiHoaDon(trangThai, loaihd, pageable);
     }
 
     @Override
@@ -105,11 +105,9 @@ public class HoaDonServiceImpl implements HoaDonService {
     @Override
     public List<TopSanPhamDTO> getTop5SanPhamBanChay() {
         List<TopSanPhamDTO> result = hoaDonChiTietRepository.findTop5SanPhamBanChay(8); // 8 = trạng thái hoàn tất
-
         if (result == null || result.isEmpty()) {
             return Collections.emptyList();
         }
-
         return result;
     }
 
@@ -126,5 +124,4 @@ public class HoaDonServiceImpl implements HoaDonService {
         return sanPhamRepository.findTopSanPhamBanChay(PageRequest.of(0, 8))
                 .getContent();
     }
-
 }

@@ -20,6 +20,7 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
 
     @Query("SELECT h FROM HoaDon h WHERE h.maHoaDon =?1 OR h.email =?1 OR h.soDienThoai =?1 ORDER BY h.ngayTao DESC")
     List<HoaDon> findHoaDonByMaOrSdtOrEmail(String inputSearch);
+
     @Query("SELECT h FROM HoaDon h where h.id =?1")
     HoaDon findHoaDonById(Integer id);
 
@@ -28,16 +29,18 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
 
     @Query("SELECT h FROM HoaDon h where h.khachHang.id =?1 ORDER BY h.id DESC")
     List<HoaDon> findAllByKhachHang(Integer id);
+
     @Query("SELECT h FROM HoaDon h WHERE h.trangThai =?1 AND h.khachHang.id =?2 ORDER BY h.id DESC")
     List<HoaDon> findHoaDonByTrangThaiAndKhachhang(Integer trangThai, Integer id);
 
     Page<HoaDon> findAllByTrangThaiAndLoaiHoaDonAndNgayTaoGreaterThanEqualAndNgayTaoLessThanEqual(
             Integer trangThai, Boolean loaihd, Date tu, Date den, Pageable p);
+
     @Query("SELECT h FROM HoaDon h ORDER BY h.id DESC")
     Page<HoaDon> findAlls(Pageable p);
 
-    @Query("SELECT h FROM HoaDon h where h.trangThai=?1 ORDER BY h.id DESC ")
-    Page<HoaDon> findAllByTrangthai(Integer trangThai, Pageable p);
+    @Query("select h from HoaDon h where h.trangThai = ?1 and (h.loaiHoaDon = true or (h.loaiHoaDon = false and h.trangThai != 1))")
+    Page<HoaDon> findByTrangThai(Integer trangthai, Pageable pageable);
 
     Long countAllByTrangThai(Integer trangThai);
 
@@ -45,26 +48,23 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
 
     Page<HoaDon> findAllByTrangThaiAndNgayTaoGreaterThanEqualAndNgayTaoLessThanEqual(Integer trangThai, Date tu, Date den, Pageable p);
 
-    Page<HoaDon> findAllByTrangThaiAndLoaiHoaDon(Integer trangThai, Boolean loaihd, Pageable p);
+    @Query("select h from HoaDon h where h.trangThai = ?1 and h.loaiHoaDon = ?2 and (h.loaiHoaDon = true or (h.loaiHoaDon = false and h.trangThai != 1))")
+    Page<HoaDon> findByTrangThaiAndLoaiHoaDon(Integer trangThai, Boolean loaiHoaDon, Pageable pageable);
 
     Page<HoaDon> findAllByNgayTaoGreaterThanEqualAndNgayTaoLessThanEqual(Date tu, Date den, Pageable p);
 
-    Page<HoaDon> findAllByLoaiHoaDon(Boolean loaihd, Pageable p);
+    @Query("select h from HoaDon h where h.loaiHoaDon = ?1 and (h.loaiHoaDon = true or (h.loaiHoaDon = false and h.trangThai != 1))")
+    Page<HoaDon> findByLoaiHoaDon(Boolean loaiHoaDon, Pageable pageable);
 
     List<HoaDon> findAllById(Integer id);
-
-    List<HoaDon> findAllByTrangThaiAndLoaiHoaDon(Integer id, Boolean loadHD);
 
     @Query("SELECT h FROM HoaDon h ORDER BY h.id DESC")
     List<HoaDon> timHDGanNhat();
 
-    @Query("SELECT h FROM HoaDon h  WHERE h.maHoaDon =?1")
+    @Query("SELECT h FROM HoaDon h WHERE h.maHoaDon =?1")
     HoaDon timHDTheoMaHD(String mahd);
 
     boolean existsById(Integer id);
-
-    @Query("select h from HoaDon h where h.trangThai = ?1")
-    Page<HoaDon> findByTrangThai(Integer trangthai, Pageable pageable);
 
     @Query("select count(h.id) from HoaDon h where h.trangThai = 1 and h.loaiHoaDon = false")
     Long demHoaDonCho();
@@ -77,18 +77,18 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
 
     @Query(value = "SELECT COUNT(*) AS SoLuongDonHang FROM HoaDon\n" +
             "WHERE CONVERT(DATE, ngayTao) = ?1", nativeQuery = true)
-    public Long soDonHomNay(Date date);
+    Long soDonHomNay(Date date);
 
     @Query(value = "SELECT COUNT(*) AS SoLuongDonHang\n" +
             "FROM HoaDon\n" +
             "WHERE ngayTao >= DATEADD(DAY, -7, CAST(GETDATE() AS DATE))\n" +
             "  AND ngayTao < CAST(GETDATE() AS DATE)", nativeQuery = true)
-    public Long soDonTuanNay();
+    Long soDonTuanNay();
 
     @Query(value = "SELECT COUNT(*) AS SoLuongDonHang\n" +
             "FROM HoaDon\n" +
             "WHERE Month(ngayTao) = MONTH(GETDATE()) and year(ngayTao) = YEAR(GETDATE())", nativeQuery = true)
-    public Long soDonThangNay();
+    Long soDonThangNay();
 
     @Query(value = "SELECT sum(tongTien) AS SoLuongDonHang\n" +
             "FROM HoaDon\n" +
@@ -103,13 +103,13 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
             "ORDER BY Gio", nativeQuery = true)
     List<Object[]> tinhDoanhThuTheoGioTrongNgay();
 
-
     @Query(value = "SELECT DATEPART(WEEKDAY, ngayTao) AS Thu, SUM(tongTien) AS DoanhThu " +
             "FROM HoaDon " +
             "WHERE DATEPART(WEEK, ngayTao) = DATEPART(WEEK, GETDATE()) " +
             "AND YEAR(ngayTao) = YEAR(GETDATE()) " +
             "AND trangThai = 8 " +
-            "GROUP BY DATEPART(WEEKDAY, ngayTao)", nativeQuery = true)
+            "GROUP BY DATEPART(WEEKDAY, ngayTao) " +
+            "ORDER BY DATEPART(WEEKDAY, ngayTao)", nativeQuery = true)
     List<Object[]> tinhDoanhThuTheoThuTrongTuan();
 
     @Query("SELECT new com.example.regal.dto.request.TopSanPhamDTO(sp.id, sp.tenSanPham, SUM(hdct.soLuong)) " +
@@ -117,7 +117,7 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
             "JOIN hdct.hoaDon hd " +
             "JOIN hdct.sanPhamChiTiet spct " +
             "JOIN spct.sanPham sp " +
-            "WHERE hd.trangThai = 8 " +  // Chỉ lấy hóa đơn hoàn tất
+            "WHERE hd.trangThai = 8 " +
             "GROUP BY sp.id, sp.tenSanPham " +
             "ORDER BY SUM(hdct.soLuong) DESC")
     List<TopSanPhamDTO> findTop5SanPhamBanChay(Pageable pageable);
@@ -128,7 +128,6 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
             nativeQuery = true)
     Double tinhDoanhThuTheoNam(Integer nam);
 
-    // Phương thức tìm kiếm mới
     @Query("SELECT h FROM HoaDon h LEFT JOIN h.khachHang kh WHERE " +
             "(:trangthai IS NULL OR h.trangThai = :trangthai) AND " +
             "(:loaiHoaDon IS NULL OR h.loaiHoaDon = :loaiHoaDon) AND " +
@@ -140,9 +139,4 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
                               @Param("trangthai") Integer trangthai,
                               @Param("loaiHoaDon") Boolean loaiHoaDon,
                               Pageable pageable);
-
-    Page<HoaDon> findByTrangThaiAndLoaiHoaDon(Integer trangThai, Boolean loaiHoaDon, Pageable pageable);
-    Page<HoaDon> findByLoaiHoaDon(Boolean loaiHoaDon, Pageable pageable);
-    // Các phương thức hiện có khác...
-
 }

@@ -454,7 +454,6 @@ public class HoaDonController {
             @RequestParam(required = false) Integer trangthai,
             @RequestParam(required = false) Boolean loaiHoaDon) {
         Page<HoaDon> page;
-
         if (keyword != null && !keyword.trim().isEmpty()) {
             page = hoaDonRepository.searchHoaDon(keyword.trim(), trangthai, loaiHoaDon, pageable);
         } else {
