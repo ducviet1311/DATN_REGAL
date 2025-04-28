@@ -468,19 +468,19 @@ const AdminDonHang = () => {
                   <div className="info-row">
                     <span className="info-label">Tên người nhận:</span>
                     <span className="info-value">
-                                        {chiTietDonHang[0]?.hoaDon?.tenKhachHang || "Khách lẻ"}
+                                        {chiTietDonHang[0]?.hoaDon?.tenKhachHang || ""}
                                     </span>
                   </div>
                   <div className="info-row">
                     <span className="info-label">Số điện thoại:</span>
                     <span className="info-value">
-                                        {chiTietDonHang[0]?.hoaDon?.soDienThoai || "Khách lẻ"}
+                                        {chiTietDonHang[0]?.hoaDon?.soDienThoai || ""}
                                     </span>
                   </div>
                   <div className="info-row">
                     <span className="info-label">Email:</span>
                     <span className="info-value">
-                                        {chiTietDonHang[0]?.hoaDon?.email || "Khách lẻ"}
+                                        {chiTietDonHang[0]?.hoaDon?.email || ""}
                                     </span>
                   </div>
                   <div className="info-row">
