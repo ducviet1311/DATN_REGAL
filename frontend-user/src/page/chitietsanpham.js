@@ -122,8 +122,7 @@ function ChiTietSanPham() {
   }
 
   async function addToCart() {
-    // Check if user is logged in by verifying token in localStorage
-    const token = localStorage.getItem("token"); // Adjust based on your auth method
+    const token = localStorage.getItem("token");
     if (!token) {
       toast.warning("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng!");
       window.location.href = "/login";
@@ -131,6 +130,11 @@ function ChiTietSanPham() {
     }
 
     var sl = document.getElementById("soluongaddgiohang").value;
+    if (sl <= 0) {
+      toast.warning("Số lượng phải lớn hơn 0");
+      document.getElementById("soluongaddgiohang").value = 1;
+      return;
+    }
     if (sl > selectChiTiet.soLuong) {
       toast.warning(
           "Số lượng thêm không được vượt quá " + selectChiTiet.soLuong
@@ -154,7 +158,8 @@ function ChiTietSanPham() {
     var sl = document.getElementById("soluongaddgiohang").value;
     sl = Number(sl) + Number(value);
     if (sl < 1) {
-      toast.warning("Số lượng nhỏ nhất là 1");
+      toast.warning("Số lượng phải lớn hơn 0");
+      document.getElementById("soluongaddgiohang").value = 1;
       return;
     }
     document.getElementById("soluongaddgiohang").value = sl;
@@ -162,8 +167,8 @@ function ChiTietSanPham() {
 
   function checkSoLuong() {
     var sl = document.getElementById("soluongaddgiohang").value;
-    if (isNumeric(sl) == false) {
-      toast.warning("Số không được nhập kiểu ký tự");
+    if (isNumeric(sl) == false || sl <= 0) {
+      toast.warning("Số lượng phải là số dương");
       document.getElementById("soluongaddgiohang").value = 1;
       return;
     }
