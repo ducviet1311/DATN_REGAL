@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { getMethod, postMethodPayload } from "../../services/request";
 const AdminAddPhieuGiamGia = () => {
@@ -73,6 +73,33 @@ const AdminAddPhieuGiamGia = () => {
     // Validate các trường
     if (!payload.maCode) {
       toast.error("Mã code không được để trống.");
+      return;
+    }
+// validate
+    var ngayBatDau = event.target.elements.ngaybatdau.value;
+    var ngayKetThuc = event.target.elements.ngayketthuc.value;
+
+    if (!ngayBatDau || !ngayKetThuc) {
+      toast.error("Vui lòng nhập đầy đủ ngày bắt đầu và ngày kết thúc");
+      return;
+    }
+
+    var d = new Date();
+    var d1 = new Date(ngayBatDau);
+    var d2 = new Date(ngayKetThuc);
+
+    if (isNaN(d1) || isNaN(d2)) {
+      toast.error("Ngày không hợp lệ");
+      return;
+    }
+
+    if(d1>d){
+      toast.error("Ngày bắt đầu phải nhỏ hơn hoặc bằng ngày hiện tại");
+      return;
+    }
+    // Chỉ so sánh ngày, bỏ qua thời gian
+    if (d1.setHours(0, 0, 0, 0) > d2.setHours(0, 0, 0, 0)) {
+      toast.error("Ngày bắt đầu phải trước ngày kết thúc");
       return;
     }
 
@@ -217,24 +244,22 @@ const AdminAddPhieuGiamGia = () => {
                 </div>
 
                 <div className="mb-3">
-                  <label className="form-label fw-bold">Ngày bắt đầu <span className="text-danger">*</span></label>
+                  <label className="form-label fw-bold">Ngày bắt đầu</label>
                   <input
-                      name="ngayBatDau"
-                      defaultValue={item?.ngayBatDau}
                       type="datetime-local"
-                      className="form-control form-control-lg"
-                      required
+                      name="ngaybatdau"
+                      defaultValue={item?.tenPhieu}
+                      className="form-control p-2 border-2"
                   />
                 </div>
 
                 <div className="mb-3">
-                  <label className="form-label fw-bold">Ngày kết thúc <span className="text-danger">*</span></label>
+                  <label className="form-label fw-bold">Ngày kết thúc</label>
                   <input
-                      name="ngayKetThuc"
-                      defaultValue={item?.ngayKetThuc}
                       type="datetime-local"
-                      className="form-control form-control-lg"
-                      required
+                      name="ngayketthuc"
+                      defaultValue={item?.tenPhieu}
+                      className="form-control p-2 border-2"
                   />
                 </div>
 
