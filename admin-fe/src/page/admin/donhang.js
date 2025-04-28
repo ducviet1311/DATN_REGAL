@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import ReactPaginate from "react-paginate";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -13,6 +13,9 @@ import { formatMoney } from "../../services/money";
 import Select from "react-select";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import Invoice2 from "./invoice2"; // Import component Invoice2
+import { jsPDF } from "jspdf"; // Import jsPDF để tạo PDF
+import html2canvas from "html2canvas"; // Import html2canvas để chụp ảnh HTML
 
 var size = 8;
 var url = "";
@@ -27,6 +30,8 @@ const AdminDonHang = () => {
   const [keyword, setKeyword] = useState("");
   const [loaiHoaDonOptions, setLoaiHoaDonOptions] = useState([]);
   const [selectedLoaiHoaDon, setSelectedLoaiHoaDon] = useState(null);
+  const [dataInvoice, setDataInvoice] = useState(null); // State để lưu dữ liệu hóa đơn trước khi in
+  const invoiceRef = useRef(null); // Ref để tham chiếu đến component Invoice2
 
   useEffect(() => {
     getStatusInvoice();
@@ -114,6 +119,56 @@ const AdminDonHang = () => {
     return nextTrangThaiMap[tt] || null;
   }
 
+  // Hàm chuẩn bị dữ liệu hóa đơn để in
+  const prepareInvoiceData = async (item) => {
+    var response = await getMethod(
+        "/api/hoa-don-chi-tiet/find-by-hoa-don?hoaDonId=" + item.id
+    );
+    var result = await response.json();
+
+    const invoiceData = {
+      maVanDon: item.maVanDon || "SPEVN202511993",
+      maDonHang: item.maHoaDon || "2008318CTVTDA0",
+      nguoiNhan: item.tenKhachHang || (item.khachHang ? item.khachHang.hoVaTen : "Khách lẻ"),
+      diaChi: item.diaChi || "Mua hàng tại quầy",
+      soDienThoai: item.soDienThoai || (item.khachHang ? item.khachHang.soDienThoai : "Khách lẻ"),
+      email: item.email || (item.khachHang ? item.khachHang.email : "Khách lẻ"),
+      khoiLuongToiDa: "500g",
+      ghiChuGiaoHang: "- Không dùng lót\n- Ở đâu thì lấy số S thì 15N phút\n- Lọc lấy cái để đi E nữa",
+      xacNhanNguonVan: "mọipmoe, bẹDV6",
+      phiVanChuyen: item.phiVanChuyen || 0,
+      items: result.map((chiTiet) => ({
+        name: chiTiet.sanPhamChiTiet?.sanPham.tenSanPham || "N/A",
+        thuongHieu: chiTiet.sanPhamChiTiet?.sanPham.thuongHieu.tenThuongHieu || "",
+        mauSac: chiTiet.sanPhamChiTiet?.mauSac.tenMauSac || "",
+        kichCo: chiTiet.sanPhamChiTiet?.kichCo.tenKichCo || "",
+        quantity: chiTiet.soLuong,
+        price: chiTiet.giaSanPham,
+      })),
+    };
+
+    setDataInvoice(invoiceData);
+  };
+
+  // Hàm in hóa đơn
+  const handlePDF = async () => {
+    const element = invoiceRef.current;
+    if (!element) return;
+
+    const canvas = await html2canvas(element, { scale: 3 });
+    const imgData = canvas.toDataURL("image/png");
+    const pdf = new jsPDF("p", "mm", "a4");
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+
+    const fileName = `hoa_don_${new Date()
+        .toLocaleDateString("vi-VN")
+        .replace(/\//g, "-")}.pdf`;
+    pdf.save(fileName);
+  };
+
   async function capNhatTrangThai(iddonhang, trangthai) {
     var con = window.confirm("Xác nhận cập nhật trạng thái");
     if (con == false) {
@@ -133,6 +188,15 @@ const AdminDonHang = () => {
       if (res.status < 300) {
         toast.success("Thành công");
         searchDonHang(0);
+
+        // Nếu trạng thái chuyển sang "Đã xác nhận" (từ 1 sang 2), in hóa đơn
+        if (trangthai == 1) {
+          const item = items.find((i) => i.id === iddonhang);
+          if (item) {
+            await prepareInvoiceData(item); // Chuẩn bị dữ liệu hóa đơn
+            setTimeout(() => handlePDF(), 500); // Đợi một chút để đảm bảo Invoice2 được render trước khi in
+          }
+        }
       }
       if (res.status == 417) {
         var result = await res.json();
@@ -375,7 +439,7 @@ const AdminDonHang = () => {
           </div>
         </div>
 
-        {/* Modal chi tiết đơn hàng đã sửa */}
+        {/* Modal chi tiết đơn hàng */}
         <div
             className="modal fade"
             id="addcate"
@@ -489,6 +553,21 @@ const AdminDonHang = () => {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Component Invoice2 ẩn để in hóa đơn */}
+        <div
+            style={{
+              position: "absolute",
+              top: "-9999px",
+              left: "-9999px",
+            }}
+        >
+          <Invoice2
+              ref={invoiceRef}
+              invoiceData={dataInvoice}
+              giamgia={{ loaiPhieu: false, giaTriGiam: 0 }} // Giả sử không có giảm giá
+          />
         </div>
 
         <style jsx>{`
