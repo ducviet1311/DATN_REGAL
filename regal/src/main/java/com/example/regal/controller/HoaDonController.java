@@ -249,36 +249,35 @@ public class HoaDonController {
     }
 
 
-    public HoaDon taoDonHang(HoaDonRequest request, HttpServletRequest httpServletRequest){
+    public HoaDon taoDonHang(HoaDonRequest request, HttpServletRequest httpServletRequest) {
         KhachHang khachHang = userUltis.getLoggedInKhachHang(httpServletRequest);
         List<GioHang> list = gioHangRepository.findAllById(request.getListIdGioHang());
         Double tong = 0D;
-        for(GioHang g : list){
+        for (GioHang g : list) {
             tong += g.getSoLuong() * g.getSanPhamChiTiet().getGiaTien();
-            if(g.getSanPhamChiTiet().getSoLuong() < g.getSoLuong()){
-                throw new MessageException("Số lượng sản phẩm "+g.getSanPhamChiTiet().getSanPham().getTenSanPham()+" - màu "+g.getSanPhamChiTiet().getMauSac().getTenMauSac()+" - size: "+g.getSanPhamChiTiet().getKichCo().getTenKichCo()+" chỉ còn: "+ g.getSanPhamChiTiet().getSoLuong());
+            if (g.getSanPhamChiTiet().getSoLuong() < g.getSoLuong()) {
+                throw new MessageException("Số lượng sản phẩm " + g.getSanPhamChiTiet().getSanPham().getTenSanPham() + " - màu " + g.getSanPhamChiTiet().getMauSac().getTenMauSac() + " - size: " + g.getSanPhamChiTiet().getKichCo().getTenKichCo() + " chỉ còn: " + g.getSanPhamChiTiet().getSoLuong());
             }
         }
 
         Double tienGiam = 0D;
-        if(request.getPhieuGiamGia() != null){
+        if (request.getPhieuGiamGia() != null) {
             PhieuGiamGia phieuGiamGia = phieuGiamGiaRepository.findById(request.getPhieuGiamGia().getId()).get();
-            if(phieuGiamGia.getSoLuong() > 0){
-                if(phieuGiamGia.getLoaiPhieu() == true){
+            if (phieuGiamGia.getSoLuong() > 0) {
+                if (phieuGiamGia.getLoaiPhieu() == true) {
                     tienGiam = Double.valueOf(phieuGiamGia.getGiaTriGiam());
-                }
-                else{
+                } else {
                     tienGiam = tong - tong * phieuGiamGia.getGiaTriGiam() / 100;
-                    if(tienGiam > phieuGiamGia.getGiaTriGiamToiDa()){
+                    if (tienGiam > phieuGiamGia.getGiaTriGiamToiDa()) {
                         tienGiam = phieuGiamGia.getGiaTriGiamToiDa();
                     }
                 }
-                phieuGiamGia.setSoLuong((short)(Integer.valueOf(phieuGiamGia.getSoLuong()) -1));
+                phieuGiamGia.setSoLuong((short) (Integer.valueOf(phieuGiamGia.getSoLuong()) - 1));
             }
         }
 
         Float kl = 0f;
-        for(GioHang g : list){
+        for (GioHang g : list) {
             kl += 0.5f * g.getSoLuong();
         }
         Integer khoiLuong = kl.intValue() + 1;
@@ -292,23 +291,24 @@ public class HoaDonController {
         hoaDon.setLoaiHoaDon(true);
         hoaDon.setKhachHang(khachHang);
         hoaDon.setNgayTao(new Timestamp(System.currentTimeMillis()));
-        hoaDon.setDiaChi(request.getDiaChi().getTenDuong()+", "+request.getDiaChi().getXaPhuong().split("\\?")[1]+", "+request.getDiaChi().getQuanHuyen().split("\\?")[1]+", "+request.getDiaChi().getTinhThanhPho().split("\\?")[1]);
+        hoaDon.setDiaChi(request.getDiaChi().getTenDuong() + ", " + request.getDiaChi().getXaPhuong().split("\\?")[1] + ", " + request.getDiaChi().getQuanHuyen().split("\\?")[1] + ", " + request.getDiaChi().getTinhThanhPho().split("\\?")[1]);
         hoaDon.setGhiChu(request.getGhiChu());
         hoaDon.setEmail(khachHang.getEmail());
         hoaDon.setPhieuGiamGia(request.getPhieuGiamGia());
         hoaDon.setTongTien(new BigDecimal(tong));
         hoaDon.setTienGiam(new BigDecimal(tienGiam));
-//        if(request.getVnpayUrl() == null){
-//            hoaDon.setDaThanhToan(false);
-//        }
-//        else{
-//            hoaDon.setDaThanhToan(true);
-//        }
         hoaDon.setTrangThai(1);
         hoaDon.setPhiVanChuyen(new BigDecimal(phiShip));
+        // Gán số điện thoại người nhận từ DiaChi
+        hoaDon.setSoDienThoai(request.getDiaChi().getSdtNguoiNhan() != null ?
+                request.getDiaChi().getSdtNguoiNhan() :
+                khachHang.getSoDienThoai()); // Nếu sdtNguoiNhan null, lấy số điện thoại chính của khách hàng
+        hoaDon.setTenKhachHang(request.getDiaChi().getTenNguoiNhan() != null ?
+                request.getDiaChi().getTenNguoiNhan() :
+                khachHang.getHoVaTen()); // Gán tên người nhận từ DiaChi
         hoaDonRepository.save(hoaDon);
 
-        for(GioHang g : list){
+        for (GioHang g : list) {
             HoaDonChiTiet hoaDonChiTiet = new HoaDonChiTiet();
             hoaDonChiTiet.setHoaDon(hoaDon);
             hoaDonChiTiet.setSanPhamChiTiet(g.getSanPhamChiTiet());
@@ -318,12 +318,11 @@ public class HoaDonController {
 
             g.getSanPhamChiTiet().setSoLuong(g.getSanPhamChiTiet().getSoLuong() - g.getSoLuong());
             sanPhamChiTietRepository.save(g.getSanPhamChiTiet());
-            System.out.println("Số lượng bị trừ: "+ g.getSoLuong());
             gioHangRepository.deleteById(g.getId());
         }
         mailService.sendMailHtml(khachHang.getEmail(), "Đặt hàng thành công",
                 "Cảm ơn bạn đã đặt hàng trên website của chúng tôi<br>" +
-                        "Mã đơn hàng của bạn là: "+hoaDon.getMaHoaDon());
+                        "Mã đơn hàng của bạn là: " + hoaDon.getMaHoaDon());
         return hoaDon;
     }
 

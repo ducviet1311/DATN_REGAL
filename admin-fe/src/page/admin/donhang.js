@@ -1,6 +1,6 @@
-import {useState, useEffect} from "react";
+import { useState, useEffect } from "react";
 import ReactPaginate from "react-paginate";
-import {toast} from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
   getMethod,
@@ -9,10 +9,10 @@ import {
   postMethod,
 } from "../../services/request";
 import Swal from "sweetalert2";
-import {formatMoney} from "../../services/money";
+import { formatMoney } from "../../services/money";
 import Select from "react-select";
 import * as XLSX from "xlsx";
-import {saveAs} from "file-saver";
+import { saveAs } from "file-saver";
 
 var size = 8;
 var url = "";
@@ -57,16 +57,11 @@ const AdminDonHang = () => {
 
     var response = await getMethod(searchUrl);
     var result = await response.json();
-
-    // Lọc bỏ các hóa đơn "Chờ" tại quầy
-    const filteredItems = result.content.filter(
-        item => !(item.trangThai === 1 && item.loaiHoaDon === false)
-    );
-
-    setItems(filteredItems);
+    setItems(result.content);
     setPageCount(result.totalPages);
     url = searchUrl.split('&page=')[0] + "&page=";
   };
+
   const handleSearch = () => {
     searchDonHang(0);
   };
@@ -75,7 +70,7 @@ const AdminDonHang = () => {
     setKeyword("");
     setSelectTrangThai(null);
     setSelectedLoaiHoaDon(null);
-    searchDonHang(0, null, null); // Gọi lại với các giá trị mặc định
+    searchDonHang(0, null, null);
   };
 
   const handlePageClick = async (data) => {
@@ -94,12 +89,29 @@ const AdminDonHang = () => {
   };
 
   function getTrangThai(tt) {
-    for (var i = 0; i < trangThai.length; i++) {
-      if (trangThai[i].value == tt) {
-        return trangThai[i].tenTrangThai;
-      }
-    }
-    return "Không xác định";
+    const trangThaiMap = {
+      1: "Chờ xác nhận",
+      2: "Đã xác nhận",
+      3: "Đang chờ đơn vị vận chuyển",
+      4: "Đơn hàng đã được gửi đi",
+      5: "Đã nhận",
+      6: "Hủy đơn",
+      7: "Không nhận hàng",
+      8: "Đã hoàn thành"
+    };
+    return trangThaiMap[tt] || "Không xác định";
+  }
+
+  function getNextTrangThai(tt) {
+    const nextTrangThaiMap = {
+      0: "Chờ vận chuyển",
+      1: "Đã xác nhận",
+      2: "Đang chờ đơn vị vận chuyển",
+      3: "Đơn hàng đã được gửi đi",
+      4: "Đã nhận",
+      5: "Đã hoàn thành",
+    };
+    return nextTrangThaiMap[tt] || null;
   }
 
   async function capNhatTrangThai(iddonhang, trangthai) {
@@ -145,23 +157,19 @@ const AdminDonHang = () => {
       denyButtonText: "Đóng",
       reverseButtons: true,
     }).then((result) => {
-      // 1. Khi bấm "Không nhận hàng" (chỉ áp dụng cho trạng thái 4)
       if (result.isConfirmed) {
         if (trangthai !== 4) {
           toast.error("Chỉ áp dụng cho đơn đã gửi đi");
           return;
         }
         chuyenTrangThai(iddonhang, 7);
-      }
-      // 2. Khi bấm "Hủy đơn" (chỉ áp dụng khi trạng thái <= 3)
-      else if (result.dismiss === Swal.DismissReason.cancel) {
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
         if (trangthai > 3) {
           toast.error("Chỉ có thể hủy đơn chưa gửi đi");
           return;
         }
         chuyenTrangThai(iddonhang, 6);
       }
-      // 3. Khi bấm "Đóng" không làm gì
     });
   }
 
@@ -186,37 +194,6 @@ const AdminDonHang = () => {
     }
   }
 
-  // Hàm ánh xạ trạng thái theo danh sách mới
-  function getTrangThai(tt) {
-    const trangThaiMap = {
-      1: "Chờ xác nhận",
-      2: "Đã xác nhận",
-      3: "Đang chờ đơn vị vận chuyển",
-      4: "Đơn hàng đã được gửi đi",
-      5: "Đã nhận",
-      6: "Hủy đơn",
-      7: "Không nhận hàng",
-      8: "Đã hoàn thành"
-    };
-    return trangThaiMap[tt] || null;
-  }
-
-// Hàm lấy trạng thái tiếp theo
-  function getNextTrangThai(tt) {
-    const nextTrangThaiMap = {
-      0: "Chờ vận chuyển",
-      1: "Đã xác nhận",
-      2: "Đang chờ đơn vị vận chuyển",
-      3: "Đơn hàng đã được gửi đi",
-      4: "Đã nhận",
-      5: "Đã hoàn thành",
-    };
-    return nextTrangThaiMap[tt] || null;
-  }
-
-// Trong phần render của bảng, cập nhật nút "Chuyển"
-
-
   async function getChiTietDonHang(item) {
     var response = await getMethod(
         "/api/hoa-don-chi-tiet/find-by-hoa-don?hoaDonId=" + item.id
@@ -238,7 +215,7 @@ const AdminDonHang = () => {
       bookType: "xlsx",
       type: "array",
     });
-    const blob = new Blob([excelBuffer], {type: "application/octet-stream"});
+    const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
     saveAs(blob, `data.xlsx`);
   };
 
@@ -287,9 +264,9 @@ const AdminDonHang = () => {
                   placeholder="Loại hóa đơn"
                   className="me-2"
                   isClearable
-                  styles={{container: (base) => ({...base, width: 200})}}
+                  styles={{ container: (base) => ({ ...base, width: 200 }) }}
               />
-              <div className="input-group me-2" style={{width: "300px"}}>
+              <div className="input-group me-2" style={{ width: "300px" }}>
                 <input
                     type="text"
                     className="form-control"
@@ -339,7 +316,7 @@ const AdminDonHang = () => {
                         data-bs-toggle="modal"
                         data-bs-target="#addcate"
                         className="pointer"
-                        style={{color: "blue", fontWeight: "bold"}}
+                        style={{ color: "blue", fontWeight: "bold" }}
                     >
                       {item.maHoaDon}
                     </td>
@@ -398,7 +375,7 @@ const AdminDonHang = () => {
           </div>
         </div>
 
-        {/* Modal giữ nguyên */}
+        {/* Modal chi tiết đơn hàng đã sửa */}
         <div
             className="modal fade"
             id="addcate"
@@ -421,25 +398,25 @@ const AdminDonHang = () => {
               </div>
               <div className="modal-body">
                 <h5 className="section-title customer-title">
-                  <i className="fa fa-user me-2"></i> Thông tin khách hàng
+                  <i className="fa fa-user me-2"></i> Thông tin người nhận
                 </h5>
                 <div className="customer-info">
                   <div className="info-row">
-                    <span className="info-label">Tên khách hàng:</span>
+                    <span className="info-label">Tên người nhận:</span>
                     <span className="info-value">
-                                        {chiTietDonHang[0]?.hoaDon?.khachHang?.hoVaTen || "Khách lẻ"}
+                                        {chiTietDonHang[0]?.hoaDon?.tenKhachHang || "Khách lẻ"}
                                     </span>
                   </div>
                   <div className="info-row">
                     <span className="info-label">Số điện thoại:</span>
                     <span className="info-value">
-                                        {chiTietDonHang[0]?.hoaDon?.khachHang?.soDienThoai || "Khách lẻ"}
+                                        {chiTietDonHang[0]?.hoaDon?.soDienThoai || "Khách lẻ"}
                                     </span>
                   </div>
                   <div className="info-row">
                     <span className="info-label">Email:</span>
                     <span className="info-value">
-                                        {chiTietDonHang[0]?.hoaDon?.khachHang?.email || "Khách lẻ"}
+                                        {chiTietDonHang[0]?.hoaDon?.email || "Khách lẻ"}
                                     </span>
                   </div>
                   <div className="info-row">
@@ -449,12 +426,12 @@ const AdminDonHang = () => {
                                     </span>
                   </div>
                 </div>
-                <br/>
+                <br />
                 <h5 className="section-title order-title">
                   <i className="fa fa-shopping-cart me-2"></i> Chi tiết đơn hàng
                 </h5>
                 <table className="table table-cart table-order" id="detailInvoice">
-                  <caption style={{textAlign: "left", fontWeight: "bold", captionSide: "top"}}>
+                  <caption style={{ textAlign: "left", fontWeight: "bold", captionSide: "top" }}>
                     Ngày tạo: {chiTietDonHang[0]?.hoaDon?.ngayTao || "N/A"}
                   </caption>
                   <thead className="thead-default theaddetail">
@@ -481,6 +458,7 @@ const AdminDonHang = () => {
                                     : ""
                               }
                               className="imgtable"
+                              alt="Ảnh sản phẩm"
                           />
                         </td>
                         <td>{item.sanPhamChiTiet.sanPham.tenSanPham}</td>
@@ -507,7 +485,7 @@ const AdminDonHang = () => {
                   </tr>
                   </tfoot>
                 </table>
-                <br/>
+                <br />
               </div>
             </div>
           </div>
@@ -602,43 +580,40 @@ const AdminDonHang = () => {
                     border-left: 4px solid #388e3c;
                 }
                 .edit-btn {
-                            padding: 6px 12px;
-                            border: none;
-                            border-radius: 12px;
-                            color: white;
-                            font-weight: bold;
-                            cursor: pointer;
-                            margin-right: 5px;
-                            transition: background-color 0.3s;
-                        }
+                    padding: 6px 12px;
+                    border: none;
+                    border-radius: 12px;
+                    color: white;
+                    font-weight: bold;
+                    cursor: pointer;
+                    margin-right: 5px;
+                    transition: background-color 0.3s;
+                }
 
-/* Ánh xạ màu nút chuyển trạng thái với trạng thái tiếp theo */
-.edit-btn.status-next-1 { background-color: #FFA500; } /* Từ 0 -> Chờ xác nhận */
-.edit-btn.status-next-2 { background-color: #1E90FF; } /* Từ 1 -> Đang chờ vận chuyển */
-.edit-btn.status-next-3 { background-color: #FFD700; } /* Từ 2 -> Đơn hàng đã được gửi đi */
-.edit-btn.status-next-4 { background-color: #32CD32; } /* Từ 3 -> Đã giao */
-.edit-btn.status-next-5 { background-color: #8e4585; } /* Từ 4 -> Đã nhận */
-.edit-btn.status-next-8 { background-color: #228B22; } /* Từ 5 -> Hoàn thành */
+                .edit-btn.status-next-1 { background-color: #FFA500; }
+                .edit-btn.status-next-2 { background-color: #1E90FF; }
+                .edit-btn.status-next-3 { background-color: #FFD700; }
+                .edit-btn.status-next-4 { background-color: #32CD32; }
+                .edit-btn.status-next-5 { background-color: #8e4585; }
+                .edit-btn.status-next-8 { background-color: #228B22; }
 
-/* Hover effect */
-.edit-btn:hover {
-    opacity: 0.9;
-}
+                .edit-btn:hover {
+                    opacity: 0.9;
+                }
 
-/* Nút hủy giữ nguyên màu đỏ */
-.delete-btn {
-    padding: 6px 12px;
-    border: none;
-    border-radius: 12px;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-    background-color: #FF0000; /* Màu cho nút Hủy */
-}
+                .delete-btn {
+                    padding: 6px 12px;
+                    border: none;
+                    border-radius: 12px;
+                    color: white;
+                    font-weight: bold;
+                    cursor: pointer;
+                    background-color: #FF0000;
+                }
 
-.delete-btn:hover {
-    opacity: 0.9;
-}
+                .delete-btn:hover {
+                    opacity: 0.9;
+                }
             `}</style>
       </>
   );

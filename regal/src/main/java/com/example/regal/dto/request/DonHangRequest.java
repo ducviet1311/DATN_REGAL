@@ -29,4 +29,8 @@ public class DonHangRequest {
     private String diaChiNhan;
 
     private String ghiChu;
+
+    private String tenNguoiNhan;
+
+    private String sdtNguoiNhan;
 }

@@ -10,8 +10,8 @@ import {
 import { formatMoney } from "../services/money";
 import Select from "react-select";
 import { toast } from "react-toastify";
-import Swal from 'sweetalert2';
-// import rac from "../assest/images/"
+import Swal from "sweetalert2";
+
 function DonHang() {
   const [donhang, setDonHang] = useState([]);
   const [trangThai, setTrangThai] = useState([]);
@@ -28,11 +28,11 @@ function DonHang() {
     var list = await response.json();
     setTrangThai(list);
   };
+
   const getDonHang = async () => {
     var response = await getMethod("/api/v1/hoa-don/hoa-don-cua-toi");
     var list = await response.json();
-
-    console.log('sdfgsgegfa', list);
+    console.log("Danh sách đơn hàng:", list);
     setDonHang(list);
   };
 
@@ -50,37 +50,33 @@ function DonHang() {
         "/api/hoa-don-chi-tiet/find-by-hoa-don?hoaDonId=" + item.id
     );
     var list = await response.json();
-    console.log(list);
-
+    console.log("Chi tiết hóa đơn:", list);
     setItemDetail(list);
     setItem(item);
   };
 
-
-  const huydonhang  = async (id) => {
+  const huydonhang = async (id) => {
     var response = await postMethod(
         "/api/v1/hoa-don/huy-don-hang?hoaDonId=" + id
     );
-
-    // var res = await response.json();
-    // console.log("huy", res);
     if (response.status < 300) {
-      toast.success("Thành công");
-      // getDonHang();
+      toast.success("Hủy đơn hàng thành công");
+      getDonHang();
     }
     if (response.status == 417) {
       var result = await response.json();
       toast.error(result.defaultMessage);
     }
-  }
+  };
+
   return (
       <>
-        <div class="headeraccount">
-          <p class="fontyel">Đơn hàng của tôi</p>
+        <div className="headeraccount">
+          <p className="fontyel">Đơn hàng của tôi</p>
         </div>
-        <div class="contentacc" id="listaddacc">
-          <table class="table table-bordered">
-            <thead className="">
+        <div className="contentacc" id="listaddacc">
+          <table className="table table-bordered">
+            <thead>
             <tr>
               <th>Mã hóa đơn</th>
               <th>Người nhận</th>
@@ -96,7 +92,7 @@ function DonHang() {
             <tbody>
             {donhang.map((item) => {
               return (
-                  <tr>
+                  <tr key={item.id}>
                     <td
                         className="pointer text-blue"
                         onClick={() => getInvoiceDetail(item)}
@@ -106,26 +102,26 @@ function DonHang() {
                       {item.maHoaDon}
                     </td>
                     <td>
-                      Họ tên: {item.khachHang.hoVaTen}
+                      Họ tên: {item.tenKhachHang}
                       <br />
-                      Số điện thoại: {item.khachHang.soDienThoai}
+                      Số điện thoại: {item.soDienThoai}
                     </td>
                     <td>{item.diaChi}</td>
                     <td>{formatMoney(item.tongTien)}</td>
                     <td>{formatMoney(item.phiVanChuyen)}</td>
                     <td>
-                      {item.loaiHoaDon == true
+                      {item.loaiHoaDon === true
                           ? "Đặt hàng online"
                           : "Thanh toán tại quầy"}
                     </td>
                     <td>{item.ngayTao}</td>
-                    <td>{getTrangThai(item.trangThai, trangThai)}</td>
+                    <td>{getTrangThai(item.trangThai)}</td>
                     <td>
                       <button
                           onClick={() => {
                             huydonhang(item.id);
                           }}
-                          class="delete-btn"
+                          className="delete-btn"
                       >
                         <i className="fa fa-times-circle"></i>
                       </button>
@@ -138,47 +134,41 @@ function DonHang() {
         </div>
 
         <div
-            class="modal fade"
+            className="modal fade"
             id="modaldeail"
-            tabindex="-1"
+            tabIndex="-1"
             aria-labelledby="exampleModalLabel"
             aria-hidden="true"
         >
-          <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title">Chi tiết đơn hàng</h5>
+          <div className="modal-dialog modal-lg">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Chi tiết đơn hàng</h5>
                 <button
                     type="button"
-                    class="btn-close"
+                    className="btn-close"
                     data-bs-dismiss="modal"
                     aria-label="Close"
                 ></button>
               </div>
-              <div class="modal-body">
-                <div class="row shipinfor">
-                  <div class="col-lg-6 col-md-6 col-sm-12 col-12">
-                    <span class="ttshipinfor">Địa chỉ nhận</span>
-                    <div class="blockinfor">
-                      <p class="reciverName">{item?.receiverName}</p>
+              <div className="modal-body">
+                <div className="row shipinfor">
+                  <div className="col-lg-6 col-md-6 col-sm-12 col-12">
+                    <span className="ttshipinfor">Địa chỉ nhận</span>
+                    <div className="blockinfor">
+                      <p className="reciverName">{item?.tenKhachHang}</p>
                       <span>
                       Địa chỉ nhận hàng: <span>{item?.diaChi}</span>
                     </span>
+                      <br />
+                      <span>
+                      Số điện thoại: <span>{item?.soDienThoai}</span>
+                    </span>
                     </div>
                   </div>
-                  {/*<div class="col-lg-3 col-md-3 col-sm-12 col-12">*/}
-                  {/*  <span class="ttshipinfor">Thanh toán</span>*/}
-                  {/*  <div class="blockinfor">*/}
-                  {/*    <span id="loaithanhtoan">*/}
-                  {/*      {item?.loaiHoaDon.length == true*/}
-                  {/*        ? "Đã thanh toán"*/}
-                  {/*        : "Chưa thanh toán"}*/}
-                  {/*    </span>*/}
-                  {/*  </div>*/}
-                  {/*</div>*/}
-                  <div class="col-lg-6 col-md-6 col-sm-12 col-12">
-                    <span class="ttshipinfor">Ghi chú</span>
-                    <div class="blockinfor">
+                  <div className="col-lg-6 col-md-6 col-sm-12 col-12">
+                    <span className="ttshipinfor">Ghi chú</span>
+                    <div className="blockinfor">
                       <span id="ghichunh">{item?.ghiChu}</span>
                     </div>
                   </div>
@@ -215,7 +205,7 @@ function DonHang() {
                         <td>{item.ngayNhanHang}</td>
                       </tr>
                   )}
-                  {item?.ngayNhanHang && (
+                  {item?.ngayHoanThanh && (
                       <tr>
                         <td>Ngày hoàn thành</td>
                         <td>{item.ngayHoanThanh}</td>
@@ -223,8 +213,8 @@ function DonHang() {
                   )}
                   </tbody>
                 </table>
-                <table class="table table-cart table-order" id="detailInvoice">
-                  <thead class="thead-default theaddetail">
+                <table className="table table-cart table-order" id="detailInvoice">
+                  <thead className="thead-default theaddetail">
                   <tr>
                     <th>Ảnh</th>
                     <th>Tên sản phẩm</th>
@@ -235,11 +225,12 @@ function DonHang() {
                   <tbody>
                   {itemDetail.map((item, index) => {
                     return (
-                        <tr>
+                        <tr key={index}>
                           <td>
                             <img
                                 src={item.sanPhamChiTiet.anhs[0].tenAnh}
                                 className="imgtable"
+                                alt="Ảnh sản phẩm"
                             />
                           </td>
                           <td>{item.sanPhamChiTiet.sanPham.tenSanPham}</td>
@@ -250,7 +241,6 @@ function DonHang() {
                   })}
                   </tbody>
                 </table>
-                <br />
                 <br />
               </div>
             </div>
