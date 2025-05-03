@@ -52,7 +52,7 @@ function GioHang() {
     var tong = 0;
     for (var i = 0; i < list.length; i++) {
       tong =
-        Number(tong) + Number(list[i].soLuong * list[i].sanPhamChiTiet.giaTien);
+          Number(tong) + Number(list[i].soLuong * list[i].sanPhamChiTiet.giaTien);
     }
     setTongTien(tong);
   };
@@ -93,9 +93,9 @@ function GioHang() {
     return true;
   }
   async function capNhatSl(id, soluong) {
-    
+
     var res = await postMethod(
-      "/api/gio-hang/cap-nhat-so-luong?idGioHang=" + id + "&soLuong=" + soluong
+        "/api/gio-hang/cap-nhat-so-luong?idGioHang=" + id + "&soLuong=" + soluong
     );
     if (res.status < 300) {
       getGioHang();
@@ -116,15 +116,20 @@ function GioHang() {
   };
 
   async function kiemTraVoucher() {
+    // Validate mã giảm giá
+    if (selectVoucher == null) {
+      toast.warning("Vui lòng chọn mã giảm giá trước khi áp dụng");
+      return;
+    }
     var selectedCheckboxes = document.querySelectorAll(
-      'input[name="sanphamchitiet"]:checked'
+        'input[name="sanphamchitiet"]:checked'
     );
     const selectedValues = Array.from(selectedCheckboxes).map(
-      (checkbox) => checkbox.value
+        (checkbox) => checkbox.value
     );
     var res = await postMethodPayload(
-      "/api/phieu-giam-gia/kiem-tra-phieu?id=" + selectVoucher.id,
-      selectedValues
+        "/api/phieu-giam-gia/kiem-tra-phieu?id=" + selectVoucher.id,
+        selectedValues
     );
     if (res.status < 300) {
       toast.success("Mã giảm giá đã được áp dụng");
@@ -147,10 +152,10 @@ function GioHang() {
       return;
     }
     var selectedCheckboxes = document.querySelectorAll(
-      'input[name="sanphamchitiet"]:checked'
+        'input[name="sanphamchitiet"]:checked'
     );
     const selectedValues = Array.from(selectedCheckboxes).map(
-      (checkbox) => checkbox.value
+        (checkbox) => checkbox.value
     );
     if (selectedValues.length == 0) {
       toast.error("Hãy chọn ít nhất 1 sản phẩm");
@@ -165,8 +170,8 @@ function GioHang() {
       return;
     }
     var res = await postMethodPayload(
-      "/api/gio-hang/tinh-tong",
-      selectedValues
+        "/api/gio-hang/tinh-tong",
+        selectedValues
     );
     var tong = await res.text();
     setTongTam(tong);
@@ -182,11 +187,11 @@ function GioHang() {
           giamtien = voucherSelect.giaTriGiamToiDa;
         }
         strgiam =
-          "- " +
-          voucherSelect.giaTriGiam +
-          " % ( tối đa " +
-          formatMoney(giamtien) +
-          ")";
+            "- " +
+            voucherSelect.giaTriGiam +
+            " % ( tối đa " +
+            formatMoney(giamtien) +
+            ")";
         settienGiam(giamtien);
       }
       settextGiamGia(strgiam);
@@ -196,11 +201,11 @@ function GioHang() {
     console.log(selectDiaChi);
 
     var res = await postMethodPayload(
-      "/api/shipping/public/calculate-shipping-fee?toDistrictId=" +
+        "/api/shipping/public/calculate-shipping-fee?toDistrictId=" +
         toDistrictId +
         "&toWardCode=" +
         toWardCode,
-      selectedValues
+        selectedValues
     );
     var result = await res.json();
     console.log(result);
@@ -209,10 +214,10 @@ function GioHang() {
 
   async function xacNhanDatHang() {
     var selectedCheckboxes = document.querySelectorAll(
-      'input[name="sanphamchitiet"]:checked'
+        'input[name="sanphamchitiet"]:checked'
     );
     const selectedValues = Array.from(selectedCheckboxes).map(
-      (checkbox) => checkbox.value
+        (checkbox) => checkbox.value
     );
     if (selectDiaChi == null) {
       toast.error("Hãy chọn địa chỉ nhận hàng");
@@ -230,8 +235,8 @@ function GioHang() {
     };
     if (phuongthuctt == "cod") {
       var res = await postMethodPayload(
-        "/api/v1/hoa-don/dat-hang-cod",
-        payload
+          "/api/v1/hoa-don/dat-hang-cod",
+          payload
       );
       if (res.status < 300) {
         toast.success("Đặt hàng thành công!");
@@ -247,8 +252,8 @@ function GioHang() {
       }
     } else {
       var res = await postMethodPayload(
-        "/api/v1/hoa-don/tao-link-thanh-toan",
-        payload
+          "/api/v1/hoa-don/tao-link-thanh-toan",
+          payload
       );
       var link = await res.text();
       window.localStorage.setItem("order", JSON.stringify(payload));
@@ -294,281 +299,281 @@ function GioHang() {
   };
 
   return (
-    <div class="maincontentweb">
-      <div class="containercustom container">
-        <div class="container-fluid">
-          <div class="row contentgiohang">
-            <div class="col-sm-8">
-              <p class="tintuctieude">
-                Giỏ hàng{" "}
-                <span class="soluonggiohang">
+      <div class="maincontentweb">
+        <div class="containercustom container">
+          <div class="container-fluid">
+            <div class="row contentgiohang">
+              <div class="col-sm-8">
+                <p class="tintuctieude">
+                  Giỏ hàng{" "}
+                  <span class="soluonggiohang">
                   (<span id="soluonggiohang">{giohang.length}</span>) sản phẩm
                 </span>
-              </p>
-              <hr />
-              <div class="divtableover">
-                <table class="table tablecart text-center">
-                  <tr>
-                    <th></th>
-                    <th>Ảnh</th>
-                    <th>Sản phẩm</th>
-                    <th>Đơn giá</th>
-                    <th>Số lượng</th>
-                    <th>Tổng tiền</th>
-                    <th>Xóa</th>
-                  </tr>
-                  <tbody id="listcartDes">
-                  {giohang.map((item, index) => {
-                    // Lấy trạng thái từ SanPham thay vì SanPhamChiTiet
-                    const isOutOfStock = item.sanPhamChiTiet.sanPham.trangThai === 2;
+                </p>
+                <hr />
+                <div class="divtableover">
+                  <table class="table tablecart text-center">
+                    <tr>
+                      <th></th>
+                      <th>Ảnh</th>
+                      <th>Sản phẩm</th>
+                      <th>Đơn giá</th>
+                      <th>Số lượng</th>
+                      <th>Tổng tiền</th>
+                      <th>Xóa</th>
+                    </tr>
+                    <tbody id="listcartDes">
+                    {giohang.map((item, index) => {
+                      // Lấy trạng thái từ SanPham thay vì SanPhamChiTiet
+                      const isOutOfStock = item.sanPhamChiTiet.sanPham.trangThai === 2;
 
-                    return (
-                        <tr key={index} className={isOutOfStock ? "out-of-stock-row" : ""}>
-                          <td>
-                            <label className="checkbox-custom">
-                              <input
-                                  name="sanphamchitiet"
-                                  value={item.id}
-                                  type="checkbox"
-                                  disabled={isOutOfStock}
+                      return (
+                          <tr key={index} className={isOutOfStock ? "out-of-stock-row" : ""}>
+                            <td>
+                              <label className="checkbox-custom">
+                                <input
+                                    name="sanphamchitiet"
+                                    value={item.id}
+                                    type="checkbox"
+                                    disabled={isOutOfStock}
+                                />
+                                <span className="checkmark-checkbox"></span>
+                              </label>
+                            </td>
+                            <td>
+                              <img
+                                  src={item.sanPhamChiTiet.anhs[0]?.tenAnh || 'default-image.jpg'}
+                                  className="imgtable"
+                                  alt={item.sanPhamChiTiet.sanPham.tenSanPham}
                               />
-                              <span className="checkmark-checkbox"></span>
-                            </label>
-                          </td>
-                          <td>
-                            <img
-                                src={item.sanPhamChiTiet.anhs[0]?.tenAnh || 'default-image.jpg'}
-                                className="imgtable"
-                                alt={item.sanPhamChiTiet.sanPham.tenSanPham}
-                            />
-                          </td>
-                          <td>
-                            <strong>{item.sanPhamChiTiet.sanPham.tenSanPham}</strong>
-                            {isOutOfStock && (
-                                <div className="text-danger small">
-                                  <i className="fa fa-exclamation-circle me-1"></i>
-                                  Sản phẩm tạm thời hết hàng
-                                </div>
-                            )}
-                            <br />
-                            Kích thước: {item.sanPhamChiTiet.kichCo?.tenKichCo || 'N/A'}
-                            <br />
-                            Màu sắc: {item.sanPhamChiTiet.mauSac?.tenMauSac || 'N/A'}
-                          </td>
-                          <td>
-                            {formatMoney(item.sanPhamChiTiet.giaTien)}
-                            {isOutOfStock && <div className="text-danger small"></div>}
-                          </td>
-                          <td>
-                            <div className="clusinp sl-container ms-4">
-                              <button
-                                  onClick={() => !isOutOfStock && capNhatSl(item.id, -1)}
-                                  className="cartbtn"
-                                  disabled={isOutOfStock}
-                              >
-                                -
-                              </button>
-                              <input
-                                  value={item.soLuong}
-                                  className="inputslcart"
-                                  readOnly
-                              />
-                              <button
-                                  onClick={() => !isOutOfStock && capNhatSl(item.id, 1)}
-                                  className="cartbtn"
-                                  disabled={isOutOfStock}
-                              >
-                                +
-                              </button>
-                            </div>
-                          </td>
-                          <td>
-                            {formatMoney(item.soLuong * item.sanPhamChiTiet.giaTien)}
-                            {isOutOfStock && <div className="text-danger small"></div>}
-                          </td>
-                          <td>
-                            <i
-                                onClick={() => deleteCart(item.id)}
-                                className="fa fa-remove pointer"
-                                title="Xóa khỏi giỏ hàng"
-                            ></i>
-                          </td>
-                        </tr>
-                    );
-                  })}
-                  </tbody>
-                </table>
+                            </td>
+                            <td>
+                              <strong>{item.sanPhamChiTiet.sanPham.tenSanPham}</strong>
+                              {isOutOfStock && (
+                                  <div className="text-danger small">
+                                    <i className="fa fa-exclamation-circle me-1"></i>
+                                    Sản phẩm tạm thời hết hàng
+                                  </div>
+                              )}
+                              <br />
+                              Kích thước: {item.sanPhamChiTiet.kichCo?.tenKichCo || 'N/A'}
+                              <br />
+                              Màu sắc: {item.sanPhamChiTiet.mauSac?.tenMauSac || 'N/A'}
+                            </td>
+                            <td>
+                              {formatMoney(item.sanPhamChiTiet.giaTien)}
+                              {isOutOfStock && <div className="text-danger small"></div>}
+                            </td>
+                            <td>
+                              <div className="clusinp sl-container ms-4">
+                                <button
+                                    onClick={() => !isOutOfStock && capNhatSl(item.id, -1)}
+                                    className="cartbtn"
+                                    disabled={isOutOfStock}
+                                >
+                                  -
+                                </button>
+                                <input
+                                    value={item.soLuong}
+                                    className="inputslcart"
+                                    readOnly
+                                />
+                                <button
+                                    onClick={() => !isOutOfStock && capNhatSl(item.id, 1)}
+                                    className="cartbtn"
+                                    disabled={isOutOfStock}
+                                >
+                                  +
+                                </button>
+                              </div>
+                            </td>
+                            <td>
+                              {formatMoney(item.soLuong * item.sanPhamChiTiet.giaTien)}
+                              {isOutOfStock && <div className="text-danger small"></div>}
+                            </td>
+                            <td>
+                              <i
+                                  onClick={() => deleteCart(item.id)}
+                                  className="fa fa-remove pointer"
+                                  title="Xóa khỏi giỏ hàng"
+                              ></i>
+                            </td>
+                          </tr>
+                      );
+                    })}
+                    </tbody>
+                  </table>
+                </div>
+                <hr />
+                {/* <p class="tintuctieude">Gợi ý sản phẩm</p> */}
+                <div id="goiysanpham" class="row"></div>
               </div>
-              <hr />
-              {/* <p class="tintuctieude">Gợi ý sản phẩm</p> */}
-              <div id="goiysanpham" class="row"></div>
-            </div>
-            <div class="col-sm-4">
-              <span class="tds">Tổng đơn: </span>
-              <span class="tonggiatien" id="tonggiatien">
+              <div class="col-sm-4">
+                <span class="tds">Tổng đơn: </span>
+                <span class="tonggiatien" id="tonggiatien">
                 {formatMoney(tongTien)}
               </span>
-              <hr />
-              <span class="lbthongtinnhanhang">Thông tin nhận hàng</span>
-              <div>
-                <Select
-                  className="select-container"
-                  options={diaChis}
-                  onChange={setSelectDiaChi}
-                  getOptionLabel={(option) =>
-                    option.tenDuong +
-                    ", " +
-                    option.xaPhuong.split("?")[1] +
-                    ", " +
-                    option.quanHuyen.split("?")[1] +
-                    ", " +
-                    option.tinhThanhPho.split("?")[1]
-                  }
-                  getOptionValue={(option) => option.id}
-                  name="tinh"
-                  placeholder="Chọn địa chỉ của bạn"
-                />
-                <textarea
-                  class="form-control formthanhtoan"
-                  id="ghichudonhang"
-                  rows="3"
-                  placeholder="Ghi chú đơn hàng"
-                ></textarea>
-                <div class="row magg">
-                  <div class="col-8">
-                    <Select
+                <hr />
+                <span class="lbthongtinnhanhang">Thông tin nhận hàng</span>
+                <div>
+                  <Select
                       className="select-container"
-                      options={voucher}
-                      onChange={setselectVoucher}
+                      options={diaChis}
+                      onChange={setSelectDiaChi}
                       getOptionLabel={(option) =>
-                        "- " +
-                        (option.loaiPhieu == true
-                          ? formatMoney(option.giaTriGiam)
-                          : option.giaTriGiam + "%") +
-                        ", Đơn tối thiểu " +
-                        formatMoney(option.donToiThieu)
+                          option.tenDuong +
+                          ", " +
+                          option.xaPhuong.split("?")[1] +
+                          ", " +
+                          option.quanHuyen.split("?")[1] +
+                          ", " +
+                          option.tinhThanhPho.split("?")[1]
                       }
                       getOptionValue={(option) => option.id}
-                      name="voucher"
-                      placeholder="Chọn khuyến mại"
-                    />
+                      name="tinh"
+                      placeholder="Chọn địa chỉ của bạn"
+                  />
+                  <textarea
+                      class="form-control formthanhtoan"
+                      id="ghichudonhang"
+                      rows="3"
+                      placeholder="Ghi chú đơn hàng"
+                  ></textarea>
+                  <div class="row magg">
+                    <div class="col-8">
+                      <Select
+                          className="select-container"
+                          options={voucher}
+                          onChange={setselectVoucher}
+                          getOptionLabel={(option) =>
+                              "- " +
+                              (option.loaiPhieu == true
+                                  ? formatMoney(option.giaTriGiam)
+                                  : option.giaTriGiam + "%") +
+                              ", Đơn tối thiểu " +
+                              formatMoney(option.donToiThieu)
+                          }
+                          getOptionValue={(option) => option.id}
+                          name="voucher"
+                          placeholder="Chọn khuyến mại"
+                      />
+                    </div>
+                    <div class="col-4">
+                      <button
+                          onClick={kiemTraVoucher}
+                          type="button"
+                          class="btnmagg"
+                      >
+                        Áp dụng
+                      </button>
+                    </div>
+                    <div class="col-12" id="blockmess">
+                      <span class="successvou">Mã giảm giá đã được áp dụng</span>
+                    </div>
+                    <div class="col-12" id="blockmessErr">
+                      <br />
+                      <i class="fa fa-warning"> </i>
+                      <span id="messerr">Mã giảm giá không khả dụng</span>
+                    </div>
                   </div>
-                  <div class="col-4">
-                    <button
-                      onClick={kiemTraVoucher}
-                      type="button"
-                      class="btnmagg"
-                    >
-                      Áp dụng
-                    </button>
-                  </div>
-                  <div class="col-12" id="blockmess">
-                    <span class="successvou">Mã giảm giá đã được áp dụng</span>
-                  </div>
-                  <div class="col-12" id="blockmessErr">
-                    <br />
-                    <i class="fa fa-warning"> </i>
-                    <span id="messerr">Mã giảm giá không khả dụng</span>
-                  </div>
-                </div>
-                <table class="table tablepay">
-                  <tr onclick="vnpay.click()">
-                    <td>
-                      <label class="radiocustom">
-                        <div>Thanh toán qua Ví Vnpay</div>
-                        <input
-                          onChange={() => setphuongthuctt("vnpay")}
-                          type="radio"
-                          name="paytype"
-                        />
-                        <span class="checkmark"></span>
-                      </label>
-                      <div className="logo-vnpay">
-                        <img src={iconvnpay} />
-                      </div>{" "}
-                    </td>
-                  </tr>
-
-                  <tr onclick="code.click()">
-                    <td>
-                      <label class="radiocustom">
-                        {" "}
-                        Thanh toán khi nhận hàng (COD)
-                        <input
-                          onChange={() => setphuongthuctt("cod")}
-                          type="radio"
-                          name="paytype"
-                        />
-                        <span class="checkmark"></span>
-                      </label>
-                      <div className="logo-vnpay">
-                        <img src={deliver} />
-                      </div>{" "}
-                    </td>
-                  </tr>
-                  <tr>
-                    <tr>
-                      <th>
-                        <input
-                          checked={isTerm}
-                          type="checkbox"
-                          onChange={(e) => handleCheckTerm(e.target.checked)}
-                        ></input>
-                      </th>
+                  <table class="table tablepay">
+                    <tr onclick="vnpay.click()">
                       <td>
-                        <TermsPopup onAgreeTerm={handleAgreeTerm} />
+                        <label class="radiocustom">
+                          <div>Thanh toán qua Ví Vnpay</div>
+                          <input
+                              onChange={() => setphuongthuctt("vnpay")}
+                              type="radio"
+                              name="paytype"
+                          />
+                          <span class="checkmark"></span>
+                        </label>
+                        <div className="logo-vnpay">
+                          <img src={iconvnpay} />
+                        </div>{" "}
                       </td>
                     </tr>
-                  </tr>
-                </table>
-                <button
-                  onClick={() => kiemTraThanhToan()}
-                  data-bs-toggle={
-                    Array.from(
-                      document.querySelectorAll(
-                        'input[name="sanphamchitiet"]:checked'
-                      )
-                    ).map((checkbox) => checkbox.value).length &&
-                    isTerm &&
-                    selectDiaChi &&
-                    phuongthuctt
-                      ? "modal"
-                      : ""
-                  }
-                  data-bs-target="#modaladd"
-                  class="form-control btndathang"
-                >
-                  Xác nhận
-                </button>
+
+                    <tr onclick="code.click()">
+                      <td>
+                        <label class="radiocustom">
+                          {" "}
+                          Thanh toán khi nhận hàng (COD)
+                          <input
+                              onChange={() => setphuongthuctt("cod")}
+                              type="radio"
+                              name="paytype"
+                          />
+                          <span class="checkmark"></span>
+                        </label>
+                        <div className="logo-vnpay">
+                          <img src={deliver} />
+                        </div>{" "}
+                      </td>
+                    </tr>
+                    <tr>
+                      <tr>
+                        <th>
+                          <input
+                              checked={isTerm}
+                              type="checkbox"
+                              onChange={(e) => handleCheckTerm(e.target.checked)}
+                          ></input>
+                        </th>
+                        <td>
+                          <TermsPopup onAgreeTerm={handleAgreeTerm} />
+                        </td>
+                      </tr>
+                    </tr>
+                  </table>
+                  <button
+                      onClick={() => kiemTraThanhToan()}
+                      data-bs-toggle={
+                        Array.from(
+                            document.querySelectorAll(
+                                'input[name="sanphamchitiet"]:checked'
+                            )
+                        ).map((checkbox) => checkbox.value).length &&
+                        isTerm &&
+                        selectDiaChi &&
+                        phuongthuctt
+                            ? "modal"
+                            : ""
+                      }
+                      data-bs-target="#modaladd"
+                      class="form-control btndathang"
+                  >
+                    Xác nhận
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div
-        class="modal fade"
-        id="modaladd"
-        tabindex="-1"
-        aria-labelledby="exampleModalLabel"
-        aria-hidden="true"
-      >
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">
-                Xác nhận đặt hàng
-              </h5>
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <div class="modal-body">
-              <table className="table table-bordered">
-                <tbody>
+        <div
+            class="modal fade"
+            id="modaladd"
+            tabindex="-1"
+            aria-labelledby="exampleModalLabel"
+            aria-hidden="true"
+        >
+          <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">
+                  Xác nhận đặt hàng
+                </h5>
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                ></button>
+              </div>
+              <div class="modal-body">
+                <table className="table table-bordered">
+                  <tbody>
                   <tr>
                     <th>Tổng dự tính</th>
                     <td>{formatMoney(tongTam)}</td>
@@ -590,25 +595,25 @@ function GioHang() {
                     <th>Tổng tiền thanh toán</th>
                     <td>
                       {formatMoney(
-                        Number(tongTam) + Number(phiShip) - Number(tienGiam) < 0
-                          ? 0
-                          : Number(tongTam) + Number(phiShip) - Number(tienGiam)
+                          Number(tongTam) + Number(phiShip) - Number(tienGiam) < 0
+                              ? 0
+                              : Number(tongTam) + Number(phiShip) - Number(tienGiam)
                       )}
                     </td>
                   </tr>
-                </tbody>
-              </table>
-              <button
-                onClick={() => xacNhanDatHang()}
-                class="form-control btndathang"
-              >
-                Xác nhận đặt hàng
-              </button>
+                  </tbody>
+                </table>
+                <button
+                    onClick={() => xacNhanDatHang()}
+                    class="form-control btndathang"
+                >
+                  Xác nhận đặt hàng
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
   );
 }
 
