@@ -56,17 +56,30 @@ function DonHang() {
   };
 
   const huydonhang = async (id) => {
-    var response = await postMethod(
-        "/api/v1/hoa-don/huy-don-hang?hoaDonId=" + id
-    );
-    if (response.status < 300) {
-      toast.success("Hủy đơn hàng thành công");
-      getDonHang();
-    }
-    if (response.status == 417) {
-      var result = await response.json();
-      toast.error(result.defaultMessage);
-    }
+    Swal.fire({
+      title: "Xác nhận",
+      text: "Bạn muốn hủy đơn hàng chứ?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Có",
+      cancelButtonText: "Không",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        var response = await postMethod(
+            "/api/v1/hoa-don/huy-don-hang?hoaDonId=" + id
+        );
+        if (response.status < 300) {
+          toast.success("Hủy đơn hàng thành công");
+          getDonHang();
+        }
+        if (response.status == 417) {
+          var result = await response.json();
+          toast.error(result.defaultMessage);
+        }
+      }
+    });
   };
 
   return (

@@ -1,38 +1,40 @@
 import React, { useState, useEffect } from "react";
-import { toast } from "react-toastify"; // Dùng để hiển thị thông báo popup
-import { postMethodPayload, postMethod } from "../services/request"; // Hàm gọi API POST
-import Swal from "sweetalert2"; // Thư viện alert,
+import { toast } from "react-toastify";
+import { postMethodPayload, postMethod } from "../services/request";
+import Swal from "sweetalert2";
 
 function ThongTinTaiKhoan() {
-  const [user, setUser] = useState(null); // Lưu thông tin người dùng từ server
-  const [gioitinh, setgioitinh] = useState(null);
+  const [user, setUser] = useState(null);
+  const [gioitinh, setGioiTinh] = useState(null);
 
-  // useEffect sẽ chạy một lần sau khi component mount để lấy dữ liệu người dùng
   useEffect(() => {
     getUser();
   }, []);
 
-  // Hàm xử lý khi người dùng nhấn nút "Cập nhật thông tin"
   const getUser = async () => {
     var response = await postMethod("/api/khachhang/dang-dang-nhap");
     var result = await response.json();
     console.log(result);
-
     setUser(result);
+    setGioiTinh(result.gioiTinh); // Cập nhật state gioiTinh từ dữ liệu server
+  };
+
+  const handleGioiTinhChange = (event) => {
+    setGioiTinh(event.target.value === "true"); // Cập nhật state gioiTinh khi người dùng chọn
   };
 
   async function handleChangeInfor(event) {
     event.preventDefault();
-    const payload = {  // Tạo payload từ dữ liệu nhập trong form
+    const payload = {
       hoVaTen: event.target.elements.hoten.value,
       ngaySinh: event.target.elements.ngsinh.value,
-      gioiTinh: event.target.elements.gioitinh.value,
+      gioiTinh: gioitinh, // Sử dụng state gioiTinh
       soDienThoai: event.target.elements.sdt.value,
     };
     console.log(payload);
     const res = await postMethodPayload("/api/khachhang/update-infor", payload);
     if (res.status < 300) {
-      toast.success("Success!");
+      toast.success("Thành công!");
       await new Promise((resolve) => setTimeout(resolve, 1000));
       window.location.reload();
     }
@@ -73,25 +75,30 @@ function ThongTinTaiKhoan() {
                 </td>
               </tr>
               <tr>
-                <th>giới tính</th>
+                <th>Giới tính</th>
                 <td>
                   <br />
                   <div className="d-flex">
                     <label class="radiocustom">
-                      {" "}
                       Nam
                       <input
                           type="radio"
                           name="gioitinh"
-                          defaultChecked={true}
                           value={true}
+                          checked={gioitinh === true}
+                          onChange={handleGioiTinhChange}
                       />
                       <span class="checkmark"></span>
                     </label>
                     <label class="radiocustom" style={{ marginLeft: "20px" }}>
-                      {" "}
                       Nữ
-                      <input type="radio" name="gioitinh" value={false} />
+                      <input
+                          type="radio"
+                          name="gioitinh"
+                          value={false}
+                          checked={gioitinh === false}
+                          onChange={handleGioiTinhChange}
+                      />
                       <span class="checkmark"></span>
                     </label>
                   </div>
