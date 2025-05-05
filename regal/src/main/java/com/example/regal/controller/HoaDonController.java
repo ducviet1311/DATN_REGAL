@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -85,7 +86,6 @@ public class HoaDonController {
         if(hoaDon.get().getTrangThai() == 6){
             throw new MessageException("Đơn hàng đã hủy, không thể cập nhật trạng thái");
         }
-        // thêm case nào nếu cần, copy bên trên xuống, thay giá trị 6 thành value khác
         NhanVien nhanVien = userUltis.getLoggedInNhanVien(request);
         hoaDon.get().setTrangThai(trangThai);
         hoaDon.get().setLanCapNhatCuoi(new Timestamp(System.currentTimeMillis()));
@@ -104,7 +104,8 @@ public class HoaDonController {
         lichSuHoaDon.setNgayTao(new Timestamp(System.currentTimeMillis()));
         lichSuHoaDonRepository.save(lichSuHoaDon);
 
-        if(trangThai == 6 || trangThai == 8){
+        // Chỉ hoàn lại số lượng sản phẩm khi trạng thái là Hủy đơn (6)
+        if(trangThai == 6){
             List<HoaDonChiTiet> hoaDonChiTiets = hoaDon.get().getHoaDonChiTiets();
             for(HoaDonChiTiet h : hoaDonChiTiets){
                 h.getSanPhamChiTiet().setSoLuong(h.getSoLuong() + h.getSanPhamChiTiet().getSoLuong());

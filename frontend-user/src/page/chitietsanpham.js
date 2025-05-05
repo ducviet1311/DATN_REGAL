@@ -146,7 +146,9 @@ function ChiTietSanPham() {
         `/api/gio-hang/add?idChiTietSanPham=${selectChiTiet.id}&soLuong=${sl}`
     );
     if (res.status < 300) {
-      toast.success("Đã thêm sản phẩm vào giỏ gàng!");
+      toast.success("Đã thêm sản phẩm vào giỏ hàng!", {
+        autoClose: 1000, // Thời gian hiển thị: 1500ms (1.5 giây)
+      });
     }
     if (res.status == 417) {
       var result = await res.json();

@@ -220,6 +220,9 @@ const AdminDonHang = () => {
       cancelButtonText: "Hủy đơn",
       denyButtonText: "Đóng",
       reverseButtons: true,
+      cancelButtonColor: "#ff0000", // Đặt màu nút Hủy đơn giống nút Đóng
+      denyButtonColor: "#6c757d", // Màu nút Đóng (giữ nguyên để rõ ràng)
+      confirmButtonColor: "#3085d6", // Màu nút Không nhận hàng
     }).then((result) => {
       if (result.isConfirmed) {
         if (trangthai !== 4) {

@@ -264,7 +264,7 @@ function GioHang() {
   async function deleteCart(id) {
     Swal.fire({
       title: "Xác nhận xóa",
-      text: "Bạn có chắc chắn muốn xóa đợt giảm giá này không?",
+      text: "Bạn có chắc chắn muốn xóa không?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Xóa",
