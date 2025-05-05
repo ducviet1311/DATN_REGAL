@@ -179,7 +179,17 @@ function DonHang() {
                     </span>
                     </div>
                   </div>
-                  <div className="col-lg-6 col-md-6 col-sm-12 col-12">
+                  <div className="col-lg-3 col-md-3 col-sm-12 col-12">
+                    <span className="ttshipinfor">Thanh toán</span>
+                    <div className="blockinfor">
+                    <span id="loaithanhtoan">
+                      {item?.phuongThucThanhToans.length > 0 == true
+                          ? "Đã thanh toán"
+                          : "Chưa thanh toán"}
+                    </span>
+                    </div>
+                  </div>
+                  <div className="col-lg-3 col-md-3 col-sm-12 col-12">
                     <span className="ttshipinfor">Ghi chú</span>
                     <div className="blockinfor">
                       <span id="ghichunh">{item?.ghiChu}</span>

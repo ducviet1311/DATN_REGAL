@@ -13,9 +13,9 @@ import { formatMoney } from "../../services/money";
 import Select from "react-select";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-import Invoice2 from "./invoice2"; // Import component Invoice2
-import { jsPDF } from "jspdf"; // Import jsPDF để tạo PDF
-import html2canvas from "html2canvas"; // Import html2canvas để chụp ảnh HTML
+import Invoice2 from "./invoice2";
+import { jsPDF } from "jspdf";
+import html2canvas from "html2canvas";
 
 var size = 8;
 var url = "";
@@ -30,8 +30,8 @@ const AdminDonHang = () => {
   const [keyword, setKeyword] = useState("");
   const [loaiHoaDonOptions, setLoaiHoaDonOptions] = useState([]);
   const [selectedLoaiHoaDon, setSelectedLoaiHoaDon] = useState(null);
-  const [dataInvoice, setDataInvoice] = useState(null); // State để lưu dữ liệu hóa đơn trước khi in
-  const invoiceRef = useRef(null); // Ref để tham chiếu đến component Invoice2
+  const [dataInvoice, setDataInvoice] = useState(null);
+  const invoiceRef = useRef(null);
 
   useEffect(() => {
     getStatusInvoice();
@@ -119,7 +119,6 @@ const AdminDonHang = () => {
     return nextTrangThaiMap[tt] || null;
   }
 
-  // Hàm chuẩn bị dữ liệu hóa đơn để in
   const prepareInvoiceData = async (item) => {
     var response = await getMethod(
         "/api/hoa-don-chi-tiet/find-by-hoa-don?hoaDonId=" + item.id
@@ -150,7 +149,6 @@ const AdminDonHang = () => {
     setDataInvoice(invoiceData);
   };
 
-  // Hàm in hóa đơn
   const handlePDF = async () => {
     const element = invoiceRef.current;
     if (!element) return;
@@ -189,12 +187,11 @@ const AdminDonHang = () => {
         toast.success("Thành công");
         searchDonHang(0);
 
-        // Nếu trạng thái chuyển sang "Đã xác nhận" (từ 1 sang 2), in hóa đơn
         if (trangthai == 1) {
           const item = items.find((i) => i.id === iddonhang);
           if (item) {
-            await prepareInvoiceData(item); // Chuẩn bị dữ liệu hóa đơn
-            setTimeout(() => handlePDF(), 500); // Đợi một chút để đảm bảo Invoice2 được render trước khi in
+            await prepareInvoiceData(item);
+            setTimeout(() => handlePDF(), 500);
           }
         }
       }
@@ -220,9 +217,9 @@ const AdminDonHang = () => {
       cancelButtonText: "Hủy đơn",
       denyButtonText: "Đóng",
       reverseButtons: true,
-      cancelButtonColor: "#ff0000", // Đặt màu nút Hủy đơn giống nút Đóng
-      denyButtonColor: "#6c757d", // Màu nút Đóng (giữ nguyên để rõ ràng)
-      confirmButtonColor: "#3085d6", // Màu nút Không nhận hàng
+      cancelButtonColor: "#ff0000",
+      denyButtonColor: "#6c757d",
+      confirmButtonColor: "#3085d6",
     }).then((result) => {
       if (result.isConfirmed) {
         if (trangthai !== 4) {
@@ -272,6 +269,7 @@ const AdminDonHang = () => {
     );
     var result = await response.json();
     setLichSuHoaDon(result);
+    setItem(item); // Lưu item để sử dụng trong modal
   }
 
   const exportToExcel = () => {
@@ -367,6 +365,7 @@ const AdminDonHang = () => {
                 <th>Tên khách hàng</th>
                 <th>Số điện thoại</th>
                 <th>Loại hóa đơn</th>
+                <th>Phương thức thanh toán</th>
                 <th>Ngày tạo</th>
                 <th>Trạng thái</th>
                 <th className="sticky-col">Cập nhật trạng thái</th>
@@ -388,11 +387,12 @@ const AdminDonHang = () => {
                     <td>{item.khachHang === null ? "Khách lẻ" : item.khachHang.hoVaTen}</td>
                     <td>{item.khachHang === null ? "Khách lẻ" : item.khachHang.soDienThoai}</td>
                     <td>{item.loaiHoaDon ? "Đặt hàng online" : "Thanh toán tại quầy"}</td>
+                    <td>{item.phuongThucThanhToans?.length > 0 ? "Đã thanh toán" : "Thanh toán khi nhận hàng"}</td>
                     <td>{item.ngayTao}</td>
                     <td>
-                                        <span className={`status-label status-${item.trangThai}`}>
-                                            {getTrangThai(item.trangThai)}
-                                        </span>
+                      <span className={`status-label status-${item.trangThai}`}>
+                        {getTrangThai(item.trangThai)}
+                      </span>
                     </td>
                     <td>
                       <div className="d-flex">
@@ -438,7 +438,6 @@ const AdminDonHang = () => {
           </div>
         </div>
 
-        {/* Modal chi tiết đơn hàng */}
         <div
             className="modal fade"
             id="addcate"
@@ -467,26 +466,32 @@ const AdminDonHang = () => {
                   <div className="info-row">
                     <span className="info-label">Tên người nhận:</span>
                     <span className="info-value">
-                                        {chiTietDonHang[0]?.hoaDon?.tenKhachHang || ""}
-                                    </span>
+                      {chiTietDonHang[0]?.hoaDon?.tenKhachHang || ""}
+                    </span>
                   </div>
                   <div className="info-row">
                     <span className="info-label">Số điện thoại:</span>
                     <span className="info-value">
-                                        {chiTietDonHang[0]?.hoaDon?.soDienThoai || ""}
-                                    </span>
+                      {chiTietDonHang[0]?.hoaDon?.soDienThoai || ""}
+                    </span>
                   </div>
                   <div className="info-row">
                     <span className="info-label">Email:</span>
                     <span className="info-value">
-                                        {chiTietDonHang[0]?.hoaDon?.email || ""}
-                                    </span>
+                      {chiTietDonHang[0]?.hoaDon?.email || ""}
+                    </span>
                   </div>
                   <div className="info-row">
                     <span className="info-label">Địa chỉ:</span>
                     <span className="info-value">
-                                        {chiTietDonHang[0]?.hoaDon?.diaChi || "Mua hàng tại quầy"}
-                                    </span>
+                      {chiTietDonHang[0]?.hoaDon?.diaChi || "Mua hàng tại quầy"}
+                    </span>
+                  </div>
+                  <div className="info-row">
+                    <span className="info-label">Phương thức thanh toán:</span>
+                    <span className="info-value">
+                      {item?.phuongThucThanhToans?.length > 0 ? "Đã thanh toán" : "Chưa thanh toán"}
+                    </span>
                   </div>
                 </div>
                 <br />
@@ -554,7 +559,6 @@ const AdminDonHang = () => {
           </div>
         </div>
 
-        {/* Component Invoice2 ẩn để in hóa đơn */}
         <div
             style={{
               position: "absolute",
@@ -565,7 +569,7 @@ const AdminDonHang = () => {
           <Invoice2
               ref={invoiceRef}
               invoiceData={dataInvoice}
-              giamgia={{ loaiPhieu: false, giaTriGiam: 0 }} // Giả sử không có giảm giá
+              giamgia={{ loaiPhieu: false, giaTriGiam: 0 }}
           />
         </div>
 
@@ -578,15 +582,15 @@ const AdminDonHang = () => {
                     display: inline-block;
                     text-align: center;
                 }
-                .status-0 { background-color: #808080; } /* Chờ xác nhận */
-                .status-1 { background-color: #FFA500; } /* Đã xác nhận */
-                .status-2 { background-color: #1E90FF; } /* Đang chờ vận chuyển */
-                .status-3 { background-color: #FFD700; } /* Đơn hàng đã được gửi đi */
-                .status-4 { background-color: #32CD32; } /* Đã giao */
-                .status-5 { background-color: #8e4585; } /* Đã nhận */
-                .status-6 { background-color: #FF0000; } /* Hủy đơn */
-                .status-7 { background-color: #DC143C; } /* Không nhận hàng */
-                .status-8 { background-color: #228B22; } /* Hoàn Thành */
+                .status-0 { background-color: #808080; }
+                .status-1 { background-color: #FFA500; }
+                .status-2 { background-color: #1E90FF; }
+                .status-3 { background-color: #FFD700; }
+                .status-4 { background-color: #32CD32; }
+                .status-5 { background-color: #8e4585; }
+                .status-6 { background-color: #FF0000; }
+                .status-7 { background-color: #DC143C; }
+                .status-8 { background-color: #228B22; }
 
                 .customer-info {
                     background-color: #f9f9f9;
