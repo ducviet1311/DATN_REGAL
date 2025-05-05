@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -71,6 +72,33 @@ public class HoaDonController {
     @Autowired
     private SanPhamChiTietRepository sanPhamChiTietRepository;
 
+
+    @GetMapping("/kiem-tra-thanh-toan")
+    public ResponseEntity<?> kiemTraThanhToan(@RequestParam Integer hoaDonId, HttpServletRequest request) {
+        Optional<HoaDon> hoaDon = hoaDonRepository.findById(hoaDonId);
+        if (hoaDon.isEmpty()) {
+            throw new MessageException("Hóa đơn không tồn tại");
+        }
+        // Kiểm tra quyền truy cập
+        KhachHang khachHang = userUltis.getLoggedInKhachHang(request);
+        if (!khachHang.getId().equals(hoaDon.get().getKhachHang().getId())) {
+            throw new MessageException("Bạn không có quyền xem thông tin thanh toán của hóa đơn này");
+        }
+        PhuongThucThanhToan pttt = phuongThucThanhToanRepository.findByIdHoaDon(hoaDonId);
+        Map<String, Object> response = new HashMap<>();
+        if (pttt != null) {
+            response.put("daThanhToan", true);
+            response.put("phuongThuc", pttt.getTenPhuongThuc());
+            response.put("maGiaoDich", pttt.getMaGiaoDichVnPay());
+            response.put("ngayThanhToan", pttt.getNgayTao());
+        } else {
+            response.put("daThanhToan", false);
+            response.put("phuongThuc", null);
+            response.put("maGiaoDich", null);
+            response.put("ngayThanhToan", null);
+        }
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
     @PostMapping("/update-trang-thai")
     public ResponseEntity<?> capNhatTrangThai(@RequestParam Integer hoaDonId, @RequestParam Integer trangThai, HttpServletRequest request){
