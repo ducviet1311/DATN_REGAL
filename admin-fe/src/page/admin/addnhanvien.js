@@ -338,19 +338,19 @@ const AdminAddNhanVien = () => {
                                                 Admin
                                             </label>
                                         </div>
-                                        <div className="form-check">
-                                            <input
-                                                className="form-check-input"
-                                                type="radio"
-                                                name="vaiTro"
-                                                id="staff"
-                                                checked={role === 0}
-                                                onChange={() => setRole(0)}
-                                            />
-                                            <label className="form-check-label" htmlFor="staff">
-                                                Nhân viên
-                                            </label>
-                                        </div>
+                                        {/*<div className="form-check">*/}
+                                        {/*    <input*/}
+                                        {/*        className="form-check-input"*/}
+                                        {/*        type="radio"*/}
+                                        {/*        name="vaiTro"*/}
+                                        {/*        id="staff"*/}
+                                        {/*        checked={role === 0}*/}
+                                        {/*        onChange={() => setRole(0)}*/}
+                                        {/*    />*/}
+                                        {/*    <label className="form-check-label" htmlFor="staff">*/}
+                                        {/*        Nhân viên*/}
+                                        {/*    </label>*/}
+                                        {/*</div>*/}
                                     </div>
                                 </div>
 

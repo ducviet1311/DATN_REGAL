@@ -62,7 +62,9 @@ const TermsPopup = (props) => {
               <p>
                 Giá sản phẩm tại thời điểm đặt hàng sẽ là giá cuối cùng, không
                 áp dụng bất kỳ thay đổi giá nào sau đó.
-
+              </p>
+              <p>
+                Khách hàng đã thanh toán online hủy đơn và muốn hoàn tiền, Vui lòng liên hệ Hotline CSKH : 0854759387.
               </p>
 
               <h3>3. Chính sách vận chuyển</h3>
