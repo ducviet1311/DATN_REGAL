@@ -365,7 +365,6 @@ const AdminDonHang = () => {
                 <th>Tên khách hàng</th>
                 <th>Số điện thoại</th>
                 <th>Loại hóa đơn</th>
-                <th>Phương thức thanh toán</th>
                 <th>Ngày tạo</th>
                 <th>Trạng thái</th>
                 <th className="sticky-col">Cập nhật trạng thái</th>
@@ -387,7 +386,6 @@ const AdminDonHang = () => {
                     <td>{item.khachHang === null ? "Khách lẻ" : item.khachHang.hoVaTen}</td>
                     <td>{item.khachHang === null ? "Khách lẻ" : item.khachHang.soDienThoai}</td>
                     <td>{item.loaiHoaDon ? "Đặt hàng online" : "Thanh toán tại quầy"}</td>
-                    <td>{item.phuongThucThanhToans?.length > 0 ? "Đã thanh toán" : "Thanh toán khi nhận hàng"}</td>
                     <td>{item.ngayTao}</td>
                     <td>
                       <span className={`status-label status-${item.trangThai}`}>
@@ -490,7 +488,7 @@ const AdminDonHang = () => {
                   <div className="info-row">
                     <span className="info-label">Phương thức thanh toán:</span>
                     <span className="info-value">
-                      {item?.phuongThucThanhToans?.length > 0 ? "Đã thanh toán" : "Chưa thanh toán"}
+                      {item?.phuongThucThanhToans?.length > 0 ? "Đã thanh toán" : "Thanh toán khi nhận hàng"}
                     </span>
                   </div>
                 </div>

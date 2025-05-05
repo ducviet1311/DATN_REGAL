@@ -20,6 +20,7 @@ const AdminPhieuGiamGia = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
   const [selectedStatus, setSelectedStatus] = useState("");
+
   useEffect(() => {
     getPGG();
   }, []);
@@ -29,6 +30,7 @@ const AdminPhieuGiamGia = () => {
     var result = await response.json();
     setItems(result);
   }
+
   const handleStatusFilter = (e) => {
     setSelectedStatus(e.target.value); // Lưu trạng thái được chọn
   };
@@ -41,15 +43,15 @@ const AdminPhieuGiamGia = () => {
   });
 
   function trangThai(tt) {
-    console.log(tt);
-
     switch (tt) {
       case 1:
-        return "Đang hoạt đông";
+        return "Đang hoạt động";
       case 2:
         return "Hết phiếu giảm giá";
       case 3:
         return "Đã hết hạn";
+      default:
+        return "Không hoạt động";
     }
   }
 
@@ -58,14 +60,12 @@ const AdminPhieuGiamGia = () => {
         "/api/phieu-giam-gia/all?&size=" + size + "&sort=id,desc&page=" + 0
     );
     var result = await response.json();
-    console.log(result);
     setItems(result.content);
     setPageCount(result.totalPages);
     url = "/api/phieu-giam-gia/all?&size=" + size + "&sort=id,desc&page=";
   };
 
   const updateTrangThai = async (item) => {
-    console.log("àdsjf", item);
     var user = JSON.parse(localStorage.getItem("user"));
 
     const payload = {
@@ -83,21 +83,14 @@ const AdminPhieuGiamGia = () => {
       trangThai: 0,
     };
 
-    // console.log('pay', payload);
     try {
-      // Chuẩn bị dữ liệu payload
-      const updatedItem = { ...item, trangThai: 0 }; // Thay đổi trạng thái nếu cần
-      console.log("Dữ liệu gửi API:", payload);
-
-      // Gửi request PUT hoặc PATCH
       const response = await postMethodPayload(
           `/api/phieu-giam-gia/${item.id}`,
           payload
       );
-      console.log("dgd", response);
       if (response.status < 300) {
         toast.success("Cập nhật trạng thái thành công!");
-        // getPGG(); // Cập nhật lại danh sách
+        getPGG(); // Tải lại danh sách để đồng bộ dữ liệu
       } else {
         toast.error("Cập nhật thất bại!");
       }
@@ -107,35 +100,32 @@ const AdminPhieuGiamGia = () => {
     }
   };
 
-
   const handlePageClick = async (data) => {
     const currentPage = data.selected;
     const response = await getMethod(
         `/api/phieu-giam-gia/all?size=${size}&sort=id,desc&page=${currentPage}`
     );
     const result = await response.json();
-    console.log("day", result);
     setItems(result.content);
     setPageCount(result.totalPages);
     setCurrentPage(currentPage);
   };
+
   useEffect(() => {
     if (items.length === 0) return; // Kiểm tra nếu items trống
 
     const now = new Date();
     let hasUpdate = false;
-    // console.log('now', now);
-
+  //set time HA
     const updatedItems = items.map((item) => {
-      // console.log('idg', item); // Sẽ log từng item nếu items không trống
       const ngayKetThuc = new Date(item.ngayKetThuc);
-      if (ngayKetThuc < now && item.trangThai !== 0 ) {
-        updateTrangThai(item);
+      // Kiểm tra nếu số lượng = 0 hoặc ngày kết thúc đã qua và trạng thái không phải 0
+      if ((item.soLuong === 0 || ngayKetThuc < now) && item.trangThai !== 0) {
+        updateTrangThai(item); // Gọi hàm cập nhật trạng thái
         hasUpdate = true;
-
         return {
           ...item,
-          trangThai: 0,
+          trangThai: 0, // Cập nhật trạng thái thành 0
         };
       }
       return item;
@@ -144,18 +134,17 @@ const AdminPhieuGiamGia = () => {
     if (hasUpdate) {
       setItems(updatedItems); // Cập nhật lại state chỉ khi có thay đổi
     }
-    // setItems(updatedItems);
   }, [items]);
 
   return (
       <>
-        <div class="headerpageadmin d-flex justify-content-between align-items-center p-3 bg-light border">
-          <strong class="text-left">
+        <div className="headerpageadmin d-flex justify-content-between align-items-center p-3 bg-light border">
+          <strong className="text-left">
             <i className="fa fa-list"></i> Quản Lý Phiếu Giảm Giá
           </strong>
-          <div class="search-wrapper d-flex align-items-center">
-            <div class="search-container"></div>
-            <a href="add-khuyen-mai" class="btn btn-primary ms-2">
+          <div className="search-wrapper d-flex align-items-center">
+            <div className="search-container"></div>
+            <a href="add-khuyen-mai" className="btn btn-primary ms-2">
               <i className="fa fa-plus"></i>
             </a>
             <select
@@ -169,12 +158,12 @@ const AdminPhieuGiamGia = () => {
             </select>
           </div>
         </div>
-        <div class="tablediv">
-          <div class="headertable">
-            <span class="lbtable">Danh sách phiếu giảm giá</span>
+        <div className="tablediv">
+          <div className="headertable">
+            <span className="lbtable">Danh sách phiếu giảm giá</span>
           </div>
-          <div class="divcontenttable">
-            <table id="example" class="table table-bordered">
+          <div className="divcontenttable">
+            <table id="example" className="table table-bordered">
               <thead>
               <tr>
                 <th>STT</th>
@@ -187,37 +176,37 @@ const AdminPhieuGiamGia = () => {
                 <th>Loại phiếu</th>
                 <th>Thời gian</th>
                 <th>Trạng thái</th>
-                <th class="sticky-col">Hành động</th>
+                <th className="sticky-col">Hành động</th>
               </tr>
               </thead>
               <tbody>
               {filteredItems.map((item, index) => {
                 const stt = currentPage * size + index + 1;
                 return (
-                    <tr>
+                    <tr key={item.id}>
                       <td>{stt}</td>
                       <td>{item.maCode}</td>
                       <td>{item.tenPhieu}</td>
                       <td>
-                        {item.loaiPhieu == false
+                        {item.loaiPhieu === false
                             ? formatMoney(item.giaTriGiamToiDa)
                             : ""}
                       </td>
                       <td>
-                        {item.loaiPhieu == true
+                        {item.loaiPhieu === true
                             ? formatMoney(item.giaTriGiam)
                             : item.giaTriGiam + "%"}
                       </td>
                       <td>{formatMoney(item.donToiThieu)}</td>
                       <td>{item.soLuong}</td>
-                      <td>{item.loaiPhieu == true ? "Giảm tiền" : "giảm %"}</td>
+                      <td>{item.loaiPhieu === true ? "Giảm tiền" : "Giảm %"}</td>
                       <td>
                         {item.ngayBatDau} - {item.ngayKetThuc}
                       </td>
                       <td
                           style={{
                             textAlign: "center",
-                            color: item.trangThai === 0 ? "#6c757d" : "#155724", // Xám đậm hoặc Xanh đậm
+                            color: item.trangThai === 0 ? "#6c757d" : "#155724",
                           }}
                       >
                         {item.trangThai === 0
@@ -225,14 +214,17 @@ const AdminPhieuGiamGia = () => {
                             : "Đang hoạt động"}
                       </td>
                       <td
-                          class="sticky-col"
+                          className="sticky-col"
                           style={{
                             display: "flex",
                             justifyContent: "center",
                             alignItems: "center",
                           }}
                       >
-                        <a href={"add-khuyen-mai?id=" + item.id} class="edit-btn">
+                        <a
+                            href={"add-khuyen-mai?id=" + item.id}
+                            className="edit-btn"
+                        >
                           <i className="fa fa-edit"></i>
                         </a>
                       </td>

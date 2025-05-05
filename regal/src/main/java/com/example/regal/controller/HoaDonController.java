@@ -72,7 +72,7 @@ public class HoaDonController {
     @Autowired
     private SanPhamChiTietRepository sanPhamChiTietRepository;
 
-    
+
     @PostMapping("/update-trang-thai")
     public ResponseEntity<?> capNhatTrangThai(@RequestParam Integer hoaDonId, @RequestParam Integer trangThai, HttpServletRequest request){
         Boolean check = TrangThai.kiemTraTonTai(trangThai);
