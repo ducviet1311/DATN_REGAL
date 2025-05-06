@@ -17,7 +17,7 @@ import Invoice2 from "./invoice2";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 
-var size = 8;
+var size = 8; // Sửa size42 thành size để đồng bộ
 var url = "";
 const AdminDonHang = () => {
   const [trangThai, setTrangThai] = useState([]);
@@ -48,23 +48,55 @@ const AdminDonHang = () => {
   const getLoaiHoaDonOptions = async () => {
     var response = await getMethod("/api/v1/hoa-don/loai-hoa-don-options");
     var result = await response.json();
-    setLoaiHoaDonOptions(result.map(item => ({
-      value: item.value,
-      label: item.label
-    })));
+    setLoaiHoaDonOptions(
+        result.map((item) => ({
+          value: item.value,
+          label: item.label,
+        }))
+    ); // Sửa cú pháp, đảm bảo đóng ngoặc đúng
   };
 
-  const searchDonHang = async (page, trangThaiFilter = selectTrangThai, loaiHoaDonFilter = selectedLoaiHoaDon?.value) => {
+  const searchDonHang = async (
+      page,
+      trangThaiFilter = selectTrangThai,
+      loaiHoaDonFilter = selectedLoaiHoaDon?.value
+  ) => {
     let searchUrl = `/api/v1/hoa-don/search?size=${size}&sort=id,desc&page=${page}`;
     if (keyword) searchUrl += `&keyword=${encodeURIComponent(keyword)}`;
     if (trangThaiFilter !== null) searchUrl += `&trangthai=${trangThaiFilter}`;
-    if (loaiHoaDonFilter !== null && loaiHoaDonFilter !== undefined) searchUrl += `&loaiHoaDon=${loaiHoaDonFilter}`;
+    if (loaiHoaDonFilter !== null && loaiHoaDonFilter !== undefined)
+      searchUrl += `&loaiHoaDon=${loaiHoaDonFilter}`;
 
     var response = await getMethod(searchUrl);
     var result = await response.json();
-    setItems(result.content);
+
+    // Sắp xếp danh sách items để طبيع trạng thái 1 và 3
+    const sortedItems = result.content.sort((a, b) => {
+      if (
+          (a.trangThai === 1 || a.trangThai === 3) &&
+          !(b.trangThai === 1 || b.trangThai === 3)
+      ) {
+        return -1; // a lên trước b
+      }
+      if (
+          !(a.trangThai === 1 || a.trangThai === 3) &&
+          (b.trangThai === 1 || b.trangThai === 3)
+      ) {
+        return 1; // b lên trước a
+      }
+      // Nếu cùng trạng thái ưu tiên, sắp xếp theo ngày tạo (mới nhất trước)
+      if (
+          a.trangThai === b.trangThai &&
+          (a.trangThai === 1 || a.trangThai === 3)
+      ) {
+        return new Date(b.ngayTao) - new Date(a.ngayTao);
+      }
+      return 0;
+    });
+
+    setItems(sortedItems);
     setPageCount(result.totalPages);
-    url = searchUrl.split('&page=')[0] + "&page=";
+    url = searchUrl.split("&page=")[0] + "&page=";
   };
 
   const handleSearch = () => {
@@ -102,7 +134,7 @@ const AdminDonHang = () => {
       5: "Đã nhận",
       6: "Hủy đơn",
       7: "Không nhận hàng",
-      8: "Đã hoàn thành"
+      8: "Đã hoàn thành",
     };
     return trangThaiMap[tt] || "Không xác định";
   }
@@ -128,17 +160,24 @@ const AdminDonHang = () => {
     const invoiceData = {
       maVanDon: item.maVanDon || "SPEVN202511993",
       maDonHang: item.maHoaDon || "2008318CTVTDA0",
-      nguoiNhan: item.tenKhachHang || (item.khachHang ? item.khachHang.hoVaTen : "Khách lẻ"),
+      nguoiNhan:
+          item.tenKhachHang ||
+          (item.khachHang ? item.khachHang.hoVaTen : "Khách lẻ"),
       diaChi: item.diaChi || "Mua hàng tại quầy",
-      soDienThoai: item.soDienThoai || (item.khachHang ? item.khachHang.soDienThoai : "Khách lẻ"),
-      email: item.email || (item.khachHang ? item.khachHang.email : "Khách lẻ"),
+      soDienThoai:
+          item.soDienThoai ||
+          (item.khachHang ? item.khachHang.soDienThoai : "Khách lẻ"),
+      email:
+          item.email || (item.khachHang ? item.khachHang.email : "Khách lẻ"),
       khoiLuongToiDa: "500g",
-      ghiChuGiaoHang: "- Không dùng lót\n- Ở đâu thì lấy số S thì 15N phút\n- Lọc lấy cái để đi E nữa",
+      ghiChuGiaoHang:
+          "- Không dùng lót\n- Ở đâu thì lấy số S thì 15N phút\n- Lọc lấy cái để đi E nữa",
       xacNhanNguonVan: "mọipmoe, bẹDV6",
       phiVanChuyen: item.phiVanChuyen || 0,
       items: result.map((chiTiet) => ({
         name: chiTiet.sanPhamChiTiet?.sanPham.tenSanPham || "N/A",
-        thuongHieu: chiTiet.sanPhamChiTiet?.sanPham.thuongHieu.tenThuongHieu || "",
+        thuongHieu:
+            chiTiet.sanPhamChiTiet?.sanPham.thuongHieu.tenThuongHieu || "",
         mauSac: chiTiet.sanPhamChiTiet?.mauSac.tenMauSac || "",
         kichCo: chiTiet.sanPhamChiTiet?.kichCo.tenKichCo || "",
         quantity: chiTiet.soLuong,
@@ -269,7 +308,7 @@ const AdminDonHang = () => {
     );
     var result = await response.json();
     setLichSuHoaDon(result);
-    setItem(item); // Lưu item để sử dụng trong modal
+    setItem(item);
   }
 
   const exportToExcel = () => {
@@ -311,7 +350,9 @@ const AdminDonHang = () => {
                 <div
                     key={index}
                     onClick={() => locDonHang(a.value)}
-                    className={`trangthaiitem ${a.value === selectTrangThai && "selected"}`}
+                    className={`trangthaiitem ${
+                        a.value === selectTrangThai && "selected"
+                    }`}
                 >
                   {a.tenTrangThai}
                 </div>
@@ -338,7 +379,7 @@ const AdminDonHang = () => {
                     placeholder="Tìm theo mã HĐ, tên KH, SĐT"
                     value={keyword}
                     onChange={(e) => setKeyword(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                    onKeyPress={(e) => e.key === "Enter" && handleSearch()}
                 />
                 <button
                     className="btn btn-outline-secondary"
@@ -383,23 +424,40 @@ const AdminDonHang = () => {
                     >
                       {item.maHoaDon}
                     </td>
-                    <td>{item.khachHang === null ? "Khách lẻ" : item.khachHang.hoVaTen}</td>
-                    <td>{item.khachHang === null ? "Khách lẻ" : item.khachHang.soDienThoai}</td>
-                    <td>{item.loaiHoaDon ? "Đặt hàng online" : "Thanh toán tại quầy"}</td>
+                    <td>
+                      {item.khachHang === null
+                          ? "Khách lẻ"
+                          : item.khachHang.hoVaTen}
+                    </td>
+                    <td>
+                      {item.khachHang === null
+                          ? "Khách lẻ"
+                          : item.khachHang.soDienThoai}
+                    </td>
+                    <td>
+                      {item.loaiHoaDon ? "Đặt hàng online" : "Thanh toán tại quầy"}
+                    </td>
                     <td>{item.ngayTao}</td>
                     <td>
-                      <span className={`status-label status-${item.trangThai}`}>
-                        {getTrangThai(item.trangThai)}
-                      </span>
+                    <span
+                        className={`status-label status-${item.trangThai}`}
+                    >
+                      {getTrangThai(item.trangThai)}
+                    </span>
                     </td>
                     <td>
                       <div className="d-flex">
                         {item.trangThai < 6 && (
                             <button
-                                onClick={() => capNhatTrangThai(item.id, item.trangThai)}
-                                className={`edit-btn status-next-${item.trangThai < 5 ? item.trangThai + 1 : 8}`}
+                                onClick={() =>
+                                    capNhatTrangThai(item.id, item.trangThai)
+                                }
+                                className={`edit-btn status-next-${
+                                    item.trangThai < 5 ? item.trangThai + 1 : 8
+                                }`}
                             >
-                              {getNextTrangThai(item.trangThai)} <i className="fa fa-arrow-right"></i>
+                              {getNextTrangThai(item.trangThai)}{" "}
+                              <i className="fa fa-arrow-right"></i>
                             </button>
                         )}
                         {item.trangThai < 5 && (
@@ -464,40 +522,51 @@ const AdminDonHang = () => {
                   <div className="info-row">
                     <span className="info-label">Tên người nhận:</span>
                     <span className="info-value">
-                      {chiTietDonHang[0]?.hoaDon?.tenKhachHang || ""}
-                    </span>
+                    {chiTietDonHang[0]?.hoaDon?.tenKhachHang || ""}
+                  </span>
                   </div>
                   <div className="info-row">
                     <span className="info-label">Số điện thoại:</span>
                     <span className="info-value">
-                      {chiTietDonHang[0]?.hoaDon?.soDienThoai || ""}
-                    </span>
+                    {chiTietDonHang[0]?.hoaDon?.soDienThoai || ""}
+                  </span>
                   </div>
                   <div className="info-row">
                     <span className="info-label">Email:</span>
                     <span className="info-value">
-                      {chiTietDonHang[0]?.hoaDon?.email || ""}
-                    </span>
+                    {chiTietDonHang[0]?.hoaDon?.email || ""}
+                  </span>
                   </div>
                   <div className="info-row">
                     <span className="info-label">Địa chỉ:</span>
                     <span className="info-value">
-                      {chiTietDonHang[0]?.hoaDon?.diaChi || "Mua hàng tại quầy"}
-                    </span>
+                    {chiTietDonHang[0]?.hoaDon?.diaChi || "Mua hàng tại quầy"}
+                  </span>
                   </div>
                   <div className="info-row">
                     <span className="info-label">Phương thức thanh toán:</span>
                     <span className="info-value">
-                      {item?.phuongThucThanhToans?.length > 0 ? "Đã thanh toán" : "Thanh toán khi nhận hàng"}
-                    </span>
+                    {item?.phuongThucThanhToans?.length > 0
+                        ? "Đã thanh toán"
+                        : "Thanh toán khi nhận hàng"}
+                  </span>
                   </div>
                 </div>
                 <br />
                 <h5 className="section-title order-title">
                   <i className="fa fa-shopping-cart me-2"></i> Chi tiết đơn hàng
                 </h5>
-                <table className="table table-cart table-order" id="detailInvoice">
-                  <caption style={{ textAlign: "left", fontWeight: "bold", captionSide: "top" }}>
+                <table
+                    className="table table-cart table-order"
+                    id="detailInvoice"
+                >
+                  <caption
+                      style={{
+                        textAlign: "left",
+                        fontWeight: "bold",
+                        captionSide: "top",
+                      }}
+                  >
                     Ngày tạo: {chiTietDonHang[0]?.hoaDon?.ngayTao || "N/A"}
                   </caption>
                   <thead className="thead-default theaddetail">
@@ -517,7 +586,7 @@ const AdminDonHang = () => {
                       <tr key={index}>
                         <td>{item.sanPhamChiTiet.maSanPhamChiTiet}</td>
                         <td>
-                          <img
+                          < terza
                               src={
                                 item.sanPhamChiTiet.anhs.length > 0
                                     ? item.sanPhamChiTiet.anhs[0].tenAnh
@@ -530,7 +599,9 @@ const AdminDonHang = () => {
                         <td>{item.sanPhamChiTiet.sanPham.tenSanPham}</td>
                         <td>{item.sanPhamChiTiet.mauSac.tenMauSac}</td>
                         <td>{item.sanPhamChiTiet.kichCo.tenKichCo}</td>
-                        <td>{item.sanPhamChiTiet.sanPham.thuongHieu.tenThuongHieu}</td>
+                        <td>
+                          {item.sanPhamChiTiet.sanPham.thuongHieu.tenThuongHieu}
+                        </td>
                         <td>{item.soLuong}</td>
                         <td>{formatMoney(item.giaSanPham)}</td>
                       </tr>
@@ -538,13 +609,19 @@ const AdminDonHang = () => {
                   </tbody>
                   <tfoot>
                   <tr>
-                    <td colSpan="7" className="footer-label">Phí vận chuyển:</td>
+                    <td colSpan="7" className="footer-label">
+                      Phí vận chuyển:
+                    </td>
                     <td className="footer-value">
-                      {formatMoney(chiTietDonHang[0]?.hoaDon?.phiVanChuyen || 0)}
+                      {formatMoney(
+                          chiTietDonHang[0]?.hoaDon?.phiVanChuyen || 0
+                      )}
                     </td>
                   </tr>
                   <tr>
-                    <td colSpan="7" className="footer-label total-label">Tổng tiền:</td>
+                    <td colSpan="7" className="footer-label total-label">
+                      Tổng tiền:
+                    </td>
                     <td className="footer-value total-value">
                       {formatMoney(chiTietDonHang[0]?.hoaDon?.tongTien || 0)}
                     </td>
@@ -572,129 +649,159 @@ const AdminDonHang = () => {
         </div>
 
         <style jsx>{`
-                .status-label {
-                    padding: 4px 8px;
-                    border-radius: 12px;
-                    color: white;
-                    font-weight: bold;
-                    display: inline-block;
-                    text-align: center;
-                }
-                .status-0 { background-color: #808080; }
-                .status-1 { background-color: #FFA500; }
-                .status-2 { background-color: #1E90FF; }
-                .status-3 { background-color: #FFD700; }
-                .status-4 { background-color: #32CD32; }
-                .status-5 { background-color: #8e4585; }
-                .status-6 { background-color: #FF0000; }
-                .status-7 { background-color: #DC143C; }
-                .status-8 { background-color: #228B22; }
+        .status-label {
+          padding: 4px 8px;
+          border-radius: 12px;
+          color: white;
+          font-weight: bold;
+          display: inline-block;
+          text-align: center;
+        }
+        .status-0 {
+          background-color: #808080;
+        }
+        .status-1 {
+          background-color: #ffa500;
+        }
+        .status-2 {
+          background-color: #1e90ff;
+        }
+        .status-3 {
+          background-color: #ffd700;
+        }
+        .status-4 {
+          background-color: #32cd32;
+        }
+        .status-5 {
+          background-color: #8e4585;
+        }
+        .status-6 {
+          background-color: #ff0000;
+        }
+        .status-7 {
+          background-color: #dc143c;
+        }
+        .status-8 {
+          background-color: #228b22;
+        }
 
-                .customer-info {
-                    background-color: #f9f9f9;
-                    padding: 15px;
-                    border-radius: 8px;
-                    margin-bottom: 20px;
-                }
-                .info-row {
-                    display: flex;
-                    justify-content: space-between;
-                    padding: 8px 0;
-                    border-bottom: 1px solid #eee;
-                }
-                .info-row:last-child {
-                    border-bottom: none;
-                }
-                .info-label {
-                    color: #555;
-                    font-size: 14px;
-                    width: 30%;
-                    font-weight: 500;
-                }
-                .info-value {
-                    color: #333;
-                    font-size: 14px;
-                    width: 70%;
-                    text-align: left;
-                    word-break: break-word;
-                }
+        .customer-info {
+          background-color: #f9f9f9;
+          padding: 15px;
+          border-radius: 8px;
+          margin-bottom: 20px;
+        }
+        .info-row {
+          display: flex;
+          justify-content: space-between;
+          padding: 8px 0;
+          border-bottom: 1px solid #eee;
+        }
+        .info-row:last-child {
+          border-bottom: none;
+        }
+        .info-label {
+          color: #555;
+          font-size: 14px;
+          width: 30%;
+          font-weight: 500;
+        }
+        .info-value {
+          color: #333;
+          font-size: 14px;
+          width: 70%;
+          text-align: left;
+          word-break: break-word;
+        }
 
-                .footer-label {
-                    text-align: right;
-                    color: #555;
-                    font-size: 14px;
-                    padding: 8px;
-                }
-                .footer-value {
-                    text-align: right;
-                    color: #333;
-                    font-size: 14px;
-                    padding: 8px;
-                }
-                .total-label {
-                    font-weight: 600;
-                    color: #000;
-                }
-                .total-value {
-                    font-weight: 600;
-                    color: #d32f2f;
-                }
+        .footer-label {
+          text-align: right;
+          color: #555;
+          font-size: 14px;
+          padding: 8px;
+        }
+        .footer-value {
+          text-align: right;
+          color: #333;
+          font-size: 14px;
+          padding: 8px;
+        }
+        .total-label {
+          font-weight: 600;
+          color: #000;
+        }
+        .total-value {
+          font-weight: 600;
+          color: #d32f2f;
+        }
 
-                .section-title {
-                    font-size: 18px;
-                    font-weight: 600;
-                    padding: 10px 15px;
-                    margin-bottom: 15px;
-                    border-radius: 5px;
-                    display: flex;
-                    align-items: center;
-                }
-                .customer-title {
-                    background-color: #e3f2fd;
-                    color: #1976d2;
-                    border-left: 4px solid #1976d2;
-                }
-                .order-title {
-                    background-color: #f1f8e9;
-                    color: #388e3c;
-                    border-left: 4px solid #388e3c;
-                }
-                .edit-btn {
-                    padding: 6px 12px;
-                    border: none;
-                    border-radius: 12px;
-                    color: white;
-                    font-weight: bold;
-                    cursor: pointer;
-                    margin-right: 5px;
-                    transition: background-color 0.3s;
-                }
+        .section-title {
+          font-size: 18px;
+          font-weight: 600;
+          padding: 10px 15px;
+          margin-bottom: 15px;
+          border-radius: 5px;
+          display: flex;
+          align-items: center;
+        }
+        .customer-title {
+          background-color: #e3f2fd;
+          color: #1976d2;
+          border-left: 4px solid #1976d2;
+        }
+        .order-title {
+          background-color: #f1f8e9;
+          color: #388e3c;
+          border-left: 4px solid #388e3c;
+        }
+        .edit-btn {
+          padding: 6px 12px;
+          border: none;
+          border-radius: 12px;
+          color: white;
+          font-weight: bold;
+          cursor: pointer;
+          margin-right: 5px;
+          transition: background-color 0.3s;
+        }
 
-                .edit-btn.status-next-1 { background-color: #FFA500; }
-                .edit-btn.status-next-2 { background-color: #1E90FF; }
-                .edit-btn.status-next-3 { background-color: #FFD700; }
-                .edit-btn.status-next-4 { background-color: #32CD32; }
-                .edit-btn.status-next-5 { background-color: #8e4585; }
-                .edit-btn.status-next-8 { background-color: #228B22; }
+        .edit-btn.status-next-1 {
+          background-color: #ffa500;
+        }
+        .edit-btn.status-next-2 {
+          background-color: #1e90ff;
+        }
+        .edit-btn.status-next-3 {
+          background-color: #ffd700;
+        }
+        .edit-btn.status-next-4 {
+          background-color: #32cd32;
+        }
+        .edit-btn.status-next-5 {
+          background-color: #8e4585;
+        }
+        .edit-btn.status-next-8 {
+          background-color: #228b22;
+        }
 
-                .edit-btn:hover {
-                    opacity: 0.9;
-                }
+        .edit-btn:hover {
+          opacity: 0.9;
+        }
 
-                .delete-btn {
-                    padding: 6px 12px;
-                    border: none;
-                    border-radius: 12px;
-                    color: white;
-                    font-weight: bold;
-                    cursor: pointer;
-                    background-color: #FF0000;
-                }
+        .delete-btn {
+          padding: 6px 12px;
+          border: none;
+          border-radius: 12px;
+          color: white;
+          font-weight: bold;
+          cursor: pointer;
+          background-color: #ff0000;
+        }
 
-                .delete-btn:hover {
-                    opacity: 0.9;
-                }
-            `}</style>
+        .delete-btn:hover {
+          opacity: 0.9;
+        }
+      `}</style>
       </>
   );
 };
