@@ -17,10 +17,15 @@ function DonHang() {
   const [trangThai, setTrangThai] = useState([]);
   const [itemDetail, setItemDetail] = useState([]);
   const [item, setItem] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageCount, setPageCount] = useState(0);
+  const size = 5; // Số lượng đơn hàng mỗi trang (đổi từ 10 thành 5)
 
   useEffect(() => {
     getStatusInvoice();
-    getDonHang();
+    getDonHang(0);
   }, []);
 
   const getStatusInvoice = async () => {
@@ -29,20 +34,30 @@ function DonHang() {
     setTrangThai(list);
   };
 
-  const getDonHang = async () => {
-    var response = await getMethod("/api/v1/hoa-don/hoa-don-cua-toi");
-    var list = await response.json();
-    console.log("Danh sách đơn hàng:", list);
-    setDonHang(list);
+  const getDonHang = async (page = 0) => {
+    const searchParam = searchTerm ? `&maHoaDon=${searchTerm}` : "";
+    const statusParam = selectedStatus ? `&trangThai=${selectedStatus}` : "";
+    const response = await getMethod(
+        `/api/v1/hoa-don/hoa-don-cua-toi?size=${size}&page=${page}${searchParam}${statusParam}`
+    );
+    const result = await response.json();
+    setDonHang(result.content || result); // Xử lý nếu API trả về mảng hoặc object phân trang
+    setPageCount(result.totalPages || 1); // Mặc định 1 trang nếu không có phân trang
+    setCurrentPage(page);
   };
 
   function getTrangThai(tt) {
-    for (var i = 0; i < trangThai.length; i++) {
-      if (trangThai[i].value == tt) {
-        return trangThai[i].tenTrangThai;
-      }
-    }
-    return "Không xác định";
+    const statusMap = {
+      1: "Chờ xác nhận",
+      2: "Đã xác nhận",
+      3: "Đang chờ đơn vị vận chuyển",
+      4: "Đơn hàng đã được gửi đi",
+      5: "Đã nhận",
+      6: "Hủy đơn",
+      7: "Không nhận hàng",
+      8: "Đã hoàn thành",
+    };
+    return statusMap[tt] || "Không xác định";
   }
 
   const getInvoiceDetail = async (item) => {
@@ -50,7 +65,6 @@ function DonHang() {
         "/api/hoa-don-chi-tiet/find-by-hoa-don?hoaDonId=" + item.id
     );
     var list = await response.json();
-    console.log("Chi tiết hóa đơn:", list);
     setItemDetail(list);
     setItem(item);
   };
@@ -72,7 +86,7 @@ function DonHang() {
         );
         if (response.status < 300) {
           toast.success("Hủy đơn hàng thành công");
-          getDonHang();
+          getDonHang(currentPage); // Tải lại trang hiện tại
         }
         if (response.status == 417) {
           var result = await response.json();
@@ -82,10 +96,70 @@ function DonHang() {
     });
   };
 
+  const handlePageClick = (data) => {
+    const selectedPage = data.selected;
+    getDonHang(selectedPage);
+  };
+
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(0); // Reset về trang đầu khi tìm kiếm
+    getDonHang(0);
+  };
+
+  const handleStatusFilter = (e) => {
+    setSelectedStatus(e.target.value);
+    setCurrentPage(0); // Reset về trang đầu khi lọc trạng thái
+    getDonHang(0);
+  };
+
+  const handleReset = () => {
+    setSearchTerm("");
+    setSelectedStatus("");
+    setCurrentPage(0);
+    getDonHang(0);
+  };
+
+  const filteredDonHang = donhang.filter((item) => {
+    const matchesSearch = item.maHoaDon
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+    const matchesStatus =
+        selectedStatus === "" || item.trangThai.toString() === selectedStatus;
+    return matchesSearch && matchesStatus;
+  });
+
   return (
       <>
         <div className="headeraccount">
           <p className="fontyel">Đơn hàng của tôi</p>
+          <div className="search-wrapper d-flex align-items-center">
+            <input
+                type="text"
+                className="form-control me-2"
+                placeholder="Tìm kiếm theo mã hóa đơn"
+                value={searchTerm}
+                onChange={handleSearch}
+            />
+            <select
+                className="form-select me-2"
+                value={selectedStatus}
+                onChange={handleStatusFilter}
+            >
+              <option value="">Tất cả trạng thái</option>
+              <option value="1">Chờ xác nhận</option>
+              <option value="2">Đã xác nhận</option>
+              <option value="3">Đang chờ đơn vị vận chuyển</option>
+              <option value="4">Đơn hàng đã được gửi đi</option>
+              <option value="5">Đã nhận</option>
+              <option value="6">Hủy đơn</option>
+              <option value="7">Không nhận hàng</option>
+              <option value="8">Đã hoàn thành</option>
+            </select>
+            <button className="btn btn-secondary" onClick={handleReset}>
+              Reset
+            </button>
+          </div>
         </div>
         <div className="contentacc" id="listaddacc">
           <table className="table table-bordered">
@@ -103,7 +177,7 @@ function DonHang() {
             </tr>
             </thead>
             <tbody>
-            {donhang.map((item) => {
+            {filteredDonHang.map((item) => {
               return (
                   <tr key={item.id}>
                     <td
@@ -144,6 +218,32 @@ function DonHang() {
             })}
             </tbody>
           </table>
+          <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+          >
+            <ReactPaginate
+                marginPagesDisplayed={2}
+                pageCount={pageCount}
+                onPageChange={handlePageClick}
+                containerClassName={"pagination"}
+                pageClassName={"page-item"}
+                pageLinkClassName={"page-link"}
+                previousClassName="page-item"
+                previousLinkClassName="page-link"
+                nextClassName="page-item"
+                nextLinkClassName="page-link"
+                breakClassName="page-item"
+                breakLinkClassName="page-link"
+                previousLabel="Trang trước"
+                nextLabel="Trang sau"
+                activeClassName="active"
+                forcePage={currentPage}
+            />
+          </div>
         </div>
 
         <div
@@ -183,9 +283,9 @@ function DonHang() {
                     <span className="ttshipinfor">Thanh toán</span>
                     <div className="blockinfor">
                     <span id="loaithanhtoan">
-                      {item?.phuongThucThanhToans.length > 0 == true
+                      {item?.phuongThucThanhToans.length > 0
                           ? "Đã thanh toán"
-                          : "Chưa thanh toán"}
+                          : "Thanh toán khi nhận hàng"}
                     </span>
                     </div>
                   </div>
